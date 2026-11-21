@@ -639,7 +639,7 @@ function topHTML() {
 }
 function navTabs(u) {
   const tabs = [{ id: 'board', label: '근무현황', short: '근무현황' }];
-  if (!isSup(u)) tabs.push({ id: 'request', label: '승인 요청 · 내 요청', short: '승인 요청' });
+  if (!isSup(u)) tabs.push({ id: 'request', label: '작업승인 요청', short: '작업승인 요청' });
   else tabs.push({ id: 'approve', label: '승인 관리', short: '승인 관리', count: pendingRequests().length });
   tabs.push({ id: 'notice', label: '공지사항', short: '공지사항' });
   return tabs;
@@ -889,7 +889,7 @@ function boardHTML() {
 }
 function boardExtras() { return historyHTML() + recentLogsHTML(); }
 
-/* ---------- 화면 ③: 승인 요청 · 내 요청 (용역직원) ---------- */
+/* ---------- 화면 ③: 작업승인 요청 (용역직원) ---------- */
 const REQ_CLS = { '승인 대기': 'out', '승인': 'work', '외근 중': 'field', '복귀 완료': 'leave', '반려': 'late' };
 
 function toInputValue(d) { return toLocalISO(d).slice(0, 16); }
