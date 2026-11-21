@@ -288,19 +288,29 @@
   .wo-acks { display: flex; flex-direction: column; gap: 6px; }
   .ack { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13.5px; padding: 7px 10px; border-radius: 10px; }
   .ack b { font-weight: 800; }
-  .ack em { font-style: normal; color: var(--text); }
+  .ack em { font-style: normal; color: var(--text); flex-basis: 100%; white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 22px; }
   .ack.yes { background: var(--work-bg); color: var(--work); }
   .ack.yes span { color: #3b6d55; }
   .ack.no { background: var(--surface-2); color: var(--muted); }
   .ack .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--out); flex: none; }
   .wo-foot { display: flex; justify-content: flex-end; }
   .wo-myack { font-size: 13.5px; font-weight: 700; color: var(--work); background: var(--work-bg); padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .wo-ack-form { display: flex; gap: 8px; }
-  .wo-ack-form .memo { flex: 1; min-width: 0; }
-  .wo-ack-form .btn { flex: none; display: inline-flex; align-items: center; gap: 5px; }
-  .opts.wo-to .opt span { display: flex; flex-direction: column; line-height: 1.25; padding: 8px 4px; }
-  .opts.wo-to .opt span small { font-weight: 500; font-size: 11.5px; color: inherit; opacity: .75; }
+  .wo-ack-form { display: flex; flex-direction: column; gap: 6px; }
+  .ack-lbl { font-weight: 700; font-size: 13px; color: var(--ex-navy); }
+  .ack-lbl small { font-weight: 500; color: var(--muted); }
+  .ack-inp { min-height: 84px; resize: vertical; font-size: 14px; line-height: 1.55; }
+  .ack-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .ack-count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .wo-ack-form .btn { flex: none; display: inline-flex; align-items: center; gap: 5px; min-width: 120px; justify-content: center; }
+  .wo-myack .ack-note { flex-basis: 100%; margin: 0; padding-left: 22px; font-weight: 500; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .opts.wo-to .opt > span { display: flex; flex-direction: column; line-height: 1.25; padding: 8px 4px; }
+  .opts.wo-to .opt > span small { font-weight: 500; font-size: 11.5px; color: inherit; opacity: .75; }
   .opts.wo-pri { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 280px; }
+  /* 우선순위: 보통 = 녹색, 긴급 = 빨강 */
+  .wo-pri .pri-normal input:checked + span { background: var(--work); border-color: var(--work); box-shadow: 0 2px 6px rgba(13, 138, 91, .28); }
+  .wo-pri .pri-urgent input:checked + span { background: var(--late); border-color: var(--late); box-shadow: 0 2px 6px rgba(217, 45, 32, .28); }
+  .wo-pri .pri-normal input:focus-visible + span { outline-color: var(--work); }
+  .wo-pri .pri-urgent input:focus-visible + span { outline-color: var(--late); }
   #order-form .btn.primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 
   .banner {
@@ -324,7 +334,7 @@
   .opts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .opt { position: relative; }
   .opt input { position: absolute; opacity: 0; inset: 0; }
-  .opt span {
+  .opt > span {
     display: flex; align-items: center; justify-content: center; text-align: center; min-height: 42px; padding: 6px 4px;
     border: 1px solid var(--line); border-radius: 10px; font-size: 14px; font-weight: 600; background: var(--surface);
     transition: all .15s;
@@ -614,7 +624,7 @@
 
     .form { padding: 18px 16px; }
     .opts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .opt span { min-height: 46px; font-size: 15px; }
+    .opt > span { min-height: 46px; font-size: 15px; }
     .row2 { grid-template-columns: 1fr; }
     .inp, .memo { font-size: 16px; } /* 아이폰 입력 시 자동 확대 방지 */
     .btn { min-height: 40px; }
@@ -700,7 +710,7 @@
   .btn.primary:hover { background: linear-gradient(180deg, #0f7bd4 0%, #0063b4 100%); }
   .inp, .memo { background: var(--surface-2); border-color: #e1e6ef; border-radius: 12px; }
   .inp:focus, .memo:focus, .pin input:focus { background: #fff; box-shadow: var(--ring); }
-  .opt span, .check { border-radius: 12px; }
+  .opt > span, .check { border-radius: 12px; }
 
   /* 로그인 */
   .login { border-radius: 24px; box-shadow: var(--shadow-lg); }
@@ -737,11 +747,423 @@
     .card .avatar { box-shadow: 0 0 0 1.5px #fff, 0 0 0 3px var(--c, var(--line)); }
     .login { border-radius: 20px; }
   }
+  /* ---------- 복귀 · 작업 결과 보고 ---------- */
+  .return-form {
+    flex-basis: 100%; display: flex; flex-direction: column; gap: 10px; padding: 14px; margin-top: 2px;
+    background: var(--surface-2); border: 1px solid rgba(0, 114, 206, .25); border-radius: 14px;
+  }
+  .reqlist .return-form { margin-top: 6px; }
+  .rf-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--ex-navy); }
+  .rf-head .muted { font-size: 13px; margin-left: 4px; }
+  .rf-head .ic { color: var(--ex-blue); }
+  .opts.rf-outcome { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rf-outcome .opt > span { flex-direction: column; gap: 1px; line-height: 1.25; padding: 8px 4px; }
+  .rf-outcome .opt small { font-size: 11.5px; font-weight: 500; opacity: .75; }
+  .rf-outcome .oc-out input:checked + span { background: var(--out); border-color: var(--out); box-shadow: none; }
+  .rf-outcome .oc-late input:checked + span { background: var(--late); border-color: var(--late); box-shadow: none; }
+  .rf-outcome .oc-work input:checked + span { background: var(--work); border-color: var(--work); box-shadow: none; }
+  .return-form textarea { resize: vertical; min-height: 0; font-size: 14px; }
+  .return-form .seg .btn { flex: 1; padding: 10px; }
+  .result {
+    display: flex; flex-direction: column; gap: 3px; padding: 8px 12px; border-radius: 10px; font-size: 13.5px;
+    background: var(--cb, var(--surface-2)); border-left: 3px solid var(--c, var(--line));
+  }
+  .result.res-work { --c: var(--work); --cb: var(--work-bg); }
+  .result.res-out { --c: var(--out); --cb: var(--out-bg); }
+  .result.res-late { --c: var(--late); --cb: var(--late-bg); }
+  .result b { display: flex; align-items: center; gap: 4px; color: var(--ex-navy-2); font-size: 12.5px; }
+  .result .chip { background: #fff; }
+  .res-note { font-size: 13px; color: var(--text); white-space: normal; }
+  .sched-hint {
+    flex-basis: 100%; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13.5px;
+    padding: 8px 12px; border-radius: 12px; background: var(--trip-bg); color: var(--trip);
+  }
+  .sched-hint span { color: var(--text); }
+  .sched-hint .btn { margin-left: auto; }
+
+  /* ---------- 외근 이력: 기간 조회 ---------- */
+  .hist-filter { margin-top: 14px; padding: 10px 12px; display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; }
+  .hf-ranges { gap: 4px; padding: 3px; background: var(--surface-2); border-radius: 12px; }
+  .hf-ranges .btn { border-color: transparent; background: transparent; color: var(--muted); }
+  .hf-ranges .btn.on { background: var(--surface); color: var(--ex-blue); border-color: rgba(0, 114, 206, .3); box-shadow: 0 1px 3px rgba(16, 24, 40, .08); }
+  .hf-period { font-weight: 700; font-size: 14px; color: var(--ex-navy); font-variant-numeric: tabular-nums; }
+  .hf-dates { display: inline-flex; align-items: center; gap: 6px; }
+  .hf-dates .inp, .hf-who { width: auto; padding: 6px 10px; font-size: 14px; }
+  .hf-who { margin-left: auto; }
+  .hf-export { display: inline-flex; align-items: center; gap: 5px; color: var(--work); border-color: rgba(13, 138, 91, .35); }
+  .hf-export:hover { background: var(--work-bg); border-color: var(--work); }
+  .hist-sum { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 10px; }
+  .hist-sum span {
+    padding: 4px 11px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+    color: var(--c, var(--ex-navy)); background: var(--cb, var(--surface)); border: 1px solid rgba(15, 23, 42, .06);
+  }
+  .hist-sum span.zero { opacity: .45; }
+  .hist td.c-date { font-weight: 700; color: var(--ex-navy-2); font-variant-numeric: tabular-nums; }
+  .hist td.c-result { white-space: normal; min-width: 150px; max-width: 260px; }
+  .hist td.c-result .chip { margin-right: 4px; }
+
+  @media (max-width: 860px) {
+    .hf-who { margin-left: 0; }
+  }
+  @media (max-width: 640px) {
+    .opts.rf-outcome { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .rf-outcome .opt > span { min-height: 46px; font-size: 14px; }
+    .rf-outcome .opt small { display: none; }
+    .hist-filter { padding: 10px; }
+    .hf-ranges { width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .hf-ranges .btn { padding: 6px 0; }
+    .hf-period { flex: 1 1 100%; }
+    .hf-dates { width: 100%; }
+    .hf-dates .inp { flex: 1; min-width: 0; }
+    .hf-who { flex: 1; min-width: 0; }
+    .hist td.c-date { grid-column: 1; grid-row: 1; font-size: 12.5px; align-self: center; }
+    .hist tr:has(.c-date) td.c-name { grid-column: 1 / -1; }
+    .hist td.c-result { max-width: none; }
+  }
+  /* ---------- 공동작업 ---------- */
+  :root { --co: #8c3a86; --co-bg: #f6ebf5; }
+  .co-tag {
+    display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px 1px 6px; border-radius: 999px;
+    background: var(--co-bg); color: var(--co); font-size: 12px; font-weight: 700; white-space: nowrap; max-width: 100%;
+  }
+  .co-tag svg { width: 13px; height: 13px; flex: none; }
+  .co-tag span { overflow: hidden; text-overflow: ellipsis; }
+  .co-line { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .kv-mini .co-tag { align-self: flex-start; margin-top: 2px; font-size: 11.5px; }
+  .co-plus { font-size: 12px; font-weight: 700; color: var(--co); }
+  .co-members { display: flex; flex-wrap: wrap; gap: 4px; }
+  .co-m { display: inline-flex; align-items: center; gap: 3px; padding: 1px 8px; border-radius: 8px; background: var(--co-bg); color: var(--co); font-weight: 700; font-size: 13px; }
+  .co-m small { font-size: 10.5px; font-weight: 700; color: #fff; background: var(--co); border-radius: 4px; padding: 0 4px; }
+  .co-m em { font-style: normal; font-size: 11px; color: var(--late); font-weight: 700; }
+  .co-owner { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; color: var(--co); }
+  .co-pick input:checked + span { background: var(--co); border-color: var(--co); box-shadow: 0 2px 6px rgba(140, 58, 134, .25); }
+  .co-pick input:disabled + span { cursor: not-allowed; }
+  .co-pick input:disabled:checked + span { opacity: .85; }
+  .hist td.c-name .co-tag { margin-top: 3px; font-size: 11.5px; }
+  /* 타임라인: 공동작업은 자홍색 계열 */
+  .tl-bar.co.active { background: linear-gradient(180deg, #a34d9c, var(--co)); color: #fff; box-shadow: 0 2px 6px rgba(140, 58, 134, .3); }
+  .tl-bar.co.planned { background: var(--co-bg); color: #6d2a68; box-shadow: inset 0 0 0 1.5px rgba(140, 58, 134, .4); }
+  .tl-bar.co.done { background: #e9d6e7; color: #5e2a5a; }
+  .tl-bar.co.approved { background: var(--co-bg); color: #6d2a68; box-shadow: inset 0 0 0 1.5px #7fcfa6; }
+  .tl-bar.co.pending { background: var(--co-bg); color: #6d2a68; box-shadow: inset 0 0 0 1.5px #f3c071; }
+  .tl-co { display: inline-grid; place-items: center; flex: none; width: 13px; height: 13px; margin-right: 3px; font-style: normal; }
+  .tl-co svg { width: 13px; height: 13px; }
+  .tl-key.co { background: linear-gradient(180deg, #a34d9c, var(--co)); }
+  .co-key { color: var(--co); font-weight: 700; }
+  /* =========================================================
+     휴가 · 출장 일정표 — 2026 리디자인
+     · 주 이동 알약 · 요약 카드(벤토) · 여러 날 이어지는 일정 막대 · 오늘 열 강조
+     · 등록 양식: 큰 구분 타일 · 빠른 날짜 칩 · 기간 자동 계산 · 날짜 타일 목록
+     ========================================================= */
+  .sc-week { --cal-cols: 150px repeat(5, minmax(0, 1fr)) repeat(2, minmax(0, .62fr)); }
+  .wk-nav {
+    display: flex; align-items: center; gap: 4px; padding: 5px; border-radius: 999px;
+    background: rgba(255, 255, 255, .85); backdrop-filter: blur(10px);
+    border: 1px solid rgba(15, 23, 42, .07); box-shadow: 0 4px 16px rgba(16, 24, 40, .06);
+  }
+  .wk-btn {
+    width: 36px; height: 36px; border-radius: 50%; border: 0; background: transparent; color: var(--ex-navy);
+    display: grid; place-items: center; transition: background .15s;
+  }
+  .wk-btn svg { width: 18px; height: 18px; }
+  .wk-btn:hover { background: var(--ex-blue-weak); color: var(--ex-blue); }
+  .wk-label { display: flex; flex-direction: column; align-items: center; min-width: 150px; line-height: 1.2; padding: 0 4px; }
+  .wk-label b { font-size: 15px; letter-spacing: -0.02em; color: var(--ex-navy); font-variant-numeric: tabular-nums; }
+  .wk-label span { font-size: 11.5px; font-weight: 700; color: var(--ex-blue); }
+  .wk-today {
+    height: 36px; padding: 0 16px; border-radius: 999px; border: 0; font-weight: 800; font-size: 13px;
+    background: linear-gradient(180deg, #1786e0, var(--ex-blue)); color: #fff; box-shadow: 0 2px 8px rgba(0, 114, 206, .3);
+  }
+  .wk-today:disabled { background: var(--surface-2); color: #6b7385; box-shadow: none; cursor: default; }
+
+  /* 주간 달력 */
+  .cal { margin-top: 18px; padding: 0; overflow: hidden; border-radius: 18px; }
+  .cal-scroll { overflow-x: auto; }
+  .cal-head, .cal-row { display: grid; grid-template-columns: var(--cal-cols); min-width: 720px; }
+  .cal-head { background: linear-gradient(180deg, #f8fafd, #f2f5fa); border-bottom: 1px solid var(--line); }
+  .dh { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 0 12px; }
+  .dh.corner { align-items: flex-start; justify-content: flex-end; padding-left: 16px; font-size: 12px; font-weight: 800; color: var(--muted); }
+  .dh .dn { font-size: 11.5px; font-weight: 800; color: var(--muted); letter-spacing: .04em; }
+  .dh .dd {
+    min-width: 34px; height: 34px; padding: 0 6px; border-radius: 999px; display: grid; place-items: center; grid-auto-flow: column;
+    font-size: 17px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+  }
+  .dh .dd small { font-size: 11px; font-weight: 700; color: var(--muted); }
+  .dh.weekend .dn, .dh.weekend .dd { color: #6b7385; }
+  .dh.today .dn { color: var(--ex-blue); }
+  .dh.today .dd { background: linear-gradient(160deg, #2b93e6, var(--ex-blue)); color: #fff; box-shadow: 0 4px 12px rgba(0, 114, 206, .35); }
+  .dh.today .dd small { color: rgba(255, 255, 255, .8); }
+  .dh em { position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 24px; height: 3px; border-radius: 3px 3px 0 0; background: var(--ex-red); font-size: 0; }
+  .cal-body .cal-row { position: relative; border-bottom: 1px solid var(--line); transition: background .15s; }
+  .cal-body .cal-row:last-child { border-bottom: 0; }
+  .cal-row:hover { background: rgba(0, 114, 206, .025); }
+  .cal-row.mine .who-cell b::after { content: "본인"; font-size: 10px; font-weight: 700; background: var(--ex-blue); color: #fff; border-radius: 4px; padding: 1px 4px; margin-left: 4px; vertical-align: 1px; }
+  .who-cell { grid-column: 1; grid-row: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 16px; min-width: 0; z-index: 1; }
+  .who-cell span { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+  .who-cell b { font-size: 14px; white-space: nowrap; }
+  .who-cell small { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .who-cell .avatar.sm { width: 32px; height: 32px; background: var(--surface-2); }
+  .cal-bg { grid-row: 1 / -1; border-left: 1px solid #edf0f5; }
+  .cal-bg.weekend { background: repeating-linear-gradient(135deg, #fafbfd 0 6px, #f5f7fb 6px 12px); }
+  .cal-bg.today { background: linear-gradient(180deg, rgba(0, 114, 206, .08), rgba(0, 114, 206, .035)); border-left-color: rgba(0, 114, 206, .18); }
+  .cal-bg.today + .cal-bg { border-left-color: rgba(0, 114, 206, .18); }
+
+  /* 일정 막대 */
+  .ev {
+    position: relative; z-index: 2; align-self: center; margin: 3px 4px; min-width: 0;
+    display: flex; align-items: center; gap: 6px; padding: 4px 9px 4px 4px; border-radius: 11px;
+    background: var(--cb); color: var(--c); font-size: 12.5px; line-height: 1.2; cursor: default;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 22%, transparent);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .ev:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 35%, transparent), 0 6px 14px color-mix(in srgb, var(--c) 18%, transparent); }
+  .ev-ic { flex: none; width: 22px; height: 22px; border-radius: 8px; display: grid; place-items: center; background: var(--c); color: #fff; }
+  .ev-ic svg { width: 13px; height: 13px; }
+  .ev b { flex: none; font-weight: 800; white-space: nowrap; }
+  .ev small { min-width: 0; font-size: 11.5px; font-weight: 500; color: var(--text); opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ev.pending { background: rgba(255, 255, 255, .9); box-shadow: none; outline: 1.5px dashed color-mix(in srgb, var(--c) 70%, transparent); outline-offset: -1.5px; }
+  .ev.pending .ev-ic { background: color-mix(in srgb, var(--c) 18%, #fff); color: var(--c); }
+  .ev.co { --c: var(--co); --cb: var(--co-bg); }
+  .ev.cont-l { margin-left: 0; border-top-left-radius: 3px; border-bottom-left-radius: 3px; }
+  .ev.cont-r { margin-right: 0; border-top-right-radius: 3px; border-bottom-right-radius: 3px; }
+  .cal-foot { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 12px 16px; border-top: 1px solid var(--line); background: #fbfcfe; }
+  .lg { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .lg i { width: 18px; height: 18px; border-radius: 6px; display: grid; place-items: center; background: var(--c); color: #fff; font-style: normal; }
+  .lg i svg { width: 11px; height: 11px; }
+  .lg.st-co { --c: var(--co); }
+  .lg-pending i { background: #fff; outline: 1.5px dashed var(--c); outline-offset: -1.5px; }
+  .cal-agenda { display: none; }
+
+  /* 등록 양식 + 다가오는 일정 */
+  .sc-bottom { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; margin-top: 16px; align-items: start; }
+  .sc-form { padding: 20px; display: flex; flex-direction: column; gap: 18px; border-radius: 18px; }
+  .form-head { display: flex; align-items: center; gap: 12px; }
+  .form-head div { display: flex; flex-direction: column; line-height: 1.3; }
+  .form-head b { font-size: 16px; letter-spacing: -0.02em; }
+  .form-head small { font-size: 12.5px; color: var(--muted); }
+  .fh-ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: var(--ex-blue); background: var(--ex-blue-weak); box-shadow: inset 0 0 0 1px rgba(0, 114, 206, .18); }
+  .fh-ic svg { width: 20px; height: 20px; }
+  .sc-form .field > .lbl { display: flex; align-items: center; gap: 8px; }
+  .type-tiles { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 10px; }
+  .tile { position: relative; cursor: pointer; }
+  .tile input { position: absolute; opacity: 0; inset: 0; }
+  .tile-in {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 12px 11px; border-radius: 16px;
+    border: 1.5px solid var(--line); background: var(--surface); transition: border-color .15s, background .15s, box-shadow .15s, transform .15s;
+  }
+  .tile:hover .tile-in { border-color: color-mix(in srgb, var(--c) 45%, var(--line)); transform: translateY(-1px); }
+  .tile-ic { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: var(--cb); color: var(--c); margin-bottom: 4px; transition: background .15s, color .15s; }
+  .tile-ic svg { width: 20px; height: 20px; }
+  .tile-in b { font-size: 15px; }
+  .tile-in small { font-size: 11.5px; color: var(--muted); }
+  .tile input:checked + .tile-in { border-color: var(--c); background: color-mix(in srgb, var(--cb) 70%, #fff); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 14%, transparent); }
+  .tile input:checked + .tile-in .tile-ic { background: var(--c); color: #fff; }
+  .tile input:focus-visible + .tile-in { outline: 2px solid var(--c); outline-offset: 2px; }
+  .dur { font-size: 12px; font-weight: 800; color: var(--ex-blue); background: var(--ex-blue-weak); padding: 2px 9px; border-radius: 999px; }
+  .dur.bad { color: var(--late); background: var(--late-bg); }
+  .quick { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .quick.mt6 { margin: 8px 0 0; }
+  .qchip {
+    border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px;
+    font-size: 12.5px; font-weight: 700; color: var(--ex-navy-2); transition: all .15s;
+  }
+  .qchip:hover { border-color: var(--ex-blue); color: var(--ex-blue); background: var(--ex-blue-weak); }
+  .qchip.soft { background: var(--surface-2); border-color: transparent; color: var(--muted); font-weight: 600; }
+  .qchip.soft:hover { color: var(--ex-blue); background: var(--ex-blue-weak); }
+  .date-range { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: 8px; }
+  .date-range label { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .date-range small { font-size: 12px; font-weight: 700; color: var(--muted); }
+  .dr-arrow { width: 32px; height: 42px; display: grid; place-items: center; color: #6b7385; }
+  .dr-arrow svg { width: 18px; height: 18px; }
+  .sc-submit { padding: 13px; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; }
+
+  .sc-up { padding: 0; border-radius: 18px; overflow: hidden; }
+  .up-head { display: flex; align-items: center; gap: 8px; padding: 18px 20px 12px; }
+  .up-head b { font-size: 16px; letter-spacing: -0.02em; }
+  .up-count { font-size: 12px; font-weight: 800; color: #fff; background: var(--ex-navy); border-radius: 999px; padding: 1px 9px; }
+  .up-list { list-style: none; margin: 0; padding: 0 10px 10px; display: flex; flex-direction: column; gap: 6px; }
+  .up-list li {
+    display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+    padding: 10px; border-radius: 16px; transition: background .15s;
+  }
+  .up-list li:hover { background: var(--surface-2); }
+  .up-list li.mine { background: color-mix(in srgb, var(--ex-blue-weak) 60%, #fff); }
+  .dt {
+    display: flex; flex-direction: column; align-items: center; line-height: 1.1; padding: 6px 0 7px; border-radius: 14px;
+    background: var(--cb); color: var(--c); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 18%, transparent);
+  }
+  .dt small { font-size: 10.5px; font-weight: 700; opacity: .8; }
+  .dt b { font-size: 20px; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .dt span { font-size: 10.5px; font-weight: 700; }
+  .up-body { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .up-line { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 14px; }
+  .up-type { display: inline-flex; align-items: center; font-size: 12.5px; font-weight: 800; color: var(--c); }
+  .up-type .st-ico { width: 1em; height: 1em; margin-right: 3px; }
+  .dday { font-style: normal; font-size: 11px; font-weight: 800; color: var(--ex-navy-2); background: #eef2f8; border-radius: 6px; padding: 1px 6px; font-variant-numeric: tabular-nums; }
+  .dday.now { color: #fff; background: var(--ex-red); }
+  .up-meta { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 10px; border: 0; background: transparent; color: #6b7385; display: grid; place-items: center; transition: all .15s; }
+  .icon-btn svg { width: 17px; height: 17px; }
+  .icon-btn:hover { background: var(--late-bg); color: var(--late); }
+  .up-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 30px 20px 36px; color: #6b7385; }
+  .up-empty svg { width: 34px; height: 34px; }
+  .up-empty p { margin: 0; font-size: 13.5px; }
+
+  @media (max-width: 960px) {
+    .sc-bottom { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .wk-nav { width: 100%; justify-content: space-between; }
+    .wk-label { min-width: 0; flex: 1; }
+    .cal { background: transparent; border: 0; box-shadow: none; border-radius: 0; overflow: visible; }
+    .cal-scroll { display: none; }
+    .cal-agenda { display: flex; flex-direction: column; gap: 8px; }
+    .ag-day {
+      display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px;
+      background: var(--surface); border: 1px solid rgba(15, 23, 42, .06); border-radius: 18px; box-shadow: var(--shadow);
+    }
+    .ag-day.empty { align-items: center; padding: 6px 10px; box-shadow: none; background: rgba(255, 255, 255, .6); }
+    .ag-day.today { border-color: rgba(0, 114, 206, .35); box-shadow: var(--ring), var(--shadow); }
+    .ag-tile { display: flex; flex-direction: column; align-items: center; line-height: 1.1; padding: 6px 0; border-radius: 13px; background: var(--surface-2); }
+    .ag-tile span { font-size: 11px; font-weight: 800; color: var(--muted); }
+    .ag-tile b { font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .ag-day.empty .ag-tile { flex-direction: row; gap: 4px; background: transparent; padding: 2px 0; }
+    .ag-day.empty .ag-tile b { font-size: 15px; color: #6b7385; }
+    .ag-day.weekend .ag-tile span, .ag-day.weekend .ag-tile b { color: #6b7385; }
+    .ag-day.today .ag-tile { background: linear-gradient(160deg, #2b93e6, var(--ex-blue)); box-shadow: 0 4px 12px rgba(0, 114, 206, .3); }
+    .ag-day.today .ag-tile span, .ag-day.today .ag-tile b { color: #fff; }
+    .ag-day ul { list-style: none; margin: 0; padding: 2px 0; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .ag-day li { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .ag-name { font-size: 13px; min-width: 42px; white-space: nowrap; }
+    .ag-day .ev { margin: 0; flex: 1; }
+    .ag-none { margin: 0; font-size: 12.5px; color: #6b7385; }
+    .cal-foot { background: transparent; border: 0; padding: 10px 2px 0; gap: 6px 12px; }
+    .sc-form { padding: 16px; gap: 16px; }
+    .tile-in { padding: 10px; border-radius: 14px; }
+    .tile-in small { display: none; }
+    .date-range { grid-template-columns: 1fr; }
+    .dr-arrow { display: none; }
+    .up-list li { grid-template-columns: 46px minmax(0, 1fr) auto; gap: 10px; padding: 8px; }
+  }
+  /* =========================================================
+     공공기관 디자인 정리 (한국도로공사)
+     · 모든 화면 같은 제목 형식 · 이모지 없이 선 아이콘/그림으로 통일
+     · 웹 접근성: 본문 바로가기, 키보드 초점 표시, 글자 명도 대비
+     · 하단 기관 정보
+     ========================================================= */
+  .skip-link {
+    position: absolute; left: 12px; top: -60px; z-index: 100; padding: 10px 16px; border-radius: 10px;
+    background: var(--ex-navy); color: #fff; font-weight: 700; text-decoration: none; box-shadow: var(--shadow-lg);
+  }
+  .skip-link:focus { top: 12px; }
+  main:focus { outline: none; }
+  :where(button, a, [role="button"], summary):focus-visible { outline: 2px solid var(--ex-blue); outline-offset: 2px; }
+
+  .page-head { display: flex; align-items: center; gap: 12px 14px; flex-wrap: wrap; }
+  .ph-ic {
+    flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; color: #fff;
+    background: linear-gradient(150deg, #1d4a8f 0%, var(--ex-navy) 100%);
+    box-shadow: 0 6px 14px rgba(11, 31, 75, .22), inset 0 -2px 0 rgba(228, 0, 43, .9);
+  }
+  .ph-ic svg { width: 23px; height: 23px; }
+  .ph-txt { min-width: 0; flex: 1 1 280px; }
+  .ph-txt h1 { margin: 0; }
+  .ph-txt p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+  .ph-right { margin-left: auto; display: flex; align-items: center; }
+
+  .avatar-btn .edit svg { width: 10px; height: 10px; stroke-width: 2.6; }
+  .nt-more { display: grid; place-items: center; }
+  .nt-more svg { width: 18px; height: 18px; }
+  .arr { display: inline-block; width: 12px; height: 12px; margin: 0 4px; vertical-align: -1px; opacity: .55;
+    background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat; }
+  .loglist .arr { margin: 0; color: var(--muted); }
+  .emoji-opt { font-family: inherit; }
+  .emoji-grid { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); }
+  .emoji-opt { height: 50px; }
+  .emoji-opt.svgav svg { width: 34px; height: 34px; }
+
+  .site-foot { background: var(--ex-navy); color: rgba(255, 255, 255, .78); border-top: 3px solid var(--ex-red); }
+  .sf-inner { max-width: 1160px; margin: 0 auto; padding: 22px 20px 26px; display: flex; align-items: center; gap: 14px 28px; flex-wrap: wrap; }
+  .sf-logo { height: 28px; width: auto; opacity: .95; }
+  .sf-txt p { margin: 0; font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .sf-txt b { color: #fff; font-weight: 700; }
+  .sf-txt .sf-note { margin-top: 4px; font-size: 12px; color: rgba(255, 255, 255, .62); }
+
+  @media (max-width: 640px) {
+    .ph-ic { width: 40px; height: 40px; border-radius: 12px; }
+    .ph-ic svg { width: 20px; height: 20px; }
+    .ph-txt { flex-basis: calc(100% - 56px); }
+    .ph-txt p { font-size: 13px; }
+    .ph-board .ph-txt p { display: none; } /* 현황판은 카드가 바로 보이도록 설명 생략 */
+    .ph-right { margin-left: 0; width: 100%; }
+    .ph-right .summary { width: 100%; }
+    main { padding-bottom: 28px; }
+    .sf-inner { padding: 18px 16px calc(104px + env(safe-area-inset-bottom)); gap: 10px; }
+    .sf-logo { height: 24px; }
+  }
+  /* ---------- 외근 시작 ---------- */
+  .start-box {
+    flex-basis: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 4px 12px;
+    padding: 12px 14px; border-radius: 14px; background: var(--ex-blue-weak); border: 1px solid rgba(0, 114, 206, .22);
+  }
+  .start-box.late { background: var(--out-bg); border-color: rgba(184, 100, 0, .3); }
+  .sb-ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--ex-blue); color: #fff; }
+  .start-box.late .sb-ic { background: var(--out); }
+  .sb-ic svg { width: 20px; height: 20px; }
+  .sb-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.35; }
+  .sb-txt b { font-size: 14px; color: var(--ex-navy); }
+  .sb-txt span { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .start-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; white-space: nowrap; }
+  .sb-hint { grid-column: 2 / -1; margin: 0; font-size: 12px; color: var(--muted); }
+  .start-block { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+  .start-inline { display: flex; align-items: center; gap: 8px; }
+  .start-inline .start-btn { padding: 7px 14px; font-size: 13.5px; }
+  .plan-note { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 7px 10px; border-radius: 10px; background: var(--work-bg); color: var(--work); }
+  .plan-note.late { background: var(--out-bg); color: var(--out); }
+  .banner.warn { background: var(--out-bg); color: #7a4300; border-color: #f3d29b; }
+  .tl-bar.waiting { background: repeating-linear-gradient(135deg, #fff3e0 0 6px, #ffe6c2 6px 12px); color: #8a4b00; box-shadow: inset 0 0 0 1.5px #f0b45e; }
+  .tl-key.waiting { background: repeating-linear-gradient(135deg, #fff3e0 0 3px, #ffe0b3 3px 6px); box-shadow: inset 0 0 0 1.5px #f0b45e; }
+  @media (max-width: 640px) {
+    .start-box { grid-template-columns: auto minmax(0, 1fr); }
+    .start-box .start-btn, .start-box .start-block { grid-column: 1 / -1; justify-content: center; }
+    .start-box .start-btn { width: 100%; padding: 12px; font-size: 15px; }
+    .sb-hint { grid-column: 1 / -1; text-align: center; }
+  }
+  /* ---------- 출발 전 안전 재확인 · 외근 취소 ---------- */
+  .start-box.open { grid-template-columns: auto minmax(0, 1fr); }
+  .start-box .start-form, .start-box .cancel-form { grid-column: 1 / -1; }
+  .start-form, .cancel-form {
+    display: flex; flex-direction: column; gap: 10px; padding: 14px; margin-top: 4px;
+    background: var(--surface); border: 1px solid rgba(0, 114, 206, .25); border-radius: 14px;
+  }
+  .cancel-form { border-color: rgba(217, 45, 32, .28); }
+  .cancel-form .rf-head .ic { color: var(--late); }
+  .start-form .rf-head .ic { color: var(--work); }
+  .start-form .checks { display: flex; flex-direction: column; gap: 8px; }
+  .sf-keep { margin: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); color: var(--ex-navy-2); }
+  .start-form .seg .btn, .cancel-form .seg .btn { flex: 1; padding: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .sb-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .btn.cancel-btn { color: var(--late); font-weight: 700; }
+  .btn.cancel-btn:hover { background: var(--late-bg); border-color: transparent; }
+  .reason.cancel { color: var(--leave); background: var(--leave-bg); font-weight: 600; }
+  .ss-ok { display: inline-grid; place-items: center; width: 16px; height: 16px; color: var(--work); vertical-align: -3px; }
+  .ss-ok .ic { width: 15px; height: 15px; }
+  .h2-sub { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .reqlist .start-inline { flex-direction: column; align-items: stretch; }
+  .reqlist .start-inline .sb-actions { justify-content: flex-start; }
+  @media (max-width: 640px) {
+    .sb-actions { grid-column: 1 / -1; justify-content: stretch; }
+    .sb-actions .start-btn { flex: 1; }
+    .start-box .sb-actions .start-btn { width: auto; }
+  }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#app">본문 바로가기</a>
 <div id="top"></div>
-<main id="app"></main>
+<main id="app" tabindex="-1"></main>
+<footer class="site-foot" id="foot"></footer>
 <div id="toast" class="toast" hidden></div>
 
 <!-- 시제품용 더미 데이터 (dummy-data.json 사본). 브라우저에서 파일로 바로 열 수 있도록 내장. -->
@@ -753,7 +1175,7 @@
     { "id": "S2", "name": "이현우", "role": "감독원",   "pin": "2222", "status": "출장", "statusNote": "본사 회의" },
     { "id": "W1", "name": "박성민", "role": "용역직원", "part": "사무자동화기기", "status": "외근", "currentRequestId": "R-003" },
     { "id": "W2", "name": "최준영", "role": "용역직원", "part": "사무자동화기기", "status": "외근", "currentRequestId": "R-002" },
-    { "id": "W3", "name": "정태윤", "role": "용역직원", "part": "네트워크", "status": "근무" },
+    { "id": "W3", "name": "정태윤", "role": "용역직원", "part": "네트워크", "status": "외근", "currentRequestId": "R-003" },
     { "id": "W4", "name": "강동현", "role": "용역직원", "part": "네트워크", "status": "휴가", "statusNote": "연차" }
   ],
   "statusOptions": {
@@ -763,30 +1185,75 @@
   "safetyItems": [
     { "title": "작업장 안전관리 준수", "required": true, "desc": "작업 전 위험요소 확인, 정리정돈, 전기·고소작업 안전수칙 준수" },
     { "title": "교통안전 준수", "required": true, "desc": "안전띠 착용, 규정속도 준수, 운전 중 휴대전화 사용 금지" },
-    { "title": "개인보호구 착용", "required": false, "desc": "작업장 상황에 따라 선택 — 안전모·안전화·안전조끼 등" }
+    { "title": "개인보호구 착용", "required": true, "desc": "작업장 상황에 따라 안전모·안전화·안전조끼 등 착용" }
   ],
   "workTypes": ["장애 대응", "정기 점검", "설치·교체", "기타"],
   "locations": ["광주지사", "담양지사", "순천지사", "함평지사", "구례지사", "보성지사", "영암지사", "기타"],
   "requests": [
     { "id": "R-001", "requesterId": "W1", "workType": "정기 점검", "location": "함평지사", "locationDetail": "1층 영업소 서버실",
-      "departAt": "2026-11-20T09:00:00", "expectedReturnAt": "2026-11-20T11:30:00", "description": "영업소 POS 서버 월간 점검 및 백업 확인",
-      "requestedAt": "2026-11-20T08:40:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"], "status": "복귀 완료", "approverId": "S1", "decidedAt": "2026-11-20T08:45:00", "returnedAt": "2026-11-20T11:20:00" },
+      "departAt": "2026-11-20T09:00:00", "startedAt": "2026-11-20T09:05:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-20T11:30:00", "description": "영업소 POS 서버 월간 점검 및 백업 확인",
+      "requestedAt": "2026-11-20T08:40:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "복귀 완료", "approverId": "S1", "decidedAt": "2026-11-20T08:45:00", "returnedAt": "2026-11-20T11:20:00",
+      "result": { "outcome": "완료", "note": "POS 서버 점검 정상, 백업 파일 3일치 확인" } },
     { "id": "R-002", "requesterId": "W2", "workType": "장애 대응", "location": "담양지사", "locationDetail": "2층 통신실",
-      "departAt": "2026-11-20T10:00:00", "expectedReturnAt": "2026-11-20T14:00:00", "description": "통신실 L2 스위치 링크 다운 장애 조치",
+      "departAt": "2026-11-20T10:00:00", "startedAt": "2026-11-20T10:03:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-20T14:00:00", "description": "통신실 L2 스위치 링크 다운 장애 조치",
       "requestedAt": "2026-11-20T09:40:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "외근 중", "approverId": "S1", "decidedAt": "2026-11-20T09:42:00", "instruction": "작업 전 담양지사 담당자와 통화 후 진행, 조치 결과 사진 보고", "returnedAt": null },
     { "id": "R-003", "requesterId": "W1", "workType": "설치·교체", "location": "순천지사", "locationDetail": "사무동 3층 업무용 PC 5대",
-      "departAt": "2026-11-20T13:00:00", "expectedReturnAt": "2026-11-20T17:00:00", "description": "노후 업무용 PC 교체 및 프린터 드라이버 설치",
+      "departAt": "2026-11-20T13:00:00", "startedAt": "2026-11-20T13:10:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-20T17:00:00", "description": "노후 업무용 PC 교체 및 프린터 드라이버 설치", "coWorkerIds": ["W3"],
       "requestedAt": "2026-11-20T12:30:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "외근 중", "approverId": "S2", "decidedAt": "2026-11-20T12:35:00", "instruction": "교체한 PC 자산번호 목록 작성 후 제출", "returnedAt": null },
     { "id": "R-004", "requesterId": "W3", "workType": "장애 대응", "location": "광주지사", "locationDetail": "민원실 무인발급기",
-      "departAt": "2026-11-20T15:00:00", "expectedReturnAt": "2026-11-20T17:00:00", "description": "무인발급기 영수증 출력 오류 점검",
-      "requestedAt": "2026-11-20T14:20:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"], "status": "승인 대기", "approverId": null, "decidedAt": null, "returnedAt": null },
+      "departAt": "2026-11-20T17:30:00", "expectedReturnAt": "2026-11-20T18:30:00", "description": "무인발급기 영수증 출력 오류 점검",
+      "requestedAt": "2026-11-20T14:20:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "승인 대기", "approverId": null, "decidedAt": null, "returnedAt": null },
     { "id": "R-005", "requesterId": "W3", "workType": "기타", "location": "기타", "locationDetail": "본부 3층 대회의실",
       "departAt": "2026-11-20T10:30:00", "expectedReturnAt": "2026-11-20T11:30:00", "description": "회의실 영상회의 장비 사전 점검",
-      "requestedAt": "2026-11-20T10:00:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"], "status": "반려", "approverId": "S1", "decidedAt": "2026-11-20T10:05:00",
+      "requestedAt": "2026-11-20T10:00:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "반려", "approverId": "S1", "decidedAt": "2026-11-20T10:05:00",
       "rejectReason": "회의 일정이 다음 주로 연기되어 점검 불필요", "returnedAt": null },
     { "id": "R-006", "requesterId": "W2", "workType": "정기 점검", "location": "영암지사", "locationDetail": "요금소 CCTV 서버",
-      "departAt": "2026-11-23T09:30:00", "expectedReturnAt": "2026-11-23T13:00:00", "description": "요금소 CCTV 녹화서버 디스크 상태 점검",
-      "requestedAt": "2026-11-20T13:50:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"], "status": "승인 대기", "approverId": null, "decidedAt": null, "returnedAt": null }
+      "departAt": "2026-11-23T09:30:00", "expectedReturnAt": "2026-11-23T13:00:00", "description": "요금소 CCTV 녹화서버 디스크 상태 점검", "coWorkerIds": ["W4"],
+      "requestedAt": "2026-11-20T13:50:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "승인 대기", "approverId": null, "decidedAt": null, "returnedAt": null },
+    { "id": "R-007", "requesterId": "W1", "workType": "설치·교체", "location": "광주지사", "locationDetail": "2층 업무지원팀",
+      "departAt": "2026-11-05T10:00:00", "startedAt": "2026-11-05T10:00:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-05T12:00:00", "description": "업무지원팀 복합기 교체 및 스캔 폴더 설정",
+      "requestedAt": "2026-11-05T09:30:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "복귀 완료", "approverId": "S1", "decidedAt": "2026-11-05T09:35:00", "returnedAt": "2026-11-05T11:50:00",
+      "result": { "outcome": "완료", "note": "복합기 교체, 부서 스캔 폴더 4개 설정" } },
+    { "id": "R-008", "requesterId": "W2", "workType": "정기 점검", "location": "담양지사", "locationDetail": "영업소 서버실",
+      "departAt": "2026-11-10T09:00:00", "startedAt": "2026-11-10T09:02:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-10T12:00:00", "description": "영업소 서버 월간 점검",
+      "requestedAt": "2026-11-10T08:40:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "복귀 완료", "approverId": "S2", "decidedAt": "2026-11-10T08:44:00", "returnedAt": "2026-11-10T11:40:00",
+      "result": { "outcome": "완료", "note": "서버 2대 점검 정상" } },
+    { "id": "R-009", "requesterId": "W3", "workType": "정기 점검", "location": "보성지사", "locationDetail": "요금소 네트워크 장비",
+      "departAt": "2026-11-17T09:30:00", "startedAt": "2026-11-17T09:35:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-17T12:00:00", "description": "요금소 L3 스위치 · 방화벽 점검",
+      "requestedAt": "2026-11-17T09:00:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "복귀 완료", "approverId": "S1", "decidedAt": "2026-11-17T09:05:00", "returnedAt": "2026-11-17T11:50:00",
+      "result": { "outcome": "완료", "note": "펌웨어 최신 버전 확인, 로그 이상 없음" } },
+    { "id": "R-010", "requesterId": "W4", "workType": "장애 대응", "location": "구례지사", "locationDetail": "영업소 인터넷 회선",
+      "departAt": "2026-11-17T13:00:00", "startedAt": "2026-11-17T13:05:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-17T15:00:00", "description": "영업소 인터넷 끊김 장애 조치",
+      "requestedAt": "2026-11-17T12:40:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "복귀 완료", "approverId": "S1", "decidedAt": "2026-11-17T12:42:00", "returnedAt": "2026-11-17T15:40:00",
+      "result": { "outcome": "완료", "note": "공유기 전원부 불량 — 예비품으로 교체" } },
+    { "id": "R-011", "requesterId": "W2", "workType": "설치·교체", "location": "광주지사", "locationDetail": "민원실",
+      "departAt": "2026-11-18T10:00:00", "startedAt": "2026-11-18T10:00:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-18T12:00:00", "description": "민원실 번호표 발급기 프린터 교체", "coWorkerIds": ["W1"],
+      "requestedAt": "2026-11-18T09:20:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "복귀 완료", "approverId": "S2", "decidedAt": "2026-11-18T09:25:00", "returnedAt": "2026-11-18T11:45:00",
+      "result": { "outcome": "완료", "note": "" } },
+    { "id": "R-012", "requesterId": "W1", "workType": "장애 대응", "location": "영암지사", "locationDetail": "사무동 2층 PC",
+      "departAt": "2026-11-18T14:00:00", "startedAt": "2026-11-18T14:10:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-18T16:00:00", "description": "업무용 PC 부팅 불가 장애 조치",
+      "requestedAt": "2026-11-18T13:30:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "복귀 완료", "approverId": "S1", "decidedAt": "2026-11-18T13:33:00", "returnedAt": "2026-11-18T16:20:00",
+      "result": { "outcome": "일부 완료", "note": "메인보드 불량 — 임시 PC 설치, 부품 입고 후 재방문 필요" } },
+    { "id": "R-013", "requesterId": "W4", "workType": "정기 점검", "location": "순천지사", "locationDetail": "사무동 무선 AP",
+      "departAt": "2026-11-19T09:00:00", "startedAt": "2026-11-19T09:00:00", "startSafety": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "expectedReturnAt": "2026-11-19T12:00:00", "description": "사무동 무선 AP 6대 점검",
+      "requestedAt": "2026-11-19T08:30:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "복귀 완료", "approverId": "S2", "decidedAt": "2026-11-19T08:36:00", "returnedAt": "2026-11-19T12:10:00",
+      "result": { "outcome": "미완료", "note": "3층 AP 2대 접속 불가 — 교체용 AP 신청, 다음 주 재방문" } },
+    { "id": "R-014", "requesterId": "W3", "workType": "기타", "location": "함평지사", "locationDetail": "회의실",
+      "departAt": "2026-11-19T14:00:00", "expectedReturnAt": "2026-11-19T15:00:00", "description": "회의실 빔프로젝터 연결 점검",
+      "requestedAt": "2026-11-19T13:20:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "반려", "approverId": "S1", "decidedAt": "2026-11-19T13:30:00",
+      "rejectReason": "지사 자체 조치 완료로 출장 불필요", "returnedAt": null },
+    { "id": "R-015", "requesterId": "W4", "workType": "장애 대응", "location": "함평지사", "locationDetail": "영업소 출입 통제기",
+      "departAt": "2026-11-19T14:00:00", "expectedReturnAt": "2026-11-19T16:00:00", "description": "영업소 출입 통제기 카드 인식 불량 점검",
+      "requestedAt": "2026-11-19T13:00:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "취소", "approverId": "S2", "decidedAt": "2026-11-19T13:10:00",
+      "prevStatus": "승인", "cancelReason": "지사 자체 조치(재부팅)로 정상화되어 외근 불필요", "canceledAt": "2026-11-19T13:40:00", "canceledBy": "W4", "returnedAt": null }
+  ],
+  "schedules": [
+    { "id": "P-001", "userId": "W4", "type": "휴가", "start": "2026-11-20", "end": "2026-11-20", "note": "연차", "createdAt": "2026-11-13T09:10:00" },
+    { "id": "P-002", "userId": "S2", "type": "출장", "start": "2026-11-20", "end": "2026-11-20", "note": "본사 회의", "createdAt": "2026-11-14T16:00:00" },
+    { "id": "P-003", "userId": "W1", "type": "외출", "start": "2026-11-24", "end": "2026-11-24", "note": "오후 병원", "createdAt": "2026-11-19T17:20:00" },
+    { "id": "P-004", "userId": "S1", "type": "출장", "start": "2026-11-25", "end": "2026-11-25", "note": "본사 정보화 담당자 회의", "createdAt": "2026-11-18T10:00:00" },
+    { "id": "P-005", "userId": "W3", "type": "휴가", "start": "2026-11-26", "end": "2026-11-27", "note": "연차", "createdAt": "2026-11-16T09:00:00" },
+    { "id": "P-006", "userId": "W2", "type": "휴가", "start": "2026-11-30", "end": "2026-11-30", "note": "오전 반차", "createdAt": "2026-11-20T11:30:00" }
   ],
   "workOrders": [
     { "id": "W-001", "fromId": "S1", "toIds": ["W1"], "priority": "보통", "title": "순천지사 PC 교체 후 프린터 연결 확인", "location": "순천지사", "dueAt": "2026-11-20T17:00:00",
@@ -803,10 +1270,11 @@
   ],
   "statusLogs": [
     { "at": "2026-11-20T08:30:00", "userId": "W4", "from": "근무", "to": "휴가", "note": "연차" },
-    { "at": "2026-11-20T08:45:00", "userId": "W1", "from": "근무", "to": "외근", "note": "R-001 승인 (함평지사)" },
-    { "at": "2026-11-20T09:42:00", "userId": "W2", "from": "근무", "to": "외근", "note": "R-002 승인 (담양지사)" },
+    { "at": "2026-11-20T09:05:00", "userId": "W1", "from": "근무", "to": "외근", "note": "R-001 외근 시작 (함평지사)" },
+    { "at": "2026-11-20T10:03:00", "userId": "W2", "from": "근무", "to": "외근", "note": "R-002 외근 시작 (담양지사)" },
     { "at": "2026-11-20T11:20:00", "userId": "W1", "from": "외근", "to": "근무", "note": "R-001 복귀" },
-    { "at": "2026-11-20T12:35:00", "userId": "W1", "from": "근무", "to": "외근", "note": "R-003 승인 (순천지사)" }
+    { "at": "2026-11-20T13:10:00", "userId": "W1", "from": "근무", "to": "외근", "note": "R-003 외근 시작 (순천지사) · 공동작업" },
+    { "at": "2026-11-20T13:10:00", "userId": "W3", "from": "근무", "to": "외근", "note": "R-003 외근 시작 (순천지사) · 공동작업 (박성민 처리)" }
   ]
 }
 </script>
@@ -816,7 +1284,7 @@
    저장소 — 1단계는 브라우저 localStorage.
    2단계에서는 load()/save()만 서버 API 호출로 바꾸면 된다.
    ========================================================= */
-const STORE_KEY = 'gj-maint-proto-v10';
+const STORE_KEY = 'gj-maint-proto-v15';
 const SESSION_KEY = 'gj-maint-proto-user';
 const SEED = JSON.parse(document.getElementById('seed').textContent);
 
@@ -873,6 +1341,16 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const userById = id => state.users.find(u => u.id === id);
 const reqById = id => state.requests.find(r => r.id === id);
 const isSup = u => u && u.role === '감독원';
+// 공동작업: 등록한 직원(requesterId) + 함께 작업하는 직원(coWorkerIds)
+const members = r => [r.requesterId, ...(r.coWorkerIds || [])];
+const isMember = (r, id) => members(r).includes(id);
+const isCoWork = r => (r.coWorkerIds || []).length > 0;
+const namesOf = ids => ids.map(id => { const u = userById(id); return u ? u.name : id; }).join(' · ');
+const coTag = (r, exceptId) => {
+  if (!isCoWork(r)) return '';
+  const others = members(r).filter(id => id !== exceptId);
+  return `<span class="co-tag" title="공동작업: ${esc(namesOf(members(r)))}">${IC.team}<span>공동${others.length ? ' · ' + esc(namesOf(others)) : ''}</span></span>`;
+};
 const me = () => userById(currentUserId);
 
 const STATUS_CLS = { '근무': 'work', '휴가': 'leave', '외출': 'out', '출장': 'trip', '외근': 'field', '복귀 지연': 'late' };
@@ -894,6 +1372,13 @@ const IC = {
   send:     lineIcon('<path d="M21.5 2.5 10.8 13.2"/><path d="M21.5 2.5 14.7 21.5l-3.9-8.3-8.3-3.9z"/>'),
   inbox:    lineIcon('<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>'),
   pin:      lineIcon('<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>'),
+  team:     lineIcon('<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3.1 2.5-5.3 5.5-5.3s5.5 2.2 5.5 5.3"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 13.9c2.6.1 4.7 2 4.7 4.6"/>'),
+  trash:    lineIcon('<path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/>'),
+  chevL:    lineIcon('<path d="M15 18l-6-6 6-6"/>'),
+  chevR:    lineIcon('<path d="M9 18l6-6-6-6"/>'),
+  arrowR:   lineIcon('<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>'),
+  plus:     lineIcon('<path d="M12 5v14M5 12h14"/>'),
+  calendar: lineIcon('<rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M7.5 13.5h2M11 13.5h2M14.5 13.5h2M7.5 17h2M11 17h2"/>'),
 };
 const ic = name => `<span class="ic" aria-hidden="true">${IC[name]}</span>`;
 // 상태별 아이콘: 근무(사무실) · 외근(차량) · 외출(나감) · 출장(서류가방) · 휴가(해) · 복귀 지연(알람시계)
@@ -942,14 +1427,23 @@ function topHTML() {
 function navTabs(u) {
   const tabs = [{ id: 'board', label: '근무현황', short: '근무현황' }];
   if (!isSup(u)) {
-    tabs.push({ id: 'request', label: '작업승인 요청', short: '작업승인 요청' });
+    tabs.push({ id: 'request', label: '작업승인 요청', short: '승인 요청' });
     tabs.push({ id: 'inbox', label: '받은 작업 요청', short: '받은 요청', count: unackedForMe() });
   } else {
     tabs.push({ id: 'approve', label: '승인 관리', short: '승인 관리', count: pendingRequests().length });
     tabs.push({ id: 'orders', label: '작업 요청', short: '작업 요청' });
   }
-  tabs.push({ id: 'notice', label: '공지사항', short: '공지사항' });
+  tabs.push({ id: 'schedule', label: '일정표', short: '일정표' });
+  tabs.push({ id: 'notice', label: '공지사항', short: '공지' });
   return tabs;
+}
+// 모든 화면 공통 제목: 메뉴 아이콘 + 제목 + 설명 (+ 오른쪽 요소)
+function pageHead(id, title, desc, right = '') {
+  return `<header class="page-head ph-${id}">
+    <span class="ph-ic" aria-hidden="true">${ICONS[id] || ''}</span>
+    <div class="ph-txt"><h1>${title}</h1>${desc ? `<p>${desc}</p>` : ''}</div>
+    ${right ? `<div class="ph-right">${right}</div>` : ''}
+  </header>`;
 }
 const svg = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const ICONS = {
@@ -959,6 +1453,7 @@ const ICONS = {
   notice: svg('<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'),
   orders: IC.send,
   inbox: IC.inbox,
+  schedule: IC.calendar,
 };
 
 /* ---------- 화면 ①: 사용자 선택 ---------- */
@@ -995,17 +1490,22 @@ function cardHTML(u) {
     const r = sv.req;
     body = `<dl class="kv">
       <dt>작업장소</dt><dd>${esc(r.location)}${r.locationDetail ? ` · ${esc(r.locationDetail)}` : ''}</dd>
-      <dt>출발</dt><dd>${fmtDT(r.departAt)}</dd>
+      <dt>출발</dt><dd>${fmtDT(r.startedAt || r.departAt)}${r.startedAt && r.startedAt.slice(0, 16) !== r.departAt.slice(0, 16) ? ` <small class="muted">(예정 ${fmtDT(r.departAt)})</small>` : ''}</dd>
       <dt>예상 복귀</dt><dd>${fmtDT(r.expectedReturnAt)}${sv.cls === 'late' ? ` <b class="late-txt">(${sv.lateMin}분 지연)</b>` : ''}</dd>
       <dt class="opt-row">작업</dt><dd class="opt-row">${esc(r.workType)}</dd>
+      ${isCoWork(r) ? `<dt>공동</dt><dd>${coTag(r, u.id)}</dd>` : ''}
     </dl>
     <div class="kv-mini">
       <span class="loc">${esc(r.location)}${r.locationDetail ? ` · ${esc(r.locationDetail)}` : ''}</span>
-      <span class="time">${fmtDT(r.departAt)} → ${fmtDT(r.expectedReturnAt)}${sv.cls === 'late' ? ` <b class="late-txt">+${sv.lateMin}분</b>` : ''}</span>
+      <span class="time">${fmtDT(r.startedAt || r.departAt)}<span class="arr" aria-label="부터"></span>${fmtDT(r.expectedReturnAt)}${sv.cls === 'late' ? ` <b class="late-txt">+${sv.lateMin}분</b>` : ''}</span>
+      ${coTag(r, u.id)}
     </div>`;
   } else {
     // 추가 기재 내용이 있을 때만 표시 (없으면 비워 둠)
     body = u.statusNote ? `<p class="note">${esc(u.statusNote)}</p>` : '';
+    // 승인됐지만 아직 출발 전인 오늘 외근
+    const ap = approvedFor(u.id).find(x => x.departAt.slice(0, 10) === dkey(now()));
+    if (ap) body += `<p class="plan-note${isStartLate(ap) ? ' late' : ''}">${ic('car')} ${isStartLate(ap) ? `출발 지연 · ${startDelayMin(ap)}분 지남` : '승인 · 출발 전'} · ${fmtDT(ap.departAt)} ${esc(ap.location)}</p>`;
   }
   return `
   <article class="card st-${sv.cls}${mine ? ' mine' : ''}">
@@ -1017,10 +1517,9 @@ function cardHTML(u) {
     ${body}
   </article>`;
 }
-// 이름 앞 동그라미: 본인이 고른 이모티콘·이미지, 없으면 성 한 글자
-// 정장 차림(👨🏻‍💼 형태, 검정 · 파랑 · 남색 · 회색) → 여성(정비 · 현장) → 전산 장비(노트북 · 네트워크 · 프린터 · PC)
-// (🧑‍💼 같은 성별 중립형은 윈도우 10에서 두 글자로 쪼개져 보여 쓰지 않음)
-// 1번 이모티콘과 같은 모양(얼굴 · 머리 · 셔츠 · 넥타이)에 정장 색만 바꾼 그림
+// 이름 앞 동그라미: 본인이 고른 그림, 없으면 성 한 글자
+// 기기마다 모양이 달라지는 이모지는 쓰지 않고, 모두 같은 화풍의 그림(SVG)으로 통일
+// 한국도로공사 CI → 정장(검정 · 파랑 · 남색 · 회색) → 여성 정장 → 안전모 작업자(남 · 여) → 전산 장비(노트북 · 네트워크 · 프린터 · PC)
 const OFFICE_MAN = (suit, lapel, tie) => `<svg viewBox="0 0 32 32" aria-hidden="true">
   <path d="M3.5 32c0-6.6 4.6-10.6 12.5-10.6S28.5 25.4 28.5 32z" fill="${suit}"/>
   <path d="M12.2 21.8 16 28.6l3.8-6.8c-1.1-.3-2.4-.4-3.8-.4s-2.7.1-3.8.4z" fill="#fff"/>
@@ -1033,6 +1532,45 @@ const OFFICE_MAN = (suit, lapel, tie) => `<svg viewBox="0 0 32 32" aria-hidden="
   <path d="M9.8 12.2C9.2 6.4 12.4 4 16.2 4c4 0 6.7 2.3 6 8.2-.6-2.3-2.4-4-5.2-4.1-2.6-.1-4.4.5-5.6 1.6-.8.7-1.3 1.5-1.6 2.5z" fill="#3b2a20"/>
   <circle cx="13.6" cy="12.7" r=".85" fill="#2b2b2b"/><circle cx="18.4" cy="12.7" r=".85" fill="#2b2b2b"/>
   <path d="M14.5 15.6c.9.7 2.1.7 3 0" stroke="#c4805f" stroke-width=".9" stroke-linecap="round" fill="none"/></svg>`;
+// 공통 얼굴(정장 그림과 같은 얼굴 · 목)
+const FACE = `<path d="M13.6 17.6h4.8v4.2c-.7.6-1.5.9-2.4.9s-1.7-.3-2.4-.9z" fill="#e7b48f"/>
+  <ellipse cx="16" cy="12" rx="6.1" ry="6.9" fill="#f6d3b7"/>`;
+const EYES = (y = 12.7) => `<circle cx="13.6" cy="${y}" r=".85" fill="#2b2b2b"/><circle cx="18.4" cy="${y}" r=".85" fill="#2b2b2b"/>
+  <path d="M14.5 ${y + 2.9}c.9.7 2.1.7 3 0" stroke="#c4805f" stroke-width=".9" stroke-linecap="round" fill="none"/>`;
+// 여성 정장: 단발머리 + 블라우스
+const OFFICE_WOMAN = (suit, lapel) => `<svg viewBox="0 0 32 32" aria-hidden="true">
+  <path d="M8.4 13.2c-.5-6.2 3-9.4 7.6-9.4s8.1 3.2 7.6 9.4c-.2 2.4.3 4.6 1.3 6-2.3 1-4.8 1.1-6.8.5h-4.2c-2 .6-4.5.5-6.8-.5 1-1.4 1.5-3.6 1.3-6z" fill="#3a2a22"/>
+  <path d="M3.5 32c0-6.6 4.6-10.6 12.5-10.6S28.5 25.4 28.5 32z" fill="${suit}"/>
+  <path d="M12.4 21.9 16 27.4l3.6-5.5c-1.1-.3-2.3-.5-3.6-.5s-2.5.2-3.6.5z" fill="#fff"/>
+  <path d="M12.4 21.9 16 27.4l-2.2 4.6-3.8-9.6zM19.6 21.9 16 27.4l2.2 4.6 3.8-9.6z" fill="${lapel}"/>
+  ${FACE}
+  <path d="M9.9 11.8c.2-4.1 2.8-6.6 6.2-6.6 3.5 0 6.1 2.4 6.1 6.4-1.7-1.8-3.8-3-6.6-3.2-1.6 1.5-3.4 2.6-5.7 3.4z" fill="#3a2a22"/>
+  ${EYES()}</svg>`;
+// 안전모 작업자: 노란 안전모 + 주황 안전조끼(반사띠) — 현장 작업
+const HELMET = `<path d="M8.6 10.2c0-4.3 3.3-7.4 7.4-7.4s7.4 3.1 7.4 7.4z" fill="#ffc20e"/>
+  <path d="M16 3v6.8" stroke="#e0a100" stroke-width="1.5"/>
+  <rect x="7" y="9.3" width="18" height="2.1" rx="1.05" fill="#e0a100"/>`;
+const VEST = `<path d="M3.5 32c0-6.6 4.6-10.6 12.5-10.6S28.5 25.4 28.5 32z" fill="#23407a"/>
+  <path d="M5 32c.3-4.7 2.5-7.9 6.6-9.5l2.4 9.5zM27 32c-.3-4.7-2.5-7.9-6.6-9.5L18 32z" fill="#f47b20"/>
+  <path d="M5.9 28.1h6.9M19.2 28.1h6.9" stroke="#eef2f7" stroke-width="1.7"/>`;
+const WORKER = `<svg viewBox="0 0 32 32" aria-hidden="true">${VEST}${FACE}${HELMET}${EYES(13)}</svg>`;
+const WORKER_WOMAN = `<svg viewBox="0 0 32 32" aria-hidden="true">
+  <path d="M8.8 11.5c-.3 3.2.2 6 1.4 7.6 1.6.4 3 .2 4-.4V11.5zM23.2 11.5c.3 3.2-.2 6-1.4 7.6-1.6.4-3 .2-4-.4V11.5z" fill="#3a2a22"/>
+  ${VEST}${FACE}${HELMET}${EYES(13)}</svg>`;
+// 전산 장비: 네트워크 그림과 같은 색(남색 테두리 · 파랑 면 · 초록 표시등)
+const LAPTOP = `<svg viewBox="0 0 32 32" aria-hidden="true">
+  <rect x="5.5" y="5.5" width="21" height="15" rx="2" fill="#0b1f4b"/><rect x="7.5" y="7.5" width="17" height="11" rx="1" fill="#0072ce"/>
+  <path d="M10.5 11.5h8M10.5 14.5h5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M2.5 22h27l-2.2 4H4.7z" fill="#0b1f4b"/><rect x="13" y="22.4" width="6" height="1.3" rx=".65" fill="#7fe0a8"/></svg>`;
+const PRINTER = `<svg viewBox="0 0 32 32" aria-hidden="true">
+  <rect x="9" y="3.5" width="14" height="8" rx="1" fill="#fff" stroke="#0b1f4b" stroke-width="1.6"/>
+  <rect x="3.5" y="10" width="25" height="11" rx="2.5" fill="#0072ce"/><circle cx="24.3" cy="13.8" r="1.2" fill="#7fe0a8"/>
+  <rect x="8" y="17.5" width="16" height="11" rx="1" fill="#fff" stroke="#0b1f4b" stroke-width="1.6"/>
+  <path d="M11 21.5h10M11 24.5h7" stroke="#0b1f4b" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+const DESKTOP = `<svg viewBox="0 0 32 32" aria-hidden="true">
+  <rect x="3" y="4" width="26" height="17.5" rx="2.2" fill="#0b1f4b"/><rect x="5" y="6" width="22" height="13.5" rx="1" fill="#0072ce"/>
+  <path d="M8.5 15.5l3.5-3.5 3 2.5 4.5-5 3.5 3.5" stroke="#7fe0a8" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M13 21.5h6l1 5h-8z" fill="#3d5a8a"/><rect x="9" y="26.3" width="14" height="2.3" rx="1.15" fill="#0b1f4b"/></svg>`;
 // 네트워크: 상위 장비 1대에 하위 장비 3대가 연결된 구성도
 const NETWORK = `<svg viewBox="0 0 32 32" aria-hidden="true">
   <path d="M16 10v5M6 15h20M6 15v5M16 15v5M26 15v5" stroke="#0b1f4b" stroke-width="2" stroke-linecap="round" fill="none"/>
@@ -1051,31 +1589,40 @@ const SVG_AVATARS = {
   'office-blue':  { svg: OFFICE_MAN('#0072ce', '#005aa3', '#0b1f4b'), title: '정장 (파랑)', full: true },
   'office-navy':  { svg: OFFICE_MAN('#0b1f4b', '#07152f', '#0072ce'), title: '정장 (남색)', full: true },
   'office-gray':  { svg: OFFICE_MAN('#6b7280', '#565d69', '#0b1f4b'), title: '정장 (회색)', full: true },
+  'office-woman': { svg: OFFICE_WOMAN('#0b1f4b', '#07152f'), title: '정장 (여성)', full: true },
+  'worker':       { svg: WORKER, title: '안전모 작업자', full: true },
+  'worker-woman': { svg: WORKER_WOMAN, title: '안전모 작업자 (여성)', full: true },
+  'laptop':       { svg: LAPTOP, title: '노트북', center: true },
+  'printer':      { svg: PRINTER, title: '프린터', center: true },
+  'desktop':      { svg: DESKTOP, title: 'PC', center: true },
 };
-const AVATARS = ['ex-ci', 'office-black', 'office-blue', 'office-navy', 'office-gray', '👩‍🔧', '👷‍♀️',
-                 '💻', 'network', '🖨️', '🖥️'];
+const AVATARS = ['ex-ci', 'office-black', 'office-blue', 'office-navy', 'office-gray', 'office-woman',
+                 'worker', 'worker-woman', 'laptop', 'network', 'printer', 'desktop'];
+// 예전에 고른 이모지는 같은 뜻의 그림으로 바꿔 보여 줌
+const LEGACY_AVATAR = { '👩‍🔧': 'worker-woman', '👷‍♀️': 'worker-woman', '💻': 'laptop', '🖨️': 'printer', '🖥️': 'desktop' };
+const avatarKey = a => { const k = LEGACY_AVATAR[a] || a; return AVATARS.includes(k) ? k : ''; };
 const avatarContent = key => SVG_AVATARS[key] ? SVG_AVATARS[key].svg : key;
 let avatarOpen = false;
 function avatarHTML(u, extra = '') {
-  const key = AVATARS.includes(u.avatar) ? u.avatar : '';
+  const key = avatarKey(u.avatar);
   const svgCls = SVG_AVATARS[key] ? ` svgav${SVG_AVATARS[key].center ? ' center' : ''}${SVG_AVATARS[key].full ? ' full' : ''}${SVG_AVATARS[key].ci ? ' ci' : ''}` : '';
   const cls = key ? ' emoji' + svgCls : '';
   return `<span class="avatar${isSup(u) ? ' sup' : ''}${cls}${extra ? ' ' + extra : ''}">${key ? avatarContent(key) : esc(u.name.charAt(0))}</span>`;
 }
 function avatarButtonHTML(u) {
   return `<button class="avatar-btn" data-action="avatar-toggle" title="내 아이콘 바꾸기" aria-expanded="${avatarOpen}">
-      ${avatarHTML(u)}<span class="edit" aria-hidden="true">✎</span></button>`;
+      ${avatarHTML(u)}<span class="edit" aria-hidden="true">${IC.pencil}</span></button>`;
 }
 function avatarPickerHTML(u) {
   if (!avatarOpen) return '';
   return `
     <div class="avatar-picker">
-      <p class="hint">이름 앞 동그라미에 넣을 모양을 고르세요. 모든 사용자 현황판에 함께 표시됩니다.</p>
+      <p class="hint">이름 앞 동그라미에 넣을 그림을 고르세요. 모든 사용자 현황판에 함께 표시됩니다.</p>
       <div class="emoji-grid">
-        <button class="emoji-opt${u.avatar ? '' : ' on'}" data-action="set-avatar" data-emoji="" title="기본 (성 한 글자)">
+        <button class="emoji-opt${avatarKey(u.avatar) ? '' : ' on'}" data-action="set-avatar" data-emoji="" title="기본 (성 한 글자)">
           <span class="avatar${isSup(u) ? ' sup' : ''}">${esc(u.name.charAt(0))}</span></button>
-        ${AVATARS.map(e => `<button class="emoji-opt${SVG_AVATARS[e] ? ' svgav' : ''}${u.avatar === e ? ' on' : ''}" data-action="set-avatar" data-emoji="${e}"
-            ${SVG_AVATARS[e] ? `title="${SVG_AVATARS[e].title}"` : ''}>${avatarContent(e)}</button>`).join('')}
+        ${AVATARS.map(e => `<button class="emoji-opt${SVG_AVATARS[e] ? ' svgav' : ''}${avatarKey(u.avatar) === e ? ' on' : ''}" data-action="set-avatar" data-emoji="${e}"
+            title="${SVG_AVATARS[e].title}" aria-label="${SVG_AVATARS[e].title}">${avatarContent(e)}</button>`).join('')}
       </div>
     </div>`;
 }
@@ -1090,9 +1637,10 @@ function myStatusHTML() {
       ${avatarButtonHTML(u)}
       <span class="lbl">내 상태</span>
       <span class="chip st-${sv.cls}">${stLabel(sv.label)}</span>
-      ${sv.req ? `<span class="muted">${reqSummary(sv.req)}</span>` : ''}
-      <button class="btn small primary" data-action="return">복귀 처리</button>
+      ${sv.req ? `<span class="muted">${reqSummary(sv.req)}</span>${coTag(sv.req, u.id)}` : ''}
+      ${returnOpen ? '' : '<button class="btn small primary" data-action="return">복귀 처리</button>'}
       ${sv.req && sv.req.instruction ? `<div class="mystatus-instr">${instructionHTML(sv.req)}</div>` : ''}
+      ${returnOpen ? returnFormHTML(sv.req) : ''}
       ${avatarPickerHTML(u)}
     </div>`;
   }
@@ -1107,25 +1655,76 @@ function myStatusHTML() {
                   ${field ? 'disabled title="작업승인이 나면 자동으로 바뀝니다"' : ''}>${stLabel(s)}</button>`;
       }).join('')}</div>
       <input class="memo" id="memo" maxlength="40" placeholder="추가 기재 (선택)">
+      ${approvedFor(u.id)[0] ? startBoxHTML(approvedFor(u.id)[0], u) : ''}
+      ${scheduleHintHTML(u)}
       ${avatarPickerHTML(u)}
     </div>`;
 }
 
-function doReturn() {
+/* ---------- 복귀 처리 + 작업 결과 보고 ----------
+   "복귀 처리"를 누르면 결과(완료 · 일부 완료 · 미완료)와 조치 내용을 적고 복귀한다.
+   일부 완료 · 미완료는 남은 작업이나 사유를 반드시 적는다. */
+const OUTCOMES = [
+  { v: '완료', cls: 'work', hint: '요청한 작업을 모두 마침' },
+  { v: '일부 완료', cls: 'out', hint: '남은 작업이 있음' },
+  { v: '미완료', cls: 'late', hint: '재방문 · 추가 조치 필요' },
+];
+const OUTCOME_CLS = Object.fromEntries(OUTCOMES.map(o => [o.v, o.cls]));
+let returnOpen = false;
+const returnDraft = { outcome: '', note: '' }; // 화면이 다시 그려져도 입력 내용 유지
+document.addEventListener('input', e => {
+  if (e.target.closest && e.target.closest('#return-form')) {
+    const f = e.target.form;
+    returnDraft.outcome = (f.querySelector('input[name="outcome"]:checked') || {}).value || '';
+    returnDraft.note = f.elements.note.value;
+  }
+});
+function returnFormHTML(r) {
+  return `
+    <form class="return-form" id="return-form" novalidate>
+      <div class="rf-head">${ic('check')} <b>복귀 · 작업 결과 보고</b>${r ? `<span class="muted">${r.id} · ${reqSummary(r)}</span>` : ''}</div>
+      ${r && isCoWork(r) ? `<p class="hint">공동작업입니다. 저장하면 ${esc(namesOf(members(r).filter(id => id !== currentUserId)))}도 함께 복귀 처리됩니다.</p>` : ''}
+      <div class="opts rf-outcome">${OUTCOMES.map(o => `
+        <label class="opt oc-${o.cls}"><input type="radio" name="outcome" value="${o.v}" ${returnDraft.outcome === o.v ? 'checked' : ''}>
+          <span><b>${o.v}</b><small>${o.hint}</small></span></label>`).join('')}</div>
+      <textarea class="inp" name="note" maxlength="200" rows="3"
+        placeholder="조치 내용 (일부 완료 · 미완료는 필수)&#10;예: 스위치 포트 교체, 링크 정상 확인">${esc(returnDraft.note)}</textarea>
+      <p class="err" id="return-err" hidden></p>
+      <div class="seg">
+        <button class="btn primary">복귀 저장</button>
+        <button type="button" class="btn" data-action="cancel-return">취소</button>
+      </div>
+    </form>`;
+}
+function resultHTML(r, compact) {
+  if (!r.result) return '';
+  const cls = OUTCOME_CLS[r.result.outcome] || 'work';
+  return compact
+    ? `<span class="chip st-${cls}">${esc(r.result.outcome)}</span>${r.result.note ? ` <span class="res-note">${esc(r.result.note)}</span>` : ''}`
+    : `<div class="result res-${cls}"><b>${ic('clipboard')} 작업 결과 · <span class="chip st-${cls}">${esc(r.result.outcome)}</span></b>${r.result.note ? `<span>${esc(r.result.note)}</span>` : ''}</div>`;
+}
+
+function doReturn(outcome, note) {
   const u = me();
   const r = reqById(u.currentRequestId);
   const at = toLocalISO(now());
-  if (r) { r.status = '복귀 완료'; r.returnedAt = at; }
-  setStatus(u, '근무', r ? `${r.id} 복귀` : '복귀');
+  if (r) { r.status = '복귀 완료'; r.returnedAt = at; r.result = { outcome, note }; r.returnedBy = u.id; }
+  // 공동작업은 함께 나간 직원 모두 복귀 처리
+  const team = r ? members(r).map(userById).filter(w => w && w.status === '외근' && w.currentRequestId === r.id) : [u];
+  if (!team.includes(u)) team.push(u);
+  team.forEach(w => setStatus(w, '근무', r ? `${r.id} 복귀 · ${outcome}${w.id !== u.id ? ` (${u.name} 처리)` : ''}` : '복귀'));
+  returnOpen = false; returnDraft.outcome = ''; returnDraft.note = '';
   commit();
   const late = r ? Math.floor((new Date(at) - new Date(r.expectedReturnAt)) / 60000) : 0;
-  toast(late > 0 ? `복귀 처리했습니다. (예상보다 ${late}분 늦음)` : '복귀 처리했습니다. "근무"로 표시됩니다.');
+  const others = team.filter(w => w.id !== u.id);
+  const coTxt = others.length ? ` 공동작업자(${others.map(w => w.name).join(', ')})도 함께 "근무"로 바뀝니다.` : '';
+  toast((late > 0 ? `복귀 처리했습니다. (예상보다 ${late}분 늦음)` : '복귀 처리했습니다.') + ' 작업 결과를 감독원에게 보고했습니다.' + coTxt);
 }
 
 // 요청 상태 표시 (출발 전 승인 / 복귀 지연 구분)
 function reqLabel(r) {
   if (r.status === '외근 중' && new Date(r.expectedReturnAt) < now()) return { label: '복귀 지연', cls: 'late' };
-  if (r.status === '승인') return { label: '승인 · 출발 전', cls: 'work' };
+  if (r.status === '승인') return isStartLate(r) ? { label: '출발 지연', cls: 'out' } : { label: '승인 · 출발 전', cls: 'work' };
   return { label: r.status, cls: REQ_CLS[r.status] };
 }
 const reqChip = r => { const l = reqLabel(r); return `<span class="chip st-${l.cls}">${l.label}</span>`; };
@@ -1148,7 +1747,7 @@ function timelineHTML() {
   const day0 = new Date(nowD); day0.setHours(0, 0, 0, 0);
   const H = iso => (new Date(iso) - day0) / 3600000;
   const nowH = (nowD - day0) / 3600000;
-  const list = todayRequests().filter(r => r.status !== '반려' && sameDay(new Date(r.departAt), nowD));
+  const list = todayRequests().filter(r => r.status !== '반려' && r.status !== '취소' && sameDay(new Date(r.departAt), nowD));
 
   // 시간 범위: 기본 08~19시, 일정이 벗어나면 넓힘
   let start = 8, end = 19;
@@ -1166,9 +1765,9 @@ function timelineHTML() {
     return { from, to, cls, label, title };
   };
   function segments(r) {
-    const dep = H(r.departAt), exp = H(r.expectedReturnAt);
-    const where = r.location;
-    const info = `${r.id} · ${r.location}${r.locationDetail ? ' ' + r.locationDetail : ''} · ${fmtDT(r.departAt)}~${fmtDT(r.expectedReturnAt)}`;
+    const dep = H(r.status !== '승인' && r.startedAt ? r.startedAt : r.departAt), exp = H(r.expectedReturnAt); // 외근 막대는 실제 출발(외근 시작) 시각부터
+    const where = isCoWork(r) ? `공동 · ${r.location}` : r.location;
+    const info = `${r.startedAt ? `[외근 시작 ${fmtDT(r.startedAt)}] ` : ''}${r.id} · ${r.location}${r.locationDetail ? ' ' + r.locationDetail : ''} · ${fmtDT(r.departAt)}~${fmtDT(r.expectedReturnAt)}${isCoWork(r) ? ` · 공동작업(${namesOf(members(r))})` : ''}`;
     if (r.status === '복귀 완료') {
       const ret = H(r.returnedAt);
       return [seg(dep, Math.min(ret, exp), 'done', where, `${info} · 복귀 ${fmtDT(r.returnedAt)}`),
@@ -1178,19 +1777,25 @@ function timelineHTML() {
       if (nowH <= exp) return [seg(dep, nowH, 'active', where, `${info} · 외근 중`), seg(Math.max(dep, nowH), exp, 'planned', '', '복귀 예정')];
       return [seg(dep, exp, 'active', where, `${info} · 외근 중`), seg(exp, nowH, 'late', `+${Math.floor((nowH - exp) * 60)}분`, '복귀 지연')];
     }
-    if (r.status === '승인') return [seg(dep, exp, 'approved', where, `${info} · 승인 · 출발 전`)];
+    if (r.status === '승인') {
+      // 출발 예정이 지났는데 아직 "외근 시작"을 안 누름 → 미출발 구간
+      if (isStartLate(r)) return [seg(dep, Math.min(nowH, exp), 'waiting', `미출발 +${startDelayMin(r)}분`, `${info} · 아직 외근 시작 안 함`),
+                                  seg(Math.max(dep, nowH), exp, 'approved', '', '승인 · 출발 전')];
+      return [seg(dep, exp, 'approved', where, `${info} · 승인 · 출발 전`)];
+    }
     if (r.status === '승인 대기') return [seg(dep, exp, 'pending', where, `${info} · 승인 대기`)];
     return [];
   }
   const barsHTML = r => {
     const s = segments(r).filter(Boolean);
-    return s.map((x, i) => `<div class="tl-bar ${x.cls}${i > 0 ? ' joinL' : ''}${i < s.length - 1 ? ' joinR' : ''}"
-        style="left:${pct(x.from)}%;width:${pct(x.to) - pct(x.from)}%" title="${esc(x.title)}"><span>${esc(x.label)}</span></div>`).join('');
+    const co = isCoWork(r);
+    return s.map((x, i) => `<div class="tl-bar ${x.cls}${co ? ' co' : ''}${i > 0 ? ' joinL' : ''}${i < s.length - 1 ? ' joinR' : ''}"
+        style="left:${pct(x.from)}%;width:${pct(x.to) - pct(x.from)}%" title="${esc(x.title)}">${co && x.label && x.cls !== 'late' ? `<i class="tl-co">${IC.team}</i>` : ''}<span>${esc(x.label)}</span></div>`).join('');
   };
 
   const workers = state.users.filter(u => !isSup(u));
   const rows = workers.map(u => {
-    const mine = list.filter(r => r.requesterId === u.id);
+    const mine = list.filter(r => isMember(r, u.id));
     const empty = !mine.length ? `<span class="tl-empty">${u.status === '휴가' ? '휴가' : '외근 없음'}</span>` : '';
     return `<div class="tl-row">
       <div class="tl-who">${avatarHTML(u, 'xs')}<span>${esc(u.name)}</span></div>
@@ -1200,8 +1805,8 @@ function timelineHTML() {
   const ticks = Array.from({ length: span + 1 }, (_, i) =>
     `<span class="${i % 2 ? 'odd' : ''}" style="left:${i / span * 100}%">${start + i}시</span>`).join('');
   const showNow = nowH >= start && nowH <= end;
-  const legend = [['active', '외근 중'], ['planned', '복귀 예정'], ['late', '지연'], ['done', '복귀 완료'], ['approved', '승인·출발 전'], ['pending', '승인 대기']]
-    .map(([c, t]) => `<span><i class="tl-key ${c}"></i>${t}</span>`).join('');
+  const legend = [['active', '외근 중'], ['planned', '복귀 예정'], ['late', '지연'], ['done', '복귀 완료'], ['approved', '승인·출발 전'], ['waiting', '미출발'], ['pending', '승인 대기'], ['co', '공동작업']]
+    .map(([c, t]) => `<span${c === 'co' ? ' class="co-key"' : ''}><i class="tl-key ${c}"></i>${t}</span>`).join('');
 
   return `
   <div class="panel timeline">
@@ -1215,28 +1820,124 @@ function timelineHTML() {
   </div>`;
 }
 
-function historyHTML() {
-  const list = todayRequests();
-  const lateTxt = r => {
-    if (!r.returnedAt) return '';
-    const m = Math.floor((new Date(r.returnedAt) - new Date(r.expectedReturnAt)) / 60000);
-    return m > 0 ? ` <b class="late-txt">(+${m}분)</b>` : '';
-  };
+/* ---------- 외근 이력: 기간별 조회 · 엑셀 내보내기 ----------
+   기간(오늘 · 이번 주 · 이번 달 · 직접 선택)과 직원으로 골라 보고, 고른 목록 그대로 엑셀(CSV)로 내려받는다.
+   출발일 또는 요청일이 기간 안에 있는 요청을 보여 준다. */
+const dkey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const keyDate = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+function weekStartOf(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
+const fmtDay = k => { const d = keyDate(k); return `${d.getMonth() + 1}/${d.getDate()} (${DAYS[d.getDay()]})`; };
+const lateMinOf = r => r.returnedAt ? Math.floor((new Date(r.returnedAt) - new Date(r.expectedReturnAt)) / 60000) : 0;
+
+const RANGES = [['today', '오늘'], ['week', '이번 주'], ['month', '이번 달'], ['custom', '직접 선택']];
+const histF = { range: 'today', from: '', to: '', who: '' };
+function histRange() {
+  const t = now();
+  if (histF.range === 'week') { const s = weekStartOf(t); return [dkey(s), dkey(addDays(s, 6))]; }
+  if (histF.range === 'month') return [dkey(new Date(t.getFullYear(), t.getMonth(), 1)), dkey(new Date(t.getFullYear(), t.getMonth() + 1, 0))];
+  if (histF.range === 'custom') {
+    let a = histF.from || dkey(new Date(t.getFullYear(), t.getMonth(), 1)), b = histF.to || dkey(t);
+    if (a > b) [a, b] = [b, a];
+    return [a, b];
+  }
+  return [dkey(t), dkey(t)];
+}
+function histList() {
+  if (histF.range === 'today') return todayRequests().filter(r => !histF.who || isMember(r, histF.who));
+  const [a, b] = histRange();
+  const inRange = iso => !!iso && iso.slice(0, 10) >= a && iso.slice(0, 10) <= b;
+  return state.requests
+    .filter(r => (inRange(r.departAt) || inRange(r.requestedAt)) && (!histF.who || isMember(r, histF.who)))
+    .sort((x, y) => y.departAt.localeCompare(x.departAt)); // 여러 날은 최근 것부터
+}
+function histFilterHTML() {
+  const [a, b] = histRange();
+  const workers = state.users.filter(u => !isSup(u));
+  return `
+  <div class="panel hist-filter">
+    <div class="seg hf-ranges" role="group" aria-label="조회 기간">${RANGES.map(([id, l]) =>
+      `<button class="btn small${histF.range === id ? ' on' : ''}" data-action="hist-range" data-range="${id}" aria-pressed="${histF.range === id}">${l}</button>`).join('')}</div>
+    ${histF.range === 'custom'
+      ? `<span class="hf-dates"><input class="inp" type="date" data-hf="from" value="${a}" aria-label="시작일"><span>~</span><input class="inp" type="date" data-hf="to" value="${b}" aria-label="종료일"></span>`
+      : `<span class="hf-period">${a === b ? fmtDay(a) : `${fmtDay(a)} ~ ${fmtDay(b)}`}</span>`}
+    <select class="inp hf-who" data-hf="who" aria-label="직원">
+      <option value="">전체 직원</option>${workers.map(u => `<option value="${u.id}" ${histF.who === u.id ? 'selected' : ''}>${esc(u.name)}</option>`).join('')}
+    </select>
+    <button class="btn small hf-export" data-action="export-csv" title="지금 보이는 목록을 엑셀에서 열 수 있는 CSV 파일로 내려받습니다">${ic('download')} 엑셀 내보내기</button>
+  </div>`;
+}
+function histSummaryHTML(list) {
+  const done = list.filter(r => r.status === '복귀 완료');
+  const items = [
+    ['전체', list.length, ''],
+    ['복귀 완료', done.length, 'leave'],
+    ['늦은 복귀', done.filter(r => lateMinOf(r) > 0).length, 'late'],
+    ['일부 완료 · 미완료', done.filter(r => r.result && r.result.outcome !== '완료').length, 'out'],
+    ['진행 · 대기', list.filter(r => ['승인 대기', '승인', '외근 중'].includes(r.status)).length, 'field'],
+    ['반려', list.filter(r => r.status === '반려').length, 'late'],
+    ['취소', list.filter(r => r.status === '취소').length, 'leave'],
+  ];
+  return `<div class="hist-sum">${items.map(([l, n, c]) => `<span class="${c ? 'st-' + c : ''}${n ? '' : ' zero'}">${l} <b>${n}</b></span>`).join('')}</div>`;
+}
+
+function historyHTML(list) {
+  const multi = histF.range !== 'today';
+  const lateTxt = r => { const m = lateMinOf(r); return m > 0 ? ` <b class="late-txt">(+${m}분)</b>` : ''; };
+  const empty = multi ? '선택한 기간에 외근 이력이 없습니다.' : '오늘 외근 이력이 없습니다.';
   return `
   <div class="panel tablewrap">${list.length ? `<table class="hist">
-    <thead><tr><th>요청자</th><th>상태</th><th>작업장소 · 구분</th><th>요청 / 승인</th><th>출발 ~ 예상 복귀</th><th>실제 복귀</th></tr></thead>
+    <thead><tr>${multi ? '<th>날짜</th>' : ''}<th>요청자</th><th>상태</th><th>작업장소 · 구분</th><th>요청 / 승인</th><th>예정 출발 ~ 복귀</th><th>실제 출발 / 복귀</th><th>작업 결과</th></tr></thead>
     <tbody>${list.map(r => {
       const u = userById(r.requesterId), a = userById(r.approverId);
-      const decided = r.decidedAt ? `${r.status === '반려' ? '반려' : '승인'} ${fmtDT(r.decidedAt)} ${esc(a ? a.name : '')}` : '승인 대기';
+      // 날짜 칸이 있을 때는 출발일과 같은 날의 시각은 시:분만 표시
+      const t = iso => multi && iso && iso.slice(0, 10) === r.departAt.slice(0, 10) ? hm(new Date(iso)) : fmtDT(iso);
+      const decided = r.decidedAt ? `${r.status === '반려' ? '반려' : '승인'} ${t(r.decidedAt)} ${esc(a ? a.name : '')}` : '승인 대기';
+      const res = r.result ? resultHTML(r, true) : r.status === '반려' && r.rejectReason ? `<span class="muted">반려: ${esc(r.rejectReason)}</span>`
+        : r.status === '취소' ? `<span class="muted">취소${r.canceledBy ? `(${esc(userById(r.canceledBy).name)})` : ''}: ${esc(r.cancelReason || '')}</span>` : '-';
       return `<tr>
-        <td class="c-name"><b>${esc(u ? u.name : '')}</b></td>
+        ${multi ? `<td class="c-date">${fmtDay(r.departAt.slice(0, 10))}</td>` : ''}
+        <td class="c-name"><b>${esc(u ? u.name : '')}</b>${isCoWork(r) ? `<br>${coTag(r, r.requesterId)}` : ''}</td>
         <td class="c-status">${reqChip(r)}</td>
         <td class="wrap">${reqSummary(r)}<br><small class="muted">${esc(r.workType)}</small></td>
-        <td class="c-wide" data-label="요청 / 승인">요청 ${fmtDT(r.requestedAt)}<br><small class="muted">${decided}</small></td>
-        <td class="c-wide" data-label="출발 ~ 복귀">${fmtDT(r.departAt)} ~ ${fmtDT(r.expectedReturnAt)}</td>
-        <td class="c-wide" data-label="실제 복귀">${r.returnedAt ? fmtDT(r.returnedAt) + lateTxt(r) : '-'}</td>
+        <td class="c-wide" data-label="요청 / 승인">요청 ${t(r.requestedAt)}<br><small class="muted">${decided}</small></td>
+        <td class="c-wide" data-label="예정">${t(r.departAt)} ~ ${t(r.expectedReturnAt)}</td>
+        <td class="c-wide" data-label="실제">${r.startedAt ? `출발 ${t(r.startedAt)}${r.startSafety ? ` <span class="ss-ok" title="출발 전 안전 재확인 완료">${ic('shield')}</span>` : ''}` : r.status === '승인' ? (isStartLate(r) ? '<b class="late-txt">미출발</b>' : '출발 전') : r.status === '취소' ? `취소 ${t(r.canceledAt)}` : '-'}${r.returnedAt ? `<br>복귀 ${t(r.returnedAt)}${lateTxt(r)}` : ''}</td>
+        <td class="c-wide c-result" data-label="작업 결과">${res}</td>
       </tr>`;
-    }).join('')}</tbody></table>` : '<p class="empty">오늘 외근 이력이 없습니다.</p>'}</div>`;
+    }).join('')}</tbody></table>` : `<p class="empty">${empty}</p>`}</div>`;
+}
+
+// 엑셀(CSV) 내보내기: 한글이 깨지지 않도록 BOM을 붙이고, =·+·-·@로 시작하는 값은 수식으로 실행되지 않게 막는다
+function csvCell(v) {
+  let t = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(t)) t = "'" + t;
+  return /[",\r\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+}
+const csvTime = iso => iso ? iso.slice(0, 16).replace('T', ' ') : '';
+function historyCSV(list) {
+  const head = ['요청번호', '요청자', '분야', '공동작업자', '작업 구분', '작업 장소', '상세 장소', '작업 내용', '상태', '요청 시각', '승인/반려',
+    '처리 감독원', '처리 시각', '출발 예정', '예상 복귀', '실제 출발(외근 시작)', '실제 복귀', '늦은 복귀(분)', '작업 결과', '조치 내용', '감독원 요청사항', '반려/취소 사유', '취소한 직원', '안전 준수 확인(요청 시)', '출발 전 안전 재확인'];
+  const rows = list.slice().sort((x, y) => x.departAt.localeCompare(y.departAt)).map(r => {
+    const u = userById(r.requesterId), a = userById(r.approverId), late = lateMinOf(r);
+    return [r.id, u ? u.name : r.requesterId, u ? u.part || '' : '', namesOf(r.coWorkerIds || []), r.workType, r.location, r.locationDetail || '', r.description,
+      reqLabel(r).label, csvTime(r.requestedAt), r.decidedAt ? (r.status === '반려' ? '반려' : '승인') : '', a ? a.name : '', csvTime(r.decidedAt),
+      csvTime(r.departAt), csvTime(r.expectedReturnAt), csvTime(r.startedAt), csvTime(r.returnedAt), late > 0 ? late : '',
+      r.result ? r.result.outcome : '', r.result ? r.result.note : '', r.instruction || '', r.rejectReason || r.cancelReason || '', r.canceledBy ? userById(r.canceledBy).name : '', (r.safetyChecked || []).join(' · '), (r.startSafety || []).join(' · ')];
+  });
+  return '﻿' + [head, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
+}
+function exportHistory() {
+  const list = histList();
+  if (!list.length) { toast('내보낼 외근 이력이 없습니다.'); return; }
+  const [a, b] = histRange();
+  const who = histF.who ? '_' + userById(histF.who).name : '';
+  const name = `외근이력_${a === b ? a : `${a}_${b}`}${who}.csv`;
+  const url = URL.createObjectURL(new Blob([historyCSV(list)], { type: 'text/csv;charset=utf-8' }));
+  const link = Object.assign(document.createElement('a'), { href: url, download: name });
+  document.body.appendChild(link); link.click();
+  setTimeout(() => { URL.revokeObjectURL(url); link.remove(); }, 1000);
+  toast(`${list.length}건을 "${name}" 파일로 내려받았습니다.`);
 }
 
 // 감독원은 상태만 표시하고 변경 시각은 기록하지 않는다
@@ -1255,7 +1956,7 @@ function recentLogsHTML() {
   <div class="panel"><ul class="loglist">${logs.map(l => {
     const u = userById(l.userId);
     return `<li><time>${fmtDT(l.at)}</time><b>${esc(u ? u.name : l.userId)}</b>
-      <span class="chip st-${STATUS_CLS[l.from] || 'work'}">${stLabel(l.from)}</span>→
+      <span class="chip st-${STATUS_CLS[l.from] || 'work'}">${stLabel(l.from)}</span><span class="arr" aria-label="에서"></span>
       <span class="chip st-${STATUS_CLS[l.to] || 'work'}">${stLabel(l.to)}</span>
       ${l.note ? `<span class="muted">${esc(l.note)}</span>` : ''}</li>`;
   }).join('')}</ul></div>`;
@@ -1267,17 +1968,15 @@ function boardHTML() {
   const order = ['근무', '외근', '복귀 지연', '외출', '출장', '휴가'];
   const pending = isSup(me()) ? pendingRequests().length : 0;
   return `
-  <div class="board-head">
-    <h1>근무현황</h1>
-    <div class="summary">${order.filter(l => counts[l]).map(l => `<span class="st-${STATUS_CLS[l]}">${stLabel(l)} <b>${counts[l]}</b></span>`).join('')}</div>
-  </div>
+  ${pageHead('board', '근무현황', '감독원 · 용역직원 6명의 근무상황을 실시간으로 함께 봅니다.',
+    `<div class="summary">${order.filter(l => counts[l]).map(l => `<span class="st-${STATUS_CLS[l]}">${stLabel(l)} <b>${counts[l]}</b></span>`).join('')}</div>`)}
   ${noticeBarHTML()}
   ${pending ? `<div class="banner">승인 대기 ${pending}건이 있습니다.
      <button class="btn small" data-action="go" data-view="approve">승인 관리로 이동</button></div>` : ''}
   ${orderBannerHTML()}
   ${boardTabsHTML()}
   <div class="subtab-body">${
-    boardTab === 'history' ? timelineHTML() + historyHTML()
+    boardTab === 'history' ? histFilterHTML() + (histF.range === 'today' ? timelineHTML() : '') + (() => { const l = histList(); return histSummaryHTML(l) + historyHTML(l); })()
     : boardTab === 'logs' ? recentLogsHTML()
     : `${myStatusHTML()}
        <div class="grid six">${[...state.users.filter(isSup), ...state.users.filter(u => !isSup(u))].map(cardHTML).join('')}</div>`
@@ -1285,13 +1984,13 @@ function boardHTML() {
   <p class="proto-note">시제품: 데이터는 이 브라우저에만 저장됩니다. 같은 브라우저의 다른 탭에서 다른 사용자로 들어가면 실시간 공유를 시험할 수 있습니다.
     <button class="btn small ghost" data-action="reset">더미 데이터로 초기화</button></p>`;
 }
-// 근무현황 안의 탭: 근무현황 / 오늘 외근 이력 / 최근 상태 변경
+// 근무현황 안의 탭: 근무현황 / 외근 이력(기본 오늘, 기간 조회) / 최근 상태 변경
 let boardTab = 'status';
 function boardTabsHTML() {
   const tabs = [
     { id: 'status',  full: '근무현황',       short: '근무현황',  count: null,
       icon: svg('<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3.1 2.5-5.3 5.5-5.3s5.5 2.2 5.5 5.3"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 13.9c2.6.1 4.7 2 4.7 4.6"/>') },
-    { id: 'history', full: '오늘 외근 이력', short: '외근 이력', count: todayRequests().length,
+    { id: 'history', full: '외근 이력', short: '외근 이력', count: todayRequests().length,
       icon: svg('<path d="M6 11l1.6-4.2A1.6 1.6 0 0 1 9.1 5.8h5.8a1.6 1.6 0 0 1 1.5 1L18 11"/><rect x="3" y="11" width="18" height="6.5" rx="2"/><path d="M6 17.5v2M18 17.5v2"/><circle cx="7.2" cy="14.2" r="1"/><circle cx="16.8" cy="14.2" r="1"/>') },
     { id: 'logs',    full: '최근 상태 변경', short: '상태 변경', count: recentLogs().length,
       icon: svg('<path d="M20 11a8 8 0 0 0-14.3-4.8L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.3 4.8L20 16"/><path d="M20 20v-4h-4"/>') },
@@ -1307,7 +2006,7 @@ function boardTabsHTML() {
 }
 
 /* ---------- 화면 ③: 작업승인 요청 (용역직원) ---------- */
-const REQ_CLS = { '승인 대기': 'out', '승인': 'work', '외근 중': 'field', '복귀 완료': 'leave', '반려': 'late' };
+const REQ_CLS = { '승인 대기': 'out', '승인': 'work', '외근 중': 'field', '복귀 완료': 'leave', '반려': 'late', '취소': 'leave' };
 
 function toInputValue(d) { return toLocalISO(d).slice(0, 16); }
 function defaultTimes() {
@@ -1322,7 +2021,7 @@ function defaultTimes() {
 let editingId = null;
 const editableRequest = id => {
   const r = reqById(id);
-  return r && r.status === '승인 대기' && r.requesterId === currentUserId ? r : null;
+  return r && r.status === '승인 대기' && isMember(r, currentUserId) ? r : null;
 };
 
 function requestHTML() {
@@ -1333,8 +2032,7 @@ function requestHTML() {
     `<label class="opt"><input type="radio" name="${name}" value="${v}" ${v === checked ? 'checked' : ''} required><span>${v}</span></label>`).join('');
   const safetyOn = (s, req) => er ? (er.safetyChecked || []).includes(s.title) : false;
   return `
-  <h1>작업승인 요청</h1>
-  <p class="muted">외근 작업 전에 감독원에게 승인을 요청합니다. 승인되면 현황판이 자동으로 "외근"으로 바뀝니다. 승인 전까지는 내 요청을 수정할 수 있습니다.</p>
+  ${pageHead('request', '작업승인 요청', `외근 작업 전에 감독원에게 승인을 요청합니다. 승인된 뒤 실제로 출발할 때 "외근 시작"을 누르면 현황판이 "외근"으로 바뀝니다. 2명 이상 함께 나가면 공동작업자를 선택하세요. 승인 전까지는 내 요청(공동작업은 공동작업자 모두)을 수정할 수 있습니다.`)}
   <div class="layout2">
     <form class="panel form${er ? ' editing' : ''}" id="req-form" novalidate>
       ${er ? `<div class="edit-banner"><span>${ic("pencil")} <b>${er.id}</b> 요청을 수정하고 있습니다</span>
@@ -1350,6 +2048,7 @@ function requestHTML() {
         <div class="field"><label class="lbl" for="expectedReturnAt">예상 복귀 시각</label>
           <input class="inp" type="datetime-local" id="expectedReturnAt" name="expectedReturnAt" value="${ret}" required></div>
       </div>
+      ${coWorkerFieldHTML(er)}
       <div class="field"><label class="lbl" for="description">작업 내용</label>
         <textarea class="inp" id="description" name="description" maxlength="200" placeholder="예: 통신실 스위치 링크 다운 장애 조치" required>${er ? esc(er.description) : ''}</textarea></div>
       <div class="field"><span class="lbl">안전 준수 확인 <small>(필수 항목은 모두 확인해야 요청할 수 있습니다)</small></span>
@@ -1370,7 +2069,25 @@ function requestHTML() {
   </div>`;
 }
 
-// 필수 항목 확인 여부 + 선택 항목(개인보호구 등)은 체크했을 때만 함께 표시
+// 공동작업자 선택: 단독 작업이 기본, 함께 나가는 직원을 체크
+// 수정할 때는 등록한 직원은 고정, 수정하는 공동작업자 본인은 빠질 수 없음
+function coWorkerFieldHTML(er) {
+  const owner = er ? er.requesterId : currentUserId;
+  const picked = er ? (er.coWorkerIds || []) : [];
+  const others = state.users.filter(u => !isSup(u) && u.id !== owner);
+  const ownerU = userById(owner);
+  return `
+      <div class="field"><span class="lbl">공동작업자 <small>(선택 · 혼자 작업하면 비워 두세요)</small></span>
+        ${er && owner !== currentUserId ? `<p class="hint co-owner">${ic('team')} 등록한 직원: <b>${esc(ownerU ? ownerU.name : owner)}</b> (고정)</p>` : ''}
+        <div class="opts wo-to co-pick">${others.map(u => {
+          const self = u.id === currentUserId;
+          const busy = u.status === '휴가' ? '휴가 중' : u.status === '외근' && !(er && u.currentRequestId === er.id) ? '외근 중' : '';
+          return `<label class="opt"><input type="checkbox" name="coWorker" value="${u.id}" ${picked.includes(u.id) ? 'checked' : ''} ${self ? 'disabled' : ''}>
+          <span>${esc(u.name)}<small>${self ? '본인 (공동작업자)' : busy ? `${esc(u.part || '')} · ${busy}` : esc(u.part || u.role)}</small></span></label>`;
+        }).join('')}</div></div>`;
+}
+
+// 필수 항목 확인 여부 + 선택 항목이 있으면 체크했을 때만 함께 표시
 function safetyText(r) {
   const done = r.safetyChecked || [];
   const missing = state.safetyItems.filter(s => s.required !== false && !done.includes(s.title));
@@ -1381,27 +2098,41 @@ function reqSummary(r) {
   return `${esc(r.location)}${r.locationDetail ? ` · ${esc(r.locationDetail)}` : ''}`;
 }
 function myRequestsHTML() {
-  const list = state.requests.filter(r => r.requesterId === currentUserId).slice().reverse();
+  const list = state.requests.filter(r => isMember(r, currentUserId)).slice().reverse();
   if (!list.length) return '<p class="empty">아직 요청이 없습니다.</p>';
   return `<ul class="reqlist">${list.map(r => `
     <li class="${r.id === editingId ? 'is-editing' : ''}">
       <div class="top"><b>${reqSummary(r)}</b>${reqChip(r)}</div>
-      <span class="muted">${esc(r.workType)} · ${fmtDT(r.departAt)} ~ ${fmtDT(r.expectedReturnAt)}${r.returnedAt ? ` · 복귀 ${fmtDT(r.returnedAt)}` : ''}${r.editedAt ? ` · <b class="edited">${editedText(r)}</b>` : ''}</span>
+      ${isCoWork(r) ? `<span class="co-line">${coTag(r, currentUserId)}${r.requesterId !== currentUserId ? `<small class="muted">${esc(userById(r.requesterId).name)} 등록</small>` : ''}</span>` : ''}
+      <span class="muted">${esc(r.workType)} · ${fmtDT(r.departAt)} ~ ${fmtDT(r.expectedReturnAt)}${r.startedAt ? ` · 출발 ${fmtDT(r.startedAt)}` : ''}${r.returnedAt ? ` · 복귀 ${fmtDT(r.returnedAt)}` : ''}${r.editedAt ? ` · <b class="edited">${editedText(r)}</b>` : ''}</span>
       <span>${esc(r.description)}</span>
       ${safetyText(r)}
       ${r.status === '반려' && r.rejectReason ? `<span class="reason">반려 사유: ${esc(r.rejectReason)}</span>` : ''}
+      ${cancelLineHTML(r)}
+      ${r.startSafety ? `<span class="safety-ok">${ic('shield')} 출발 전 안전 재확인 완료 · ${fmtDT(r.startedAt)}</span>` : ''}
       ${instructionHTML(r)}
+      ${resultHTML(r)}
       ${myRequestActions(r)}
     </li>`).join('')}</ul>`;
 }
+// 취소된 요청: 누가 언제, 사유
+function cancelLineHTML(r) {
+  if (r.status !== '취소') return '';
+  const by = userById(r.canceledBy);
+  return `<span class="reason cancel">${r.prevStatus === '승인' ? '승인 후 ' : ''}취소 ${fmtDT(r.canceledAt)}${by ? ` · ${esc(by.name)}` : ''} — ${esc(r.cancelReason || '')}</span>`;
+}
 function myRequestActions(r) {
   const u = me();
+  if (r.status === '승인' && u && isMember(r, u.id)) return startBoxHTML(r, u, true);
   if (r.status === '외근 중' && u && u.currentRequestId === r.id)
-    return '<div><button class="btn small primary" data-action="return">복귀 처리</button></div>';
-  if (r.status === '승인 대기' && u && r.requesterId === u.id)
+    return returnOpen ? returnFormHTML(r) : '<div><button class="btn small primary" data-action="return">복귀 처리</button></div>';
+  if (r.status === '승인 대기' && u && isMember(r, u.id)) {
+    if (cancelOpenId === r.id) return cancelFormHTML(r);
     return r.id === editingId
       ? `<div><span class="editing-tag">${ic('pencil')} 왼쪽에서 수정 중</span></div>`
-      : `<div><button class="btn small" data-action="edit-req" data-id="${r.id}">${ic("pencil")} 수정</button></div>`;
+      : `<div class="seg"><button class="btn small" data-action="edit-req" data-id="${r.id}">${ic("pencil")} 수정</button>
+          <button class="btn small ghost cancel-btn" data-action="cancel-open" data-id="${r.id}">요청 취소</button></div>`;
+  }
   return '';
 }
 
@@ -1438,7 +2169,7 @@ function checkReqFields(x) {
 function editedText(r) {
   if (!r.editedAt) return '';
   const by = userById(r.editedBy);
-  const who = by && by.id !== r.requesterId ? `${esc(by.name)} 감독원` : '본인';
+  const who = !by ? '' : isSup(by) ? `${esc(by.name)} 감독원` : by.id === currentUserId ? '본인' : isCoWork(r) ? esc(by.name) : '본인';
   return `수정됨 ${fmtDT(r.editedAt)} · ${who}`;
 }
 
@@ -1468,6 +2199,14 @@ function supEditFormHTML(r) {
     </form>`;
 }
 
+// 공동작업 인원과 지금 상태 (휴가 · 다른 외근 중이면 표시)
+function coMembersHTML(r) {
+  return `<span class="co-members">${members(r).map(id => {
+    const w = userById(id);
+    const busy = !w ? '' : w.status === '휴가' ? '휴가 중' : w.status === '외근' && w.currentRequestId !== r.id ? '다른 외근 중' : '';
+    return `<span class="co-m${id === r.requesterId ? ' owner' : ''}">${esc(w ? w.name : id)}${id === r.requesterId ? '<small>등록</small>' : ''}${busy ? `<em>${busy}</em>` : ''}</span>`;
+  }).join('')}</span>`;
+}
 function pendingCardHTML(r) {
   const u = userById(r.requesterId);
   if (supEditId === r.id) {
@@ -1498,10 +2237,11 @@ function pendingCardHTML(r) {
   return `
   <article class="card st-out">
     <header class="card-head">
-      <div><div class="name">${esc(u ? u.name : r.requesterId)}</div><div class="role">${r.id} · 요청 ${fmtDT(r.requestedAt)}</div>${r.editedAt ? `<div class="role"><b class="edited">${ic("pencil")} ${editedText(r)}</b></div>` : ''}</div>
+      <div><div class="name">${esc(u ? u.name : r.requesterId)}${isCoWork(r) ? ` <small class="co-plus">외 ${r.coWorkerIds.length}명</small>` : ''}</div><div class="role">${r.id} · 요청 ${fmtDT(r.requestedAt)}</div>${r.editedAt ? `<div class="role"><b class="edited">${ic("pencil")} ${editedText(r)}</b></div>` : ''}</div>
       <span class="badge">승인 대기</span>
     </header>
     <dl class="kv">
+      ${isCoWork(r) ? `<dt>공동</dt><dd>${coMembersHTML(r)}</dd>` : ''}
       <dt>작업</dt><dd>${esc(r.workType)}</dd>
       <dt>작업장소</dt><dd>${reqSummary(r)}</dd>
       <dt>출발</dt><dd>${fmtDT(r.departAt)}</dd>
@@ -1515,40 +2255,121 @@ function pendingCardHTML(r) {
 
 function approveHTML() {
   const pending = pendingRequests();
-  const decided = state.requests.filter(r => r.decidedAt && sameDay(new Date(r.decidedAt), now()))
-    .sort((a, b) => b.decidedAt.localeCompare(a.decidedAt));
+  const lastAt = r => r.canceledAt || r.decidedAt;
+  const decided = state.requests.filter(r => (r.decidedAt && sameDay(new Date(r.decidedAt), now())) || (r.canceledAt && sameDay(new Date(r.canceledAt), now())))
+    .sort((a, b) => lastAt(b).localeCompare(lastAt(a)));
   return `
-  <h1>승인 관리</h1>
-  <p class="muted">승인하면 해당 직원이 출발 시각에 맞춰 자동으로 "외근"이 됩니다. 반려할 때는 사유를 한 줄 적습니다.</p>
+  ${pageHead('approve', '승인 관리', `승인해도 바로 "외근"이 되지 않습니다. 직원이 실제로 출발하면서 "외근 시작"을 누르면 외근이 되고, 그 시각이 출발 시각으로 기록됩니다. 반려할 때는 사유를 한 줄 적습니다.`)}
   <h2>승인 대기 ${pending.length}건</h2>
   ${pending.length ? `<div class="grid">${pending.map(pendingCardHTML).join('')}</div>`
                    : '<div class="panel"><p class="empty">승인 대기 중인 요청이 없습니다.</p></div>'}
-  <h2>오늘 처리한 요청</h2>
+  <h2>오늘 처리한 요청 <small class="h2-sub">직원이 취소한 요청 포함</small></h2>
   <div class="panel">${decided.length ? `<ul class="reqlist">${decided.map(r => {
       const u = userById(r.requesterId), a = userById(r.approverId);
-      return `<li><div class="top"><b>${esc(u ? u.name : '')} · ${reqSummary(r)}</b>${reqChip(r)}</div>
-        <span class="muted">${fmtDT(r.decidedAt)} ${esc(a ? a.name : '')} ${r.status === '반려' ? '반려' : '승인'}</span>
+      return `<li><div class="top"><b>${esc(u ? u.name : '')}${isCoWork(r) ? ` 외 ${r.coWorkerIds.length}명` : ''} · ${reqSummary(r)}</b>${reqChip(r)}</div>
+        ${isCoWork(r) ? `<span class="co-line">${coTag(r)}</span>` : ''}
+        ${r.decidedAt ? `<span class="muted">${fmtDT(r.decidedAt)} ${esc(a ? a.name : '')} ${r.status === '반려' ? '반려' : '승인'}</span>` : ''}
         ${r.status === '반려' && r.rejectReason ? `<span class="reason">반려 사유: ${esc(r.rejectReason)}</span>` : ''}
-        ${instructionHTML(r)}</li>`;
+        ${cancelLineHTML(r)}
+        ${instructionHTML(r)}${resultHTML(r)}</li>`;
     }).join('')}</ul>` : '<p class="empty">오늘 처리한 요청이 없습니다.</p>'}</div>`;
 }
 
-// 승인된 요청 → 외근 시작
-function startField(r) {
-  const u = userById(r.requesterId);
-  r.status = '외근 중';
-  setStatus(u, '외근', `${r.id} 승인 (${r.location})`);
-  u.currentRequestId = r.id;
+/* ---------- 외근 시작 ----------
+   승인만으로는 "외근"이 되지 않는다. 직원이 실제로 나가면서 "외근 시작"을 누른 시각이 출발 시각.
+   공동작업은 한 명이 누르면 함께 가는 직원 모두 외근 시작 (다른 외근 중인 직원은 건너뜀). */
+const START_GRACE_MIN = 10; // 출발 예정 시각이 이만큼 지나도 시작하지 않으면 "출발 지연"
+const startDelayMin = r => r.status === '승인' ? Math.floor((now() - new Date(r.departAt)) / 60000) : 0;
+const isStartLate = r => startDelayMin(r) > START_GRACE_MIN;
+// 이 직원이 시작할 수 있는(승인된) 외근 — 출발 예정 순
+const approvedFor = id => state.requests.filter(r => r.status === '승인' && isMember(r, id)).sort((a, b) => a.departAt.localeCompare(b.departAt));
+// 시작 가능 여부: 출발일 당일부터, 다른 외근 중이 아닐 때
+function startBlock(r, u) {
+  if (r.departAt.slice(0, 10) > dkey(now())) return `${fmtDay(r.departAt.slice(0, 10))} 출발일에 시작할 수 있습니다`;
+  if (u.status === '외근' && u.currentRequestId && u.currentRequestId !== r.id) return '다른 외근 중입니다. 복귀 처리 후 시작하세요';
+  return '';
 }
-// 출발 시각이 된 '승인' 요청을 외근으로 전환 (출발 전 승인 건 처리)
-function tick() {
-  let changed = false;
-  state.requests.forEach(r => {
-    if (r.status !== '승인' || new Date(r.departAt) > now()) return;
-    const u = userById(r.requesterId);
-    if (u && u.status !== '외근') { startField(r); changed = true; }
+function startOuting(r, by) {
+  const at = toLocalISO(now());
+  r.status = '외근 중'; r.startedAt = at; r.startedBy = by.id;
+  const started = [];
+  members(r).forEach(id => {
+    const u = userById(id);
+    if (!u || (u.status === '외근' && u.currentRequestId && u.currentRequestId !== r.id)) return;
+    setStatus(u, '외근', `${r.id} 외근 시작 (${r.location})${isCoWork(r) ? ' · 공동작업' : ''}${u.id !== by.id ? ` (${by.name} 처리)` : ''}`);
+    u.currentRequestId = r.id;
+    started.push(u);
   });
-  if (changed) save();
+  return started;
+}
+// 열려 있는 양식: 외근 시작(안전 재확인) / 외근 취소 — 화면이 다시 그려져도 입력 유지
+let startOpenId = null, cancelOpenId = null;
+const startChecks = {};   // { 요청ID: [체크한 항목 번호] }
+const cancelDrafts = {};  // { 요청ID: 사유 }
+document.addEventListener('input', e => {
+  const f = e.target.form;
+  if (!f) return;
+  if (f.id === 'start-form') startChecks[f.dataset.id] = [...f.querySelectorAll('input[name="ss"]:checked')].map(c => +c.value);
+  if (f.id === 'cancel-form') cancelDrafts[f.dataset.id] = f.elements.reason.value;
+});
+// 직원이 취소할 수 있는 요청: 승인 대기 · 승인(출발 전)
+const cancelable = (r, u) => u && isMember(r, u.id) && (r.status === '승인 대기' || r.status === '승인');
+
+// 출발 직전 안전 재확인 — 모두 체크해야 외근 시작
+function startFormHTML(r) {
+  const done = startChecks[r.id] || [];
+  return `
+    <form class="start-form" id="start-form" data-id="${r.id}" novalidate>
+      <div class="rf-head">${ic('shield')} <b>출발 전 안전 재확인</b><span class="muted">${r.id} · ${reqSummary(r)}</span></div>
+      <p class="hint">출발 직전에 다시 확인하세요. 모든 항목을 체크해야 외근을 시작할 수 있습니다.</p>
+      <div class="checks">${state.safetyItems.map((it, i) => `
+        <label class="check"><input type="checkbox" name="ss" value="${i}" ${done.includes(i) ? 'checked' : ''}>
+          <span><b>${esc(it.title)}</b><small>${esc(it.desc)}</small></span></label>`).join('')}</div>
+      <p class="sf-keep">${ic('alarm')} 예상 복귀 <b>${fmtDT(r.expectedReturnAt)}</b> — 승인된 시각 그대로이며, 늦게 출발해도 바뀌지 않습니다.</p>
+      ${isCoWork(r) ? `<p class="hint">공동작업입니다. 함께 가는 ${esc(namesOf(members(r).filter(id => id !== currentUserId)))}의 안전 수칙 준수도 함께 확인해 주세요. 시작하면 모두 외근으로 바뀝니다.</p>` : ''}
+      <p class="err" id="start-err" hidden></p>
+      <div class="seg">
+        <button class="btn primary">${ic('car')} 외근 시작</button>
+        <button type="button" class="btn" data-action="start-close">닫기</button>
+      </div>
+    </form>`;
+}
+// 외근 취소 — 사유 필수, 되돌릴 수 없음
+function cancelFormHTML(r) {
+  return `
+    <form class="cancel-form" id="cancel-form" data-id="${r.id}" novalidate>
+      <div class="rf-head">${ic('alarm')} <b>외근 취소</b><span class="muted">${r.id} · ${reqSummary(r)}</span></div>
+      <p class="hint">작업이 필요 없어졌을 때 취소합니다. 취소하면 감독원 화면에 사유와 함께 표시되며 되돌릴 수 없습니다.${isCoWork(r) ? ' 공동작업은 함께 가는 직원 모두에게서 취소됩니다.' : ''}</p>
+      <input class="inp" name="reason" maxlength="60" placeholder="취소 사유 (필수) 예: 지사 자체 조치로 작업 불필요" value="${esc(cancelDrafts[r.id] || '')}">
+      <p class="err" id="cancel-err" hidden></p>
+      <div class="seg">
+        <button class="btn danger">취소 확정</button>
+        <button type="button" class="btn" data-action="cancel-close">닫기</button>
+      </div>
+    </form>`;
+}
+// 내 상태 / 내 요청에 보이는 "외근 시작" 상자
+function startBoxHTML(r, u, compact) {
+  const block = startBlock(r, u);
+  const late = isStartLate(r);
+  const when = `${fmtDT(r.departAt)} 출발 예정 · 예상 복귀 ${fmtDT(r.expectedReturnAt)}${late ? ` <b class="late-txt">(출발 ${startDelayMin(r)}분 지남)</b>` : ''}`;
+  const cancelBtn = `<button class="btn ghost cancel-btn" data-action="cancel-open" data-id="${r.id}">외근 취소</button>`;
+  const controls = startOpenId === r.id ? startFormHTML(r)
+    : cancelOpenId === r.id ? cancelFormHTML(r)
+    : block ? `<div class="sb-actions"><span class="start-block">${esc(block)}</span>${cancelBtn}</div>`
+    : `<div class="sb-actions"><button class="btn primary start-btn" data-action="start-open" data-id="${r.id}">${ic('car')} 외근 시작</button>${cancelBtn}</div>`;
+  if (compact) return `<div class="start-inline">${controls}</div>`;
+  const open = startOpenId === r.id || cancelOpenId === r.id;
+  return `<div class="start-box${late ? ' late' : ''}${open ? ' open' : ''}">
+    <span class="sb-ic">${IC.car}</span>
+    <div class="sb-txt"><b>승인된 외근 · ${reqSummary(r)}</b><span>${when}${isCoWork(r) ? ` · ${coTag(r, u.id)}` : ''}</span></div>
+    ${controls}
+    ${block || open ? '' : '<p class="sb-hint">실제로 출발할 때 누르세요. 출발 전 안전 재확인 후, 누른 시각이 출발 시각으로 기록됩니다.</p>'}
+  </div>`;
+}
+function cancelRequest(r, by, reason) {
+  r.prevStatus = r.status;
+  Object.assign(r, { status: '취소', cancelReason: reason, canceledAt: toLocalISO(now()), canceledBy: by.id });
 }
 
 /* ---------- 공지사항 (6명 누구나 게시) ---------- */
@@ -1571,7 +2392,7 @@ function noticeBarHTML() {
     <span class="nt-tag">${ic("megaphone")} 공지</span>
     <div class="nt-window"><ul class="nt-list" id="nt-list" data-count="${items.length}">${loop.join('')}</ul></div>
     ${list.length > 1 ? `<span class="nt-count">${list.length}건</span>` : ''}
-    <span class="nt-more" aria-hidden="true">›</span>
+    <span class="nt-more" aria-hidden="true">${IC.chevR}</span>
   </div>`;
 }
 function placeTicker(animate) {
@@ -1595,7 +2416,7 @@ setInterval(() => {
 function noticeHTML() {
   const list = notices();
   return `
-  <h1>공지사항</h1>
+  ${pageHead('notice', '공지사항', '근무현황 상단에 표시되는 공지입니다. 누구나 게시할 수 있고, 삭제는 작성자 본인과 감독원이 합니다.')}
   <div class="layout2">
     <form class="panel form" id="notice-form">
       <div class="field"><label class="lbl" for="nt-title">제목</label>
@@ -1637,8 +2458,13 @@ function unackedForMe() { return myInbox().filter(o => !ackOf(o, currentUserId))
 const unackedPeople = () => workOrders().reduce((n, o) => n + o.toIds.filter(id => !ackOf(o, id)).length, 0);
 // 회신 입력 중인 내용은 화면이 다시 그려져도 남도록 보관
 const ackDrafts = {};
+const ACK_MAX = 300; // 회신 최대 글자 수 (2~3줄 이상 적을 수 있게)
 document.addEventListener('input', e => {
-  if (e.target.dataset && e.target.dataset.ack) ackDrafts[e.target.dataset.ack] = e.target.value;
+  if (e.target.dataset && e.target.dataset.ack) {
+    ackDrafts[e.target.dataset.ack] = e.target.value;
+    const c = document.querySelector(`[data-ack-count="${e.target.dataset.ack}"]`);
+    if (c) c.textContent = `${e.target.value.length}/${ACK_MAX}`;
+  }
 });
 function nextOrderId() {
   const max = (state.workOrders || []).reduce((m, o) => Math.max(m, parseInt(o.id.slice(2), 10) || 0), 0);
@@ -1653,9 +2479,14 @@ function orderBannerHTML() {
     return n ? `<div class="banner info"><span>${ic('inbox')} 새 작업 요청 ${n}건이 있습니다.</span>
       <button class="btn small" data-action="go" data-view="inbox">확인하기</button></div>` : '';
   }
+  const late = state.requests.filter(r => isStartLate(r) && r.departAt.slice(0, 10) === dkey(now()));
+  const canceled = state.requests.filter(r => r.status === '취소' && r.prevStatus === '승인' && r.canceledAt && sameDay(new Date(r.canceledAt), now()));
+  const cancelBanner = canceled.length ? `<div class="banner"><span>${ic('alarm')} 오늘 직원이 취소한 승인 외근 ${canceled.length}건 · ${esc(canceled.map(r => `${userById(r.canceledBy).name}(${r.cancelReason})`).join(', '))}</span>
+    <button class="btn small" data-action="go" data-view="approve">자세히</button></div>` : '';
+  const lateBanner = late.length ? `<div class="banner warn"><span>${ic('alarm')} 출발 예정 시각이 지났는데 아직 "외근 시작"을 하지 않은 승인 건 ${late.length}건 · ${esc(late.map(r => `${namesOf(members(r))}(${fmtDT(r.departAt)})`).join(', '))}</span></div>` : '';
   const n = unackedPeople();
-  return n ? `<div class="banner info"><span>${ic('send')} 보낸 작업 요청 중 아직 확인하지 않은 직원 ${n}명</span>
-    <button class="btn small" data-action="go" data-view="orders">작업 요청 보기</button></div>` : '';
+  return lateBanner + cancelBanner + (n ? `<div class="banner info"><span>${ic('send')} 보낸 작업 요청 중 아직 확인하지 않은 직원 ${n}명</span>
+    <button class="btn small" data-action="go" data-view="orders">작업 요청 보기</button></div>` : '');
 }
 
 function orderMetaHTML(o) {
@@ -1672,15 +2503,14 @@ const urgentChip = o => o.priority === '긴급' ? '<span class="chip st-late">�
 function ordersHTML() {
   const workers = state.users.filter(u => !isSup(u));
   return `
-  <h1>작업 요청</h1>
-  <p class="muted">용역직원에게 작업을 요청합니다. 직원이 확인하면 아래 목록에 확인 시각과 회신이 표시됩니다.</p>
+  ${pageHead('orders', '작업 요청', `용역직원에게 작업을 요청합니다. 직원이 확인하면 아래 목록에 확인 시각과 회신이 표시됩니다.`)}
   <div class="layout2">
     <form class="panel form" id="order-form" novalidate>
       <div class="field"><span class="lbl">받는 직원 <small>(여러 명 선택 가능)</small></span>
         <div class="opts wo-to">${workers.map(u => `<label class="opt"><input type="checkbox" name="to" value="${u.id}">
           <span>${esc(u.name)}<small>${esc(u.part || u.role)}</small></span></label>`).join('')}</div></div>
       <div class="field"><span class="lbl">우선순위</span>
-        <div class="opts wo-pri">${['보통', '긴급'].map((p, i) => `<label class="opt"><input type="radio" name="priority" value="${p}" ${i === 0 ? 'checked' : ''}><span>${p}</span></label>`).join('')}</div></div>
+        <div class="opts wo-pri">${['보통', '긴급'].map((p, i) => `<label class="opt ${p === '긴급' ? 'pri-urgent' : 'pri-normal'}"><input type="radio" name="priority" value="${p}" ${i === 0 ? 'checked' : ''}><span>${p}</span></label>`).join('')}</div></div>
       <div class="field"><label class="lbl" for="wo-title">요청 제목</label>
         <input class="inp" id="wo-title" name="title" maxlength="60" placeholder="예: 담양지사 프린터 용지 걸림 점검" required></div>
       <div class="row2">
@@ -1727,8 +2557,7 @@ function sentOrdersHTML() {
 function inboxHTML() {
   const list = myInbox().sort((a, b) => (!!ackOf(a, currentUserId) - !!ackOf(b, currentUserId)) || b.createdAt.localeCompare(a.createdAt));
   return `
-  <h1>받은 작업 요청</h1>
-  <p class="muted">감독원이 보낸 작업 요청입니다. 내용을 보고 "확인"을 누르면 감독원 화면에 확인 시각과 회신이 표시됩니다.</p>
+  ${pageHead('inbox', '받은 작업 요청', `감독원이 보낸 작업 요청입니다. 내용을 보고 "확인"을 누르면 감독원 화면에 확인 시각과 회신이 표시됩니다.`)}
   <div class="wo-list inbox">${list.length ? list.map(o => {
     const a = ackOf(o, currentUserId);
     return `
@@ -1738,17 +2567,196 @@ function inboxHTML() {
       ${orderMetaHTML(o)}
       ${o.detail ? `<p class="wo-detail">${esc(o.detail)}</p>` : ''}
       ${a
-        ? `<div class="wo-myack">${ic('check')} ${fmtDT(a.at)}에 확인했습니다${a.note ? ` · 회신: “${esc(a.note)}”` : ''}</div>`
+        ? `<div class="wo-myack"><span>${ic('check')} ${fmtDT(a.at)}에 확인했습니다</span>${a.note ? `<p class="ack-note">회신: ${esc(a.note)}</p>` : ''}</div>`
         : `<div class="wo-ack-form">
-             <input class="memo" data-ack="${o.id}" maxlength="60" placeholder="회신 (선택) 예: 15시에 출발하겠습니다" value="${esc(ackDrafts[o.id] || '')}">
-             <button class="btn primary" data-action="ack-order" data-id="${o.id}">${ic('check')} 확인</button>
+             <label class="ack-lbl" for="ack-${o.id}">회신 <small>(선택 · 여러 줄 가능)</small></label>
+             <textarea class="inp ack-inp" id="ack-${o.id}" data-ack="${o.id}" maxlength="${ACK_MAX}" rows="3"
+               placeholder="예: 15시에 출발하겠습니다.&#10;현장 확인 후 조치 결과를 다시 보고드리겠습니다.">${esc(ackDrafts[o.id] || '')}</textarea>
+             <div class="ack-foot"><span class="ack-count" data-ack-count="${o.id}">${(ackDrafts[o.id] || '').length}/${ACK_MAX}</span>
+               <button class="btn primary" data-action="ack-order" data-id="${o.id}">${ic('check')} 확인</button></div>
            </div>`}
     </article>`;
   }).join('') : '<div class="panel"><p class="empty">받은 작업 요청이 없습니다.</p></div>'}</div>`;
 }
 
+/* ---------- 휴가 · 출장 일정표 ----------
+   본인 휴가 · 출장 · 외출 일정을 미리 등록하고, 6명의 한 주 일정을 한눈에 본다.
+   승인된(또는 승인 대기) 외근도 함께 표시. 삭제는 등록한 본인과 감독원. */
+const SCHED_TYPES = { '감독원': ['휴가', '출장', '외출'], '용역직원': ['휴가', '외출'] };
+const schedules = () => (state.schedules || []).slice().sort((a, b) => a.start.localeCompare(b.start) || a.userId.localeCompare(b.userId));
+const schedOn = (uid, k) => schedules().filter(p => p.userId === uid && p.start <= k && p.end >= k);
+const todaySchedule = u => schedOn(u.id, dkey(now()))[0];
+let calWeek = 0; // 이번 주 기준 몇 주 앞/뒤
+const schedDraft = {};
+document.addEventListener('input', e => {
+  if (e.target.closest && e.target.closest('#sched-form') && e.target.name) schedDraft[e.target.name] = e.target.value;
+});
+
+// 근무현황 "내 상태": 오늘 등록된 일정이 있는데 상태가 다르면 한 번에 반영하도록 안내
+function scheduleHintHTML(u) {
+  const p = todaySchedule(u);
+  if (!p || (u.status === p.type && (u.statusNote || '') === (p.note || ''))) return '';
+  return `<div class="sched-hint">${ic('calendar')} <span>오늘 일정: <b>${esc(p.type)}</b>${p.note ? ` · ${esc(p.note)}` : ''}</span>
+    <button class="btn small" data-action="apply-schedule" data-id="${p.id}">내 상태에 반영</button></div>`;
+}
+
+const SCHED_DESC = { '휴가': '연차 · 반차', '출장': '회의 · 교육', '외출': '잠시 자리 비움' };
+const dayDiff = (a, b) => Math.round((keyDate(b) - keyDate(a)) / 86400000);
+const weekDays = () => { const s0 = addDays(weekStartOf(now()), calWeek * 7); return Array.from({ length: 7 }, (_, i) => addDays(s0, i)); };
+const schedPeople = () => [...state.users.filter(isSup), ...state.users.filter(u => !isSup(u))];
+
+// 한 주(7칸) 안의 일정 막대: 여러 날 일정은 이어진 막대, 외근은 하루 막대. 겹치면 아래 줄로
+function weekEvents(u, days) {
+  const k0 = dkey(days[0]), k6 = dkey(days[6]);
+  const evs = schedules().filter(p => p.userId === u.id && p.start <= k6 && p.end >= k0).map(p => ({
+    from: Math.max(0, dayDiff(k0, p.start)), to: Math.min(6, dayDiff(k0, p.end)), contL: p.start < k0, contR: p.end > k6,
+    cls: STATUS_CLS[p.type] || 'out', icon: STATUS_ICON[p.type] || IC.calendar, label: p.type, sub: p.note || '',
+    title: `${u.name} · ${p.type}${p.note ? ' · ' + p.note : ''} (${fmtDay(p.start)}${p.end !== p.start ? ' ~ ' + fmtDay(p.end) : ''})`,
+  }));
+  if (!isSup(u)) state.requests
+    .filter(r => isMember(r, u.id) && r.status !== '반려' && r.status !== '취소' && r.departAt.slice(0, 10) >= k0 && r.departAt.slice(0, 10) <= k6)
+    .sort((a, b) => a.departAt.localeCompare(b.departAt))
+    .forEach(r => {
+      const d = dayDiff(k0, r.departAt.slice(0, 10)), co = isCoWork(r);
+      evs.push({
+        from: d, to: d, cls: 'field', co, pending: r.status === '승인 대기', icon: co ? IC.team : IC.car,
+        label: `${co ? '공동 ' : ''}외근${r.status === '승인 대기' ? ' · 대기' : ''}`, sub: `${hm(new Date(r.departAt))} ${r.location}`,
+        title: `${r.id} ${reqLabel(r).label} · ${namesOf(members(r))} · ${r.location}${r.locationDetail ? ' ' + r.locationDetail : ''} · ${hm(new Date(r.departAt))}~${hm(new Date(r.expectedReturnAt))}`,
+      });
+    });
+  evs.sort((a, b) => a.from - b.from || (b.to - b.from) - (a.to - a.from));
+  const ends = [];
+  evs.forEach(e => { let l = ends.findIndex(x => x < e.from); if (l < 0) { l = ends.length; ends.push(-1); } ends[l] = e.to; e.lane = l; });
+  return { evs, lanes: Math.max(1, ends.length) };
+}
+const evHTML = (e, style = '') => `<div class="ev st-${e.cls}${e.pending ? ' pending' : ''}${e.co ? ' co' : ''}${e.contL ? ' cont-l' : ''}${e.contR ? ' cont-r' : ''}"${style} title="${esc(e.title)}">
+  <span class="ev-ic">${e.icon}</span><b>${esc(e.label)}</b>${e.sub ? `<small>${esc(e.sub)}</small>` : ''}</div>`;
+function weekHTML() {
+  const days = weekDays();
+  const today = dkey(now());
+  const people = schedPeople();
+  const dayCls = d => `${d.getDay() === 0 || d.getDay() === 6 ? ' weekend' : ''}${dkey(d) === today ? ' today' : ''}`;
+  const dayNum = d => d.getDate() === 1 || d === days[0] ? `<small>${d.getMonth() + 1}/</small>${d.getDate()}` : d.getDate();
+  const head = days.map(d => `<div class="dh${dayCls(d)}"><span class="dn">${DAYS[d.getDay()]}</span><span class="dd">${dayNum(d)}</span>${dkey(d) === today ? '<em>오늘</em>' : ''}</div>`).join('');
+  const data = people.map(u => ({ u, ...weekEvents(u, days) }));
+  const rows = data.map(({ u, evs, lanes }) => `
+    <div class="cal-row${u.id === currentUserId ? ' mine' : ''}" style="grid-template-rows: repeat(${lanes}, minmax(38px, auto))">
+      <div class="who-cell">${avatarHTML(u, 'sm')}<span><b>${esc(u.name)}</b><small>${esc(u.part || u.role)}</small></span></div>
+      ${days.map((d, i) => `<div class="cal-bg${dayCls(d)}" style="grid-column:${i + 2}"></div>`).join('')}
+      ${evs.map(e => evHTML(e, ` style="grid-column:${e.from + 2} / ${e.to + 3};grid-row:${e.lane + 1}"`)).join('')}
+    </div>`).join('');
+  // 휴대폰: 날짜별 카드
+  const agenda = days.map((d, i) => {
+    const list = data.flatMap(({ u, evs }) => evs.filter(e => e.from <= i && e.to >= i)
+      .map(e => `<li>${avatarHTML(u, 'xs')}<b class="ag-name">${esc(u.name)}</b>${evHTML(e)}</li>`));
+    return `<div class="ag-day${dayCls(d)}${list.length ? '' : ' empty'}">
+      <div class="ag-tile"><span>${DAYS[d.getDay()]}</span><b>${d.getDate()}</b></div>
+      ${list.length ? `<ul>${list.join('')}</ul>` : '<p class="ag-none">일정 없음</p>'}</div>`;
+  }).join('');
+  const sameMonth = days[0].getMonth() === days[6].getMonth();
+  const label = `${days[0].getMonth() + 1}월 ${days[0].getDate()}일 – ${sameMonth ? '' : days[6].getMonth() + 1 + '월 '}${days[6].getDate()}일`;
+  const rel = calWeek === 0 ? '이번 주' : calWeek === 1 ? '다음 주' : calWeek === -1 ? '지난주' : calWeek > 0 ? `${calWeek}주 뒤` : `${-calWeek}주 전`;
+  const legend = [['leave', '휴가', IC.leave], ['trip', '출장', IC.trip], ['out', '외출', IC.out], ['field', '외근', IC.car], ['co', '공동 외근', IC.team]]
+    .map(([c, t, i]) => `<span class="lg st-${c}"><i>${i}</i>${t}</span>`).join('') + `<span class="lg lg-pending st-field"><i></i>승인 대기</span>`;
+  return `
+  <section class="sc-week">
+    ${pageHead('schedule', '휴가 · 출장 일정표', '휴가 · 출장 · 외출 일정을 미리 등록하면 6명이 한 주 일정을 함께 봅니다. 승인된 외근도 같이 표시됩니다.', `
+      <div class="wk-nav" role="group" aria-label="주 이동">
+        <button class="wk-btn" data-action="cal-week" data-d="-1" aria-label="지난주">${IC.chevL}</button>
+        <div class="wk-label"><b>${label}</b><span>${rel}</span></div>
+        <button class="wk-btn" data-action="cal-week" data-d="1" aria-label="다음 주">${IC.chevR}</button>
+        <button class="wk-today" data-action="cal-week" data-d="0" ${calWeek ? '' : 'disabled'}>이번 주</button>
+      </div>`)}
+    <div class="panel cal">
+      <div class="cal-scroll">
+        <div class="cal-head"><div class="dh corner" aria-hidden="true"></div>${head}</div>
+        <div class="cal-body">${rows}</div>
+      </div>
+      <div class="cal-agenda">${agenda}</div>
+      <div class="cal-foot">${legend}</div>
+    </div>
+  </section>`;
+}
+
+function scheduleHTML() {
+  const u = me();
+  const types = SCHED_TYPES[u.role] || ['휴가'];
+  const today = dkey(now());
+  const d = { type: types[0], start: today, end: today, note: '', ...schedDraft };
+  if (!types.includes(d.type)) d.type = types[0];
+  const quick = [['today', '오늘'], ['tomorrow', '내일'], ['nextmon', '다음 주 월요일'], ['nextweek', '다음 주 월~금']];
+  return `
+  ${weekHTML()}
+  <div class="sc-bottom">
+    <form class="panel sc-form" id="sched-form" novalidate>
+      <div class="form-head"><span class="fh-ic">${IC.plus}</span><div><b>새 일정 등록</b><small>본인 일정만 등록할 수 있습니다</small></div></div>
+      <div class="field"><span class="lbl">구분</span>
+        <div class="type-tiles" style="--n:${types.length}">${types.map(t => `
+          <label class="tile st-${STATUS_CLS[t]}"><input type="radio" name="type" value="${t}" ${d.type === t ? 'checked' : ''}>
+            <span class="tile-in"><span class="tile-ic">${STATUS_ICON[t]}</span><b>${t}</b><small>${SCHED_DESC[t] || ''}</small></span></label>`).join('')}
+        </div></div>
+      <div class="field"><span class="lbl">기간 <span class="dur" id="sched-dur">${durText(d.start, d.end)}</span></span>
+        <div class="quick">${quick.map(([k, l]) => `<button type="button" class="qchip" data-action="sched-quick" data-k="${k}">${l}</button>`).join('')}</div>
+        <div class="date-range">
+          <label><small>시작일</small><input class="inp" type="date" id="sc-start" name="start" value="${esc(d.start)}" required></label>
+          <span class="dr-arrow" aria-hidden="true">${IC.arrowR}</span>
+          <label><small>종료일</small><input class="inp" type="date" id="sc-end" name="end" value="${esc(d.end)}" required></label>
+        </div></div>
+      <div class="field"><label class="lbl" for="sc-note">내용 <small>(선택 · 현황판 추가 기재로도 쓰임)</small></label>
+        <input class="inp" id="sc-note" name="note" maxlength="40" value="${esc(d.note)}" placeholder="예: 연차, 오전 반차, 본사 회의">
+        <div class="quick mt6">${['연차', '오전 반차', '오후 반차', '교육', '회의'].map(v => `<button type="button" class="qchip soft" data-action="sched-note" data-v="${v}">${v}</button>`).join('')}</div></div>
+      <p class="err" id="sched-err" hidden></p>
+      <button class="btn primary sc-submit">${ic('calendar')} 일정 등록</button>
+    </form>
+    <section class="panel sc-up">
+      <div class="up-head"><b>다가오는 일정</b><span class="up-count">${schedules().filter(p => p.end >= today).length}</span></div>
+      <div id="sched-list">${scheduleListHTML()}</div>
+    </section>
+  </div>`;
+}
+// 기간 표시: 총 N일 (평일 M일)
+function durText(a, b) {
+  if (!a || !b) return '날짜를 고르세요';
+  if (b < a) return '종료일이 시작일보다 빠릅니다';
+  const n = dayDiff(a, b) + 1;
+  let w = 0; for (let i = 0; i < n; i++) { const g = addDays(keyDate(a), i).getDay(); if (g && g !== 6) w++; }
+  return `총 ${n}일${w !== n ? ` · 평일 ${w}일` : ''}`;
+}
+function updateSchedDur() {
+  const f = document.getElementById('sched-form'), el = document.getElementById('sched-dur');
+  if (!f || !el) return;
+  el.textContent = durText(f.elements.start.value, f.elements.end.value);
+  el.classList.toggle('bad', !!f.elements.start.value && f.elements.end.value < f.elements.start.value);
+}
+document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#sched-form')) updateSchedDur(); });
+function scheduleListHTML() {
+  const today = dkey(now());
+  const list = schedules().filter(p => p.end >= today);
+  if (!list.length) return `<div class="up-empty">${IC.calendar}<p>등록된 일정이 없습니다.</p></div>`;
+  const u = me();
+  return `<ul class="up-list">${list.map(p => {
+    const w = userById(p.userId), sd = keyDate(p.start);
+    const canDelete = u && (u.id === p.userId || isSup(u));
+    const n = dayDiff(p.start, p.end) + 1;
+    const period = p.start === p.end ? fmtDay(p.start) : `${fmtDay(p.start)} – ${fmtDay(p.end)}`;
+    const dd = p.start <= today ? '<em class="dday now">진행 중</em>' : `<em class="dday">D-${dayDiff(today, p.start)}</em>`;
+    return `<li class="st-${STATUS_CLS[p.type] || 'out'}${p.userId === currentUserId ? ' mine' : ''}">
+      <div class="dt"><small>${sd.getMonth() + 1}월</small><b>${sd.getDate()}</b><span>${DAYS[sd.getDay()]}</span></div>
+      <div class="up-body">
+        <div class="up-line">${w ? avatarHTML(w, 'xs') : ''}<b>${esc(w ? w.name : p.userId)}</b><span class="up-type">${stLabel(p.type)}</span>${dd}</div>
+        <div class="up-meta">${period}${n > 1 ? ` · ${n}일` : ''}${p.note ? ` · ${esc(p.note)}` : ''}</div>
+      </div>
+      ${canDelete ? `<button class="icon-btn" data-action="del-schedule" data-id="${p.id}" aria-label="일정 삭제" title="삭제">${IC.trash}</button>` : '<span></span>'}
+    </li>`;
+  }).join('')}</ul>`;
+}
+function nextScheduleId() {
+  const max = (state.schedules || []).reduce((m, p) => Math.max(m, parseInt(p.id.slice(2), 10) || 0), 0);
+  return 'P-' + String(max + 1).padStart(3, '0');
+}
+
 /* ---------- 렌더링 ---------- */
-const VIEWS = { board: boardHTML, request: requestHTML, approve: approveHTML, notice: noticeHTML, orders: ordersHTML, inbox: inboxHTML };
+const VIEWS = { board: boardHTML, request: requestHTML, approve: approveHTML, notice: noticeHTML, orders: ordersHTML, inbox: inboxHTML, schedule: scheduleHTML };
 
 // partial=true: 타이머·다른 탭 갱신. 요청서처럼 입력 중인 화면은 목록만 갱신한다.
 function render(partial = false) {
@@ -1763,6 +2771,12 @@ function render(partial = false) {
   if (partial && view === 'approve' && document.getElementById('sup-edit-form')) return; // 감독원 수정 중에는 다시 그리지 않음
   if (partial && view === 'orders' && document.getElementById('order-form')) {
     document.getElementById('wo-list').innerHTML = sentOrdersHTML();
+    return;
+  }
+  if (partial && view === 'schedule' && document.getElementById('sched-form')) {
+    document.getElementById('sched-list').innerHTML = scheduleListHTML();
+    const wk = document.querySelector('#app .sc-week');
+    if (wk) wk.outerHTML = weekHTML();
     return;
   }
   if (partial && view === 'notice' && document.getElementById('notice-form')) {
@@ -1793,6 +2807,18 @@ function toast(msg) {
 
 function commit() { save(); render(); }
 
+// 하단 기관 정보 (공공기관 표준 형식: 기관 로고 · 기관명 · 이용 안내)
+function footHTML() {
+  return `<div class="sf-inner">
+    <img class="sf-logo" src="${EX_LOGO}" alt="한국도로공사" width="105" height="28">
+    <div class="sf-txt">
+      <p><b>한국도로공사 광주전남본부</b><span>전산유지보수 작업관리 · 근무현황</span></p>
+      <p class="sf-note">이 시스템은 내부 업무용입니다. 업무 외 목적으로 사용하거나 정보를 외부에 제공하지 마십시오.</p>
+    </div>
+  </div>`;
+}
+document.getElementById('foot').innerHTML = footHTML();
+
 /* ---------- 동작 ---------- */
 const actions = {
   pick(el) {
@@ -1801,7 +2827,7 @@ const actions = {
     login(u.id);
   },
   'cancel-pin'() { pinTarget = null; pinError = ''; render(); },
-  logout() { currentUserId = null; setSessionUser(null); pinTarget = null; render(); },
+  logout() { currentUserId = null; setSessionUser(null); pinTarget = null; returnOpen = false; render(); },
   async install() {
     if (installPrompt) {
       installPrompt.prompt();
@@ -1815,7 +2841,8 @@ const actions = {
     toast('사파리 아래쪽 공유 버튼 → "홈 화면에 추가"를 누르면 앱으로 설치됩니다.');
   },
   go(el) {
-    view = el.dataset.view; editingId = null; supEditId = null;
+    view = el.dataset.view; editingId = null; supEditId = null; returnOpen = false; startOpenId = null; cancelOpenId = null;
+    if (view === 'schedule') calWeek = 0;
     if (view === 'board') boardTab = 'status'; // 근무현황 메뉴는 항상 "근무현황" 탭부터
     render(); window.scrollTo(0, 0);
   },
@@ -1836,13 +2863,33 @@ const actions = {
     r.status = '승인';
     if (instruction) r.instruction = instruction;
     delete instrDrafts[r.id];
-    tick(); // 출발 시각이 이미 지났으면 바로 외근으로
     commit();
-    const u = userById(r.requesterId);
     const extra = instruction ? ' 요청사항도 전달했습니다.' : '';
-    toast((r.status === '외근 중' ? `${u.name}: 승인 완료, 외근으로 표시합니다.` : `${u.name}: 승인 완료, ${fmtDT(r.departAt)}에 외근으로 바뀝니다.`) + extra);
+    toast(`${namesOf(members(r))}: 승인했습니다. 직원이 출발하면서 "외근 시작"을 누르면 외근으로 바뀝니다.` + extra);
   },
-  return() { doReturn(); },
+  return() {
+    returnOpen = true; render();
+    const f = document.getElementById('return-form');
+    if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  },
+  'cancel-return'() { returnOpen = false; render(); },
+  'start-open'(el) {
+    const r = reqById(el.dataset.id), u = me();
+    if (!r || r.status !== '승인' || !isMember(r, u.id)) { toast('이미 시작했거나 시작할 수 없는 요청입니다.'); render(); return; }
+    const block = startBlock(r, u);
+    if (block) { toast(block); return; }
+    startOpenId = r.id; cancelOpenId = null; render();
+    const f = document.getElementById('start-form'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  },
+  'start-close'() { startOpenId = null; render(); },
+  'cancel-open'(el) {
+    const r = reqById(el.dataset.id);
+    if (!r || !cancelable(r, me())) { toast('이미 처리되어 취소할 수 없는 요청입니다.'); render(); return; }
+    cancelOpenId = r.id; startOpenId = null; editingId = editingId === r.id ? null : editingId; render();
+    const f = document.getElementById('cancel-form');
+    if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.elements.reason.focus({ preventScroll: true }); }
+  },
+  'cancel-close'() { cancelOpenId = null; render(); },
   reject(el) { rejectTarget = el.dataset.id; render(); const i = document.querySelector('#reject-form input'); if (i) i.focus(); },
   'cancel-reject'() { rejectTarget = null; render(); },
   'sup-edit'(el) {
@@ -1855,11 +2902,47 @@ const actions = {
   },
   'cancel-sup-edit'() { supEditId = null; render(); },
   'board-tab'(el) { boardTab = el.dataset.tab; render(); },
+  'hist-range'(el) { histF.range = el.dataset.range; render(); },
+  'export-csv'() { exportHistory(); },
+  'cal-week'(el) {
+    const d = +el.dataset.d; calWeek = d ? calWeek + d : 0;
+    const wk = document.querySelector('#app .sc-week');
+    if (wk && document.getElementById('sched-form')) wk.outerHTML = weekHTML(); else render(); // 입력 중인 등록 양식은 그대로
+  },
+  'sched-quick'(el) {
+    const f = document.getElementById('sched-form'); if (!f) return;
+    const t = now(), mon = addDays(weekStartOf(t), 7);
+    const [a, b] = { today: [t, t], tomorrow: [addDays(t, 1), addDays(t, 1)], nextmon: [mon, mon], nextweek: [mon, addDays(mon, 4)] }[el.dataset.k];
+    f.elements.start.value = schedDraft.start = dkey(a);
+    f.elements.end.value = schedDraft.end = dkey(b);
+    updateSchedDur();
+  },
+  'sched-note'(el) {
+    const f = document.getElementById('sched-form'); if (!f) return;
+    f.elements.note.value = schedDraft.note = el.dataset.v;
+  },
+  'apply-schedule'(el) {
+    const p = (state.schedules || []).find(x => x.id === el.dataset.id);
+    if (!p) return;
+    setStatus(me(), p.type, p.note || '');
+    commit();
+    toast(`'${p.type}' 상태로 변경했습니다. 모든 사용자 현황판에 반영됩니다.`);
+  },
+  'del-schedule'(el) {
+    const p = (state.schedules || []).find(x => x.id === el.dataset.id);
+    const u = me();
+    if (!p || !(u.id === p.userId || isSup(u))) return;
+    const w = userById(p.userId);
+    if (!confirm(`${w ? w.name : ''} ${p.type} 일정(${fmtDay(p.start)}${p.end !== p.start ? ' ~ ' + fmtDay(p.end) : ''})을 삭제할까요?`)) return;
+    state.schedules = state.schedules.filter(x => x.id !== p.id);
+    commit();
+    toast('일정을 삭제했습니다.');
+  },
   'ack-order'(el) {
     const o = (state.workOrders || []).find(x => x.id === el.dataset.id);
     if (!o || !o.toIds.includes(currentUserId)) return;
     const box = document.querySelector(`[data-ack="${o.id}"]`);
-    const note = ((box ? box.value : ackDrafts[o.id]) || '').trim().slice(0, 60);
+    const note = ((box ? box.value : ackDrafts[o.id]) || '').trim().slice(0, ACK_MAX);
     o.acks = o.acks || {};
     o.acks[currentUserId] = { at: toLocalISO(now()), note };
     delete ackDrafts[o.id];
@@ -1903,10 +2986,70 @@ const actions = {
   },
 };
 function login(id) {
-  currentUserId = id; setSessionUser(id); pinTarget = null; pinError = ''; view = 'board'; boardTab = 'status'; render();
+  currentUserId = id; setSessionUser(id); pinTarget = null; pinError = ''; view = 'board'; boardTab = 'status'; returnOpen = false; render();
 }
 
 const forms = {
+  'start-form'(f) {
+    const r = reqById(f.dataset.id), u = me();
+    const err = document.getElementById('start-err');
+    const fail = msg => { err.textContent = msg; err.hidden = false; };
+    if (!r || r.status !== '승인' || !isMember(r, u.id)) { startOpenId = null; render(); toast('이미 시작했거나 시작할 수 없는 요청입니다.'); return; }
+    const block = startBlock(r, u);
+    if (block) return fail(block);
+    const idx = [...f.querySelectorAll('input[name="ss"]:checked')].map(c => +c.value);
+    if (idx.length < state.safetyItems.length) return fail('출발 전 안전 재확인 항목을 모두 체크해야 외근을 시작할 수 있습니다.');
+    const early = -startDelayMin(r);
+    if (early > 60 && !confirm(`출발 예정(${fmtDT(r.departAt)})보다 ${Math.floor(early / 60)}시간 ${early % 60}분 이릅니다. 지금 외근을 시작할까요?`)) return;
+    const started = startOuting(r, u);
+    r.startSafety = state.safetyItems.map(it => it.title);
+    startOpenId = null; delete startChecks[r.id];
+    commit();
+    const others = started.filter(w => w.id !== u.id);
+    toast(`${hm(now())} 외근을 시작했습니다. 예상 복귀 ${fmtDT(r.expectedReturnAt)} · 안전 운행하세요.${others.length ? ` 공동작업자(${others.map(w => w.name).join(', ')})도 함께 외근으로 바뀝니다.` : ''}`);
+  },
+  'cancel-form'(f) {
+    const r = reqById(f.dataset.id), u = me();
+    const err = document.getElementById('cancel-err');
+    if (!r || !cancelable(r, u)) { cancelOpenId = null; render(); toast('이미 처리되어 취소할 수 없는 요청입니다.'); return; }
+    const reason = f.elements.reason.value.trim().slice(0, 60);
+    if (!reason) { err.textContent = '취소 사유를 적어 주세요.'; err.hidden = false; f.elements.reason.focus(); return; }
+    const was = r.status;
+    cancelRequest(r, u, reason);
+    cancelOpenId = null; delete cancelDrafts[r.id];
+    commit();
+    toast(`${r.id} ${was === '승인' ? '외근' : '요청'}을 취소했습니다. 감독원 화면에 사유가 표시됩니다.`);
+  },
+  'sched-form'(f) {
+    const err = document.getElementById('sched-err');
+    const fail = msg => { err.textContent = msg; err.hidden = false; };
+    const u = me();
+    const type = (f.querySelector('input[name="type"]:checked') || {}).value;
+    const start = f.elements.start.value, end = f.elements.end.value, note = f.elements.note.value.trim().slice(0, 40);
+    if (!(SCHED_TYPES[u.role] || []).includes(type)) return fail('구분을 선택하세요.');
+    if (!start || !end) return fail('시작일과 종료일을 입력하세요.');
+    if (end < start) return fail('종료일은 시작일과 같거나 늦어야 합니다.');
+    if (end < dkey(now())) return fail('이미 지난 날짜는 등록할 수 없습니다.');
+    const overlap = schedules().find(p => p.userId === u.id && p.start <= end && p.end >= start);
+    if (overlap) return fail(`같은 기간에 이미 '${overlap.type}' 일정(${fmtDay(overlap.start)}${overlap.end !== overlap.start ? ' ~ ' + fmtDay(overlap.end) : ''})이 있습니다.`);
+    if (!state.schedules) state.schedules = [];
+    state.schedules.push({ id: nextScheduleId(), userId: u.id, type, start, end, note, createdAt: toLocalISO(now()) });
+    Object.keys(schedDraft).forEach(k => delete schedDraft[k]);
+    // 등록한 일정이 보이도록 그 주로 이동
+    calWeek = Math.round((weekStartOf(keyDate(start)) - weekStartOf(now())) / (7 * 86400000));
+    commit();
+    toast(`${type} 일정을 등록했습니다. 모든 사용자 일정표에 표시됩니다.`);
+  },
+  'return-form'(f) {
+    const err = document.getElementById('return-err');
+    const outcome = (f.querySelector('input[name="outcome"]:checked') || {}).value;
+    const note = f.elements.note.value.trim().slice(0, 200);
+    const fail = msg => { err.textContent = msg; err.hidden = false; };
+    if (!me() || me().status !== '외근') { returnOpen = false; render(); return; }
+    if (!outcome) return fail('작업 결과(완료 · 일부 완료 · 미완료)를 선택하세요.');
+    if (outcome !== '완료' && !note) { fail('일부 완료 · 미완료는 남은 작업이나 사유를 적어야 합니다.'); f.elements.note.focus(); return; }
+    doReturn(outcome, note);
+  },
   'pin-form'(f) {
     const u = userById(pinTarget);
     if (f.pin.value === u.pin) login(u.id);
@@ -1951,29 +3094,34 @@ const forms = {
     if (bad) return fail(bad);
     const checkedIdx = [...f.querySelectorAll('input[name="safety"]:checked')].map(c => +c.value);
     const safetyChecked = state.safetyItems.filter((s, i) => checkedIdx.includes(i)).map(s => s.title);
+    // 공동작업자: 체크한 직원 (수정하는 공동작업자 본인은 항상 포함)
+    const owner = editingId ? (reqById(editingId) || {}).requesterId : currentUserId;
+    const coWorkerIds = [...f.querySelectorAll('input[name="coWorker"]:checked')].map(c => c.value);
+    if (owner && owner !== currentUserId && !coWorkerIds.includes(currentUserId)) coWorkerIds.push(currentUserId);
+    const coIds = state.users.filter(u => coWorkerIds.includes(u.id) && u.id !== owner).map(u => u.id); // 순서 고정
     if (state.safetyItems.some(s => s.required !== false && !safetyChecked.includes(s.title)))
-      return fail('필수 안전 준수 항목(작업장 안전관리, 교통안전)을 확인해야 승인 요청을 할 수 있습니다.');
+      return fail(`필수 안전 준수 항목(${state.safetyItems.filter(s => s.required !== false).map(s => s.title.replace(/ (준수|착용)$/, '')).join(', ')})을 모두 확인해야 승인 요청을 할 수 있습니다.`);
     if (editingId) {
       // 저장 직전에 다시 확인: 그사이 감독원이 승인·반려했으면 수정 불가
       const r = editableRequest(editingId);
       if (!r) { editingId = null; render(); toast('그사이 감독원이 처리한 요청이라 수정할 수 없습니다.'); return; }
       Object.assign(r, {
-        workType, location, locationDetail, description, safetyChecked,
+        workType, location, locationDetail, description, safetyChecked, coWorkerIds: coIds,
         departAt: departAt + ':00', expectedReturnAt: expectedReturnAt + ':00', editedAt: toLocalISO(now()), editedBy: currentUserId,
       });
       const id = r.id;
       editingId = null;
       commit();
-      toast(`${id} 요청을 수정했습니다. 감독원 승인 화면에도 바로 반영됩니다.`);
+      toast(`${id} 요청을 수정했습니다. 감독원 승인 화면${coIds.length ? '과 공동작업자 화면' : ''}에도 바로 반영됩니다.`);
       return;
     }
     state.requests.push({
-      id: nextRequestId(), requesterId: currentUserId, workType, location, locationDetail,
+      id: nextRequestId(), requesterId: currentUserId, coWorkerIds: coIds, workType, location, locationDetail,
       departAt: departAt + ':00', expectedReturnAt: expectedReturnAt + ':00', description,
       requestedAt: toLocalISO(now()), safetyChecked, status: '승인 대기', approverId: null, decidedAt: null, returnedAt: null,
     });
     commit();
-    toast('승인을 요청했습니다. 감독원 승인을 기다립니다.');
+    toast(coIds.length ? `공동작업(${namesOf(coIds)})으로 승인을 요청했습니다. 공동작업자도 수정할 수 있습니다.` : '승인을 요청했습니다. 감독원 승인을 기다립니다.');
   },
   'order-form'(f) {
     const err = document.getElementById('wo-err');
@@ -2015,6 +3163,14 @@ document.addEventListener('keydown', e => {
     e.preventDefault(); e.target.click();
   }
 });
+// 외근 이력 조회 조건(기간 · 직원)을 바꾸면 바로 다시 조회
+document.addEventListener('change', e => {
+  const k = e.target.dataset && e.target.dataset.hf;
+  if (!k) return;
+  histF[k] = e.target.value;
+  if (k === 'from' || k === 'to') { const [a, b] = histRange(); histF.from = a; histF.to = b; }
+  render();
+});
 document.addEventListener('submit', e => {
   const f = e.target;
   if (forms[f.id]) { e.preventDefault(); forms[f.id](f); }
@@ -2027,7 +3183,6 @@ window.addEventListener('storage', e => {
 // 시계와 복귀 지연 표시를 30초마다 갱신
 setInterval(() => {
   const c = document.getElementById('clock'); if (c) c.innerHTML = fmtClock();
-  tick();
   safeRender();
 }, 30000);
 
@@ -2042,7 +3197,6 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
 }
 
-tick();
 render();
 </script>
 </body>
