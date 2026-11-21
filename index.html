@@ -173,6 +173,17 @@
   .avatar.svgav.full { overflow: hidden; background: #e8f0fa; }
   .avatar.svgav.full svg { width: 96%; height: 96%; margin-top: 10%; }
   .emoji-opt.svgav svg { width: 30px; height: 30px; }
+  /* ex CI 심벌: 원본 로고의 ex 부분(79×24)만 보이게 */
+  .exmark {
+    display: block; width: 80%; aspect-ratio: 79 / 24;
+    background-repeat: no-repeat; background-size: 265.8% auto; background-position: 0 50%;
+  }
+  .avatar.svgav.ci, .avatar.sup.svgav.ci { background: #fff; box-shadow: inset 0 0 0 1px #dfe4ec; }
+  .emoji-opt .exmark { width: 36px; }
+  .card .avatar.svgav.ci { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--c, var(--line)), inset 0 0 0 1px #dfe4ec; }
+  @media (max-width: 640px) {
+    .card .avatar.svgav.ci { box-shadow: 0 0 0 1.5px #fff, 0 0 0 3px var(--c, var(--line)), inset 0 0 0 1px #dfe4ec; }
+  }
 
   /* ---------- 사용자 선택 ---------- */
   .login {
@@ -1030,20 +1041,24 @@ const NETWORK = `<svg viewBox="0 0 32 32" aria-hidden="true">
   <rect x="11.5" y="20" width="9" height="7" rx="1.6" fill="#0072ce"/>
   <rect x="21.5" y="20" width="9" height="7" rx="1.6" fill="#0072ce"/>
   <circle cx="14" cy="6.2" r="1" fill="#7fe0a8"/><circle cx="17" cy="6.2" r="1" fill="#fff"/></svg>`;
+// 한국도로공사 ex CI: 공식 로고(EX_LOGO, 210×56)에서 ex 심벌 부분(가로 0~79, 세로 16~40)만 보이게 표시
+// (원본 이미지의 색·비율은 바꾸지 않고, 보이는 영역만 잘라 흰 원 안에 배치)
+document.head.insertAdjacentHTML('beforeend', `<style>.exmark { background-image: url(${EX_LOGO}); }</style>`);
 const SVG_AVATARS = {
+  'ex-ci':     { svg: '<span class="exmark" aria-hidden="true"></span>', title: '한국도로공사 ex CI', ci: true },
   'network':   { svg: NETWORK, title: '네트워크', center: true },
   'office-black': { svg: OFFICE_MAN('#24272e', '#16181d', '#8a1c2b'), title: '정장 (검정)', full: true },
   'office-blue':  { svg: OFFICE_MAN('#0072ce', '#005aa3', '#0b1f4b'), title: '정장 (파랑)', full: true },
   'office-navy':  { svg: OFFICE_MAN('#0b1f4b', '#07152f', '#0072ce'), title: '정장 (남색)', full: true },
   'office-gray':  { svg: OFFICE_MAN('#6b7280', '#565d69', '#0b1f4b'), title: '정장 (회색)', full: true },
 };
-const AVATARS = ['office-black', 'office-blue', 'office-navy', 'office-gray', '👩‍🔧', '👷‍♀️',
+const AVATARS = ['ex-ci', 'office-black', 'office-blue', 'office-navy', 'office-gray', '👩‍🔧', '👷‍♀️',
                  '💻', 'network', '🖨️', '🖥️'];
 const avatarContent = key => SVG_AVATARS[key] ? SVG_AVATARS[key].svg : key;
 let avatarOpen = false;
 function avatarHTML(u, extra = '') {
   const key = AVATARS.includes(u.avatar) ? u.avatar : '';
-  const svgCls = SVG_AVATARS[key] ? ` svgav${SVG_AVATARS[key].center ? ' center' : ''}${SVG_AVATARS[key].full ? ' full' : ''}` : '';
+  const svgCls = SVG_AVATARS[key] ? ` svgav${SVG_AVATARS[key].center ? ' center' : ''}${SVG_AVATARS[key].full ? ' full' : ''}${SVG_AVATARS[key].ci ? ' ci' : ''}` : '';
   const cls = key ? ' emoji' + svgCls : '';
   return `<span class="avatar${isSup(u) ? ' sup' : ''}${cls}${extra ? ' ' + extra : ''}">${key ? avatarContent(key) : esc(u.name.charAt(0))}</span>`;
 }
