@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1f4b">
 <title>작업관리 · 근무현황</title>
+<!-- 앱 설치(PWA): 휴대폰 홈 화면에 아이콘으로 설치, 전체 화면으로 열림 -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="작업관리">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <!-- 글꼴: Pretendard (인터넷이 안 되면 맑은 고딕으로 표시) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
@@ -73,6 +81,11 @@
   .userchip .uname { font-weight: 600; }
   .userchip .btn { background: rgba(255, 255, 255, .14); border-color: transparent; color: #fff; border-radius: 999px; }
   .userchip .btn:hover { background: rgba(255, 255, 255, .24); }
+  .install-btn {
+    display: inline-flex; align-items: center; gap: 5px; border-radius: 999px;
+    background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .25); color: #fff;
+  }
+  .install-btn:hover { background: rgba(255, 255, 255, .22); border-color: rgba(255, 255, 255, .4); }
 
   .nav { max-width: 1160px; margin: 0 auto; padding: 0 12px; display: flex; gap: 2px; }
   .nav button {
@@ -196,15 +209,14 @@
   .summary b { font-weight: 800; }
 
   /* 상태 아이콘 */
-  .st-ico {
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
-    font-weight: 400; font-size: 1.05em; line-height: 1; margin-right: 4px; display: inline-block; vertical-align: -1px;
-  }
+  /* 선 아이콘 (이모지 대신, 어느 기기에서나 같은 모양) */
+  .st-ico, .ic { display: inline-grid; place-items: center; flex: none; line-height: 0; }
+  .st-ico { width: 1.15em; height: 1.15em; margin-right: 5px; }
+  .st-ico svg, .ic svg { width: 100%; height: 100%; stroke-width: 2.1; }
+  .ic { width: 1.1em; height: 1.1em; vertical-align: -0.18em; }
+  .ic + * , .ic-gap { margin-left: 4px; }
   .badge, .chip, .summary > span, .seg .btn { display: inline-flex; align-items: center; justify-content: center; }
-  .card.st-late .badge .st-ico {
-    background: #fff; border-radius: 50%; width: 1.35em; height: 1.35em; display: inline-grid; place-items: center; font-size: .95em;
-  }
-  .btn:disabled .st-ico { filter: grayscale(1); }
+  .btn:disabled .st-ico { opacity: .6; }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
   .grid.six { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
@@ -247,6 +259,38 @@
   .mystatus .lbl { font-weight: 800; font-size: 14px; color: var(--ex-navy); }
   .mystatus .memo { flex: 1; width: auto; min-width: 180px; }
   .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* 작업 요청 */
+  .banner.info { background: var(--ex-blue-weak); color: var(--ex-navy-2); border-color: #bcd9f5; }
+  .banner > span { display: inline-flex; align-items: center; gap: 6px; }
+  .wo-list { display: flex; flex-direction: column; gap: 12px; }
+  .wo-card { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+  .wo-card.urgent { border-color: #f3c7c4; }
+  .wo-card.unread { border-color: rgba(0, 114, 206, .45); box-shadow: 0 0 0 3px rgba(0, 114, 206, .1), var(--shadow); }
+  .wo-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .wo-title { font-size: 15.5px; margin-right: auto; }
+  .wo-progress { font-size: 12.5px; font-weight: 800; color: var(--out); background: var(--out-bg); padding: 3px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px; }
+  .wo-progress.done { color: var(--work); background: var(--work-bg); }
+  .wo-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); }
+  .wo-meta span { display: inline-flex; align-items: center; gap: 4px; }
+  .wo-detail { margin: 0; font-size: 14px; padding: 10px 12px; background: var(--surface-2); border-radius: 12px; white-space: pre-wrap; }
+  .wo-acks { display: flex; flex-direction: column; gap: 6px; }
+  .ack { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13.5px; padding: 7px 10px; border-radius: 10px; }
+  .ack b { font-weight: 800; }
+  .ack em { font-style: normal; color: var(--text); }
+  .ack.yes { background: var(--work-bg); color: var(--work); }
+  .ack.yes span { color: #3b6d55; }
+  .ack.no { background: var(--surface-2); color: var(--muted); }
+  .ack .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--out); flex: none; }
+  .wo-foot { display: flex; justify-content: flex-end; }
+  .wo-myack { font-size: 13.5px; font-weight: 700; color: var(--work); background: var(--work-bg); padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .wo-ack-form { display: flex; gap: 8px; }
+  .wo-ack-form .memo { flex: 1; min-width: 0; }
+  .wo-ack-form .btn { flex: none; display: inline-flex; align-items: center; gap: 5px; }
+  .opts.wo-to .opt span { display: flex; flex-direction: column; line-height: 1.25; padding: 8px 4px; }
+  .opts.wo-to .opt span small { font-weight: 500; font-size: 11.5px; color: inherit; opacity: .75; }
+  .opts.wo-pri { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 280px; }
+  #order-form .btn.primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 
   .banner {
     display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
@@ -314,6 +358,116 @@
   .instr b { color: var(--ex-navy-2); font-size: 12.5px; }
   .mystatus-instr { width: 100%; }
 
+  /* 요청 수정 */
+  .form.editing { border-color: var(--ex-blue); box-shadow: 0 0 0 3px rgba(0, 114, 206, .12), var(--shadow); }
+  .edit-banner {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    padding: 10px 12px; border-radius: 10px; background: var(--ex-blue-weak); color: var(--ex-navy-2); font-size: 14px;
+  }
+  .reqlist li.is-editing { background: var(--ex-blue-weak); }
+  .editing-tag { font-size: 12.5px; font-weight: 700; color: var(--ex-blue); }
+  .edited { color: var(--out); font-weight: 700; }
+  /* 오늘 외근 타임라인 */
+  .timeline { padding: 16px 0 14px; margin-bottom: 14px; --who: 92px; }
+  .tl-head { display: flex; justify-content: space-between; align-items: center; padding: 0 18px 10px; }
+  .tl-head b { font-size: 15px; color: var(--ex-navy); display: inline-flex; align-items: center; gap: 6px; }
+  .tl-head b .ic { color: var(--ex-blue); }
+  .tl-head .muted { font-size: 12.5px; }
+  .tl-body { position: relative; padding: 0 18px; }
+  .tl-row { display: grid; grid-template-columns: var(--who) 1fr; column-gap: 10px; align-items: center; min-height: 40px; }
+  .tl-who { display: flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 700; min-width: 0; white-space: nowrap; }
+  .tl-scale { position: relative; height: 22px; }
+  .tl-scale span { position: absolute; top: 2px; transform: translateX(-50%); font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tl-scale span:first-child { transform: none; }
+  .tl-scale span:last-child { transform: translateX(-100%); }
+  .tl-track {
+    position: relative; height: 32px; border-radius: 10px; background-color: var(--surface-2);
+    background-image: linear-gradient(to right, rgba(15, 23, 42, .07) 1px, transparent 1px);
+    background-size: calc(100% / var(--n)) 100%;
+  }
+  .tl-row + .tl-row { border-top: 1px dashed transparent; }
+  .tl-bar {
+    position: absolute; top: 4px; bottom: 4px; min-width: 6px; border-radius: 8px; overflow: hidden;
+    display: flex; align-items: center; padding: 0 8px; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: default;
+  }
+  .tl-bar span { overflow: hidden; text-overflow: ellipsis; }
+  .tl-bar.joinR { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .tl-bar.joinL { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+  .tl-bar.active { background: linear-gradient(180deg, #2b93e6, var(--ex-blue)); color: #fff; box-shadow: 0 2px 6px rgba(0, 114, 206, .28); }
+  .tl-bar.planned { background: #e3effc; color: var(--ex-navy-2); box-shadow: inset 0 0 0 1.5px rgba(0, 114, 206, .35); }
+  .tl-bar.late { background: repeating-linear-gradient(135deg, #e5484d 0 6px, #f0716f 6px 12px); color: #fff; }
+  .tl-bar.done { background: #cfd6e2; color: #33415a; }
+  .tl-bar.approved { background: #e8f7ef; color: #0d6b47; box-shadow: inset 0 0 0 1.5px #7fcfa6; }
+  .tl-bar.pending { background: #fff5e3; color: #8a5300; box-shadow: inset 0 0 0 1.5px #f3c071; }
+  .tl-empty { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); }
+  .tl-nowwrap { position: absolute; top: 0; bottom: 0; left: calc(18px + var(--who) + 10px); right: 18px; pointer-events: none; }
+  .tl-now { position: absolute; top: 20px; bottom: 0; width: 2px; margin-left: -1px; background: var(--ex-red); border-radius: 2px; }
+  .tl-now em {
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-style: normal; font-size: 11px; font-weight: 800;
+    color: #fff; background: var(--ex-red); padding: 1px 6px; border-radius: 999px; white-space: nowrap;
+  }
+  .tl-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 12px 18px 0; font-size: 12px; color: var(--muted); }
+  .tl-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .tl-key { display: inline-block; width: 18px; height: 10px; border-radius: 3px; }
+  .tl-key.active { background: var(--ex-blue); }
+  .tl-key.planned { background: #e3effc; box-shadow: inset 0 0 0 1.5px rgba(0, 114, 206, .35); }
+  .tl-key.late { background: repeating-linear-gradient(135deg, #e5484d 0 3px, #f0716f 3px 6px); }
+  .tl-key.done { background: #cfd6e2; }
+  .tl-key.approved { background: #e8f7ef; box-shadow: inset 0 0 0 1.5px #7fcfa6; }
+  .tl-key.pending { background: #fff5e3; box-shadow: inset 0 0 0 1.5px #f3c071; }
+  @media (max-width: 640px) {
+    .timeline { --who: 62px; padding-top: 14px; }
+    .tl-head, .tl-legend { padding-left: 14px; padding-right: 14px; }
+    .tl-body { padding: 0 14px; }
+    .tl-row { column-gap: 8px; }
+    .tl-who { font-size: 12.5px; gap: 4px; }
+    .tl-who .avatar { display: none; }
+    .tl-scale span.odd { display: none; }
+    .tl-nowwrap { left: calc(14px + var(--who) + 8px); right: 14px; }
+    .tl-bar { padding: 0 5px; font-size: 11px; }
+  }
+
+  /* 근무현황 안의 탭 */
+  .subtabs {
+    margin-top: 18px; display: flex; gap: 6px; padding: 6px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow);
+  }
+  .subtabs button {
+    position: relative; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: 0; background: transparent; padding: 11px 10px; border-radius: 11px;
+    font-weight: 700; font-size: 14.5px; letter-spacing: -0.02em; color: #4b5568; white-space: nowrap;
+    transition: background .2s, color .2s, box-shadow .2s;
+  }
+  .subtabs button:hover:not(.on) { background: #f2f5fa; color: var(--ex-navy); }
+  .subtabs button.on {
+    color: var(--ex-navy);
+    background: linear-gradient(180deg, #f1f7fe 0%, #e3effc 100%);
+    box-shadow: inset 0 0 0 1px rgba(0, 114, 206, .28), 0 2px 8px rgba(0, 114, 206, .12);
+  }
+  /* 선택된 탭 아래 ex 레드 포인트 */
+  .subtabs button.on::after {
+    content: ""; position: absolute; left: 50%; bottom: 5px; width: 22px; height: 3px; margin-left: -11px;
+    border-radius: 3px; background: var(--ex-red);
+  }
+  .subtabs button:focus-visible { outline: 2px solid var(--ex-blue); outline-offset: 2px; }
+  .sub-ico { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: #eef2f8; color: var(--ex-navy-2); flex: none; }
+  .sub-ico svg { width: 16px; height: 16px; }
+  .subtabs button.on .sub-ico { background: #fff; color: var(--ex-blue); box-shadow: 0 1px 2px rgba(0, 114, 206, .15); }
+  .subtabs .l-short { display: none; }
+  .sub-count {
+    min-width: 22px; padding: 0 7px; border-radius: 999px; font-size: 12px; font-weight: 800; line-height: 20px; text-align: center;
+    background: #eef2f8; color: var(--ex-navy-2); font-variant-numeric: tabular-nums;
+  }
+  .subtabs button.on .sub-count { background: var(--ex-blue); color: #fff; }
+  .subtab-body > :first-child { margin-top: 14px; }
+
+  .editing-card { border-color: var(--ex-blue); box-shadow: 0 0 0 3px rgba(0, 114, 206, .12), var(--shadow); }
+  .sup-edit { display: flex; flex-direction: column; gap: 10px; }
+  .sup-edit label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ex-navy); min-width: 0; }
+  .sup-edit .inp { font-weight: 400; font-size: 14px; padding: 8px 10px; }
+  .sup-edit .row2 { gap: 10px; }
+  .sup-edit .row2.dates { grid-template-columns: 1fr; }
+
   /* ---------- 공지 티커 ---------- */
   .notice-bar {
     margin-top: 16px; display: flex; align-items: center; gap: 12px; height: 50px; padding: 0 10px 0 8px;
@@ -332,7 +486,7 @@
   .nt-title { font-weight: 700; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .nt-meta { flex: none; color: var(--muted); font-size: 12.5px; }
   .nt-default .nt-title { color: var(--ex-navy-2); }
-  .nt-default .nt-title::before { content: "🦺 "; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
+  .nt-default .ic { color: var(--ex-blue); margin-right: 6px; }
   .nt-count { flex: none; font-size: 12px; font-weight: 700; color: var(--ex-blue); background: var(--ex-blue-weak); padding: 2px 8px; border-radius: 999px; }
   .nt-more { flex: none; color: var(--muted); font-size: 22px; line-height: 1; padding: 0 2px; }
   @media (prefers-reduced-motion: reduce) { .nt-list { transition: none !important; } }
@@ -431,6 +585,14 @@
     .nt-tag { font-size: 12px; padding: 5px 9px; }
     .nt-meta { display: none; }
     .nt-title { font-size: 13.5px; }
+    .subtabs { margin-top: 12px; gap: 4px; padding: 5px; border-radius: 14px; }
+    .subtabs button { flex-direction: column; gap: 3px; padding: 9px 2px 11px; font-size: 12.5px; border-radius: 10px; }
+    .subtabs button.on::after { bottom: 4px; width: 16px; margin-left: -8px; height: 2.5px; }
+    .sub-ico { width: 24px; height: 24px; border-radius: 7px; }
+    .sub-ico svg { width: 15px; height: 15px; }
+    .subtabs .l-full { display: none; }
+    .subtabs .l-short { display: inline; }
+    .sub-count { position: absolute; top: 5px; right: calc(50% - 26px); min-width: 17px; font-size: 10.5px; line-height: 16px; padding: 0 4px; }
 
     .grid { grid-template-columns: 1fr; }
     .login { padding: 22px 18px; border-radius: 16px; margin-top: 4px; }
@@ -464,6 +626,105 @@
     .hist td.wrap small, .hist td.c-wide small { margin-left: 6px; }
 
     .toast { bottom: calc(84px + env(safe-area-inset-bottom)); }
+  }
+
+  /* =========================================================
+     2026 디자인 리프레시 — 최신 트렌드 반영
+     · 은은한 그라데이션 배경 · 큰 라운드 · 얇은 테두리 + 부드러운 그림자
+     · 아바타 상태 링(카드 왼쪽 굵은 띠 대신) · 알약형 메뉴 · 떠 있는 하단 메뉴(휴대폰)
+     CI 색상(ex 남색 · 블루 · 레드)은 그대로 유지
+     ========================================================= */
+  :root {
+    --bg: #f4f6fb;
+    --line: #e6e9f1;
+    --surface-2: #f6f8fc;
+    --radius: 18px;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 2px 8px rgba(16, 24, 40, .04);
+    --shadow-lg: 0 12px 32px rgba(16, 24, 40, .10);
+    --ring: 0 0 0 4px rgba(0, 114, 206, .14);
+  }
+  body {
+    background:
+      radial-gradient(1100px 520px at -8% -12%, rgba(0, 114, 206, .09), transparent 60%),
+      radial-gradient(900px 480px at 108% -6%, rgba(228, 0, 43, .045), transparent 60%),
+      var(--bg);
+    background-attachment: fixed;
+  }
+  h1 { font-size: 24px; letter-spacing: -0.035em; }
+  h2 { font-size: 14.5px; letter-spacing: -0.02em; }
+  h2::before { height: 14px; border-radius: 4px; background: linear-gradient(180deg, var(--ex-blue), #39a0f0); }
+
+  /* 상단 바: 깊은 남색 + 은은한 광택 */
+  .topbar {
+    background:
+      radial-gradient(600px 200px at 85% -40%, rgba(57, 160, 240, .28), transparent 70%),
+      linear-gradient(120deg, #0a1a44 0%, #0f2c66 55%, #12397f 100%);
+  }
+
+  /* 카드 · 패널: 얇은 테두리 + 큰 라운드, 왼쪽 굵은 띠 대신 아바타 상태 링 */
+  .panel, .card, .notice-bar, .mystatus, .subtabs, .login { border-color: rgba(15, 23, 42, .07); }
+  .panel { border-radius: 18px; }
+  .card { border-radius: 20px; padding: 18px; transition: transform .2s ease, box-shadow .2s ease; }
+  .card::before { display: none; }
+  .card .avatar { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--c, var(--line)); }
+  .card.mine { border-color: rgba(0, 114, 206, .35); box-shadow: var(--ring), var(--shadow); }
+  .card.st-late { background: linear-gradient(180deg, #fff5f4 0%, #fff 70%); border-color: #f5cdc9; }
+  .kv, .note, .kv-mini { background: var(--surface-2); border-radius: 12px; }
+  @media (hover: hover) {
+    .grid .card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(16, 24, 40, .08); }
+  }
+  .badge { padding: 5px 11px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6); }
+
+  .notice-bar { border-radius: 16px; }
+  .nt-tag { border-radius: 10px; background: linear-gradient(135deg, var(--ex-navy), var(--ex-navy-2)); }
+  .mystatus { border-radius: 18px; }
+  .subtabs { border-radius: 18px; }
+  .banner { border-radius: 14px; }
+  .summary > span { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7); }
+
+  /* 버튼 · 입력 */
+  .btn { border-radius: 12px; }
+  .btn.small { border-radius: 10px; }
+  .btn.primary { background: linear-gradient(180deg, #1786e0 0%, var(--ex-blue) 100%); border-color: #0068bd; }
+  .btn.primary:hover { background: linear-gradient(180deg, #0f7bd4 0%, #0063b4 100%); }
+  .inp, .memo { background: var(--surface-2); border-color: #e1e6ef; border-radius: 12px; }
+  .inp:focus, .memo:focus, .pin input:focus { background: #fff; box-shadow: var(--ring); }
+  .opt span, .check { border-radius: 12px; }
+
+  /* 로그인 */
+  .login { border-radius: 24px; box-shadow: var(--shadow-lg); }
+  .pick button { border-radius: 14px; }
+
+  /* 알림 메시지 */
+  .toast {
+    border-radius: 999px; padding: 12px 22px;
+    background: rgba(11, 31, 75, .92); backdrop-filter: blur(10px);
+  }
+
+  /* PC: 상단 메뉴를 알약형으로 */
+  @media (min-width: 641px) {
+    .nav { gap: 6px; padding-bottom: 10px; }
+    .nav button { border-radius: 999px; padding: 8px 16px; }
+    .nav button:hover { background: rgba(255, 255, 255, .08); }
+    .nav button.on { background: rgba(255, 255, 255, .16); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18); }
+    .nav button.on::after { display: none; }
+  }
+
+  /* 휴대폰: 떠 있는 하단 메뉴 */
+  @media (max-width: 640px) {
+    .nav {
+      left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom));
+      padding: 6px; border-radius: 22px; border: 1px solid rgba(15, 23, 42, .06);
+      background: rgba(255, 255, 255, .9); backdrop-filter: blur(14px);
+      box-shadow: 0 12px 32px rgba(16, 24, 40, .16);
+    }
+    .nav button { border-radius: 16px; }
+    main { padding-bottom: 116px; }
+    .toast { bottom: calc(96px + env(safe-area-inset-bottom)); }
+    .card { padding: 13px 12px; border-radius: 16px; }
+    .grid.six .card { border-radius: 16px; padding: 13px 12px; }
+    .card .avatar { box-shadow: 0 0 0 1.5px #fff, 0 0 0 3px var(--c, var(--line)); }
+    .login { border-radius: 20px; }
   }
 </style>
 </head>
@@ -516,6 +777,14 @@
       "departAt": "2026-11-23T09:30:00", "expectedReturnAt": "2026-11-23T13:00:00", "description": "요금소 CCTV 녹화서버 디스크 상태 점검",
       "requestedAt": "2026-11-20T13:50:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"], "status": "승인 대기", "approverId": null, "decidedAt": null, "returnedAt": null }
   ],
+  "workOrders": [
+    { "id": "W-001", "fromId": "S1", "toIds": ["W1"], "priority": "보통", "title": "순천지사 PC 교체 후 프린터 연결 확인", "location": "순천지사", "dueAt": "2026-11-20T17:00:00",
+      "detail": "교체한 PC 5대 모두 공용 프린터 인쇄 테스트까지 확인 바랍니다.", "createdAt": "2026-11-20T13:05:00",
+      "acks": { "W1": { "at": "2026-11-20T13:12:00", "note": "PC 설치 후 바로 확인하겠습니다." } } },
+    { "id": "W-002", "fromId": "S2", "toIds": ["W3", "W4"], "priority": "긴급", "title": "본부 상황실 네트워크 스위치 이중화 점검", "location": "기타", "dueAt": "2026-11-21T10:00:00",
+      "detail": "내일 오전 10시 전까지 상황실 백본 스위치 이중화 상태를 점검하고 결과를 공유해 주세요.", "createdAt": "2026-11-20T14:10:00",
+      "acks": {} }
+  ],
   "notices": [
     { "id": "N-001", "authorId": "S1", "at": "2026-11-20T08:50:00", "title": "11/24(월) 09:00~10:00 본부 전산실 UPS 정기점검", "body": "점검 시간 동안 본부 전산실 출입을 자제하고, 서버 작업 일정은 점검 이후로 조정해 주세요." },
     { "id": "N-002", "authorId": "S2", "at": "2026-11-20T11:05:00", "title": "동절기 결빙구간 운행 주의 — 외근 시 감속 운행", "body": "새벽·야간 교량 및 터널 출구 결빙 주의. 차량 이동 시 규정속도보다 낮춰 운행 바랍니다." },
@@ -536,7 +805,7 @@
    저장소 — 1단계는 브라우저 localStorage.
    2단계에서는 load()/save()만 서버 API 호출로 바꾸면 된다.
    ========================================================= */
-const STORE_KEY = 'gj-maint-proto-v9';
+const STORE_KEY = 'gj-maint-proto-v10';
 const SESSION_KEY = 'gj-maint-proto-user';
 const SEED = JSON.parse(document.getElementById('seed').textContent);
 
@@ -557,9 +826,10 @@ function load() {
 function save(s = state) {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch (e) {}
 }
-function getSessionUser() { try { return sessionStorage.getItem(SESSION_KEY); } catch (e) { return null; } }
+// 마지막으로 선택한 사용자를 기억 (브라우저를 닫았다 열어도 유지, "변경"을 누를 때까지)
+function getSessionUser() { try { return localStorage.getItem(SESSION_KEY); } catch (e) { return null; } }
 function setSessionUser(id) {
-  try { id ? sessionStorage.setItem(SESSION_KEY, id) : sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+  try { id ? localStorage.setItem(SESSION_KEY, id) : localStorage.removeItem(SESSION_KEY); } catch (e) {}
 }
 
 let state = load();
@@ -595,8 +865,28 @@ const isSup = u => u && u.role === '감독원';
 const me = () => userById(currentUserId);
 
 const STATUS_CLS = { '근무': 'work', '휴가': 'leave', '외출': 'out', '출장': 'trip', '외근': 'field', '복귀 지연': 'late' };
-// 상태별 아이콘: 근무(사무실) · 외근(차량 이동) · 외출(도보) · 출장(여행가방) · 휴가(야자수) · 복귀 지연(알람시계)
-const STATUS_ICON = { '근무': '🏢', '외근': '🚗', '외출': '🚶', '출장': '🧳', '휴가': '🌴', '복귀 지연': '⏰' };
+// 선 아이콘 모음 (24×24, 선 굵기 2, 글자색을 따라감) — 이모지 대신 사용해 기기마다 모양이 달라지지 않게
+const lineIcon = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const IC = {
+  office:   lineIcon('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h1.5M13.5 7H15M9 11h1.5M13.5 11H15M9 15h1.5M13.5 15H15"/><path d="M10 21v-3h4v3"/>'),
+  car:      lineIcon('<path d="M6 11l1.6-4.2A1.6 1.6 0 0 1 9.1 5.8h5.8a1.6 1.6 0 0 1 1.5 1L18 11"/><rect x="3" y="11" width="18" height="6.5" rx="2"/><path d="M6 17.5v2M18 17.5v2"/><circle cx="7.2" cy="14.2" r="1"/><circle cx="16.8" cy="14.2" r="1"/>'),
+  out:      lineIcon('<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M9 16l4-4-4-4"/><path d="M13 12H3"/>'),
+  trip:     lineIcon('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/>'),
+  leave:    lineIcon('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>'),
+  alarm:    lineIcon('<circle cx="12" cy="13" r="7.5"/><path d="M12 9.5V13l2.5 2"/><path d="M5 3.5 2.5 6M19 3.5 21.5 6"/>'),
+  megaphone:lineIcon('<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'),
+  clipboard:lineIcon('<rect x="5.5" y="4" width="13" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 10h6M9 14h6M9 18h3"/>'),
+  pencil:   lineIcon('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
+  check:    lineIcon('<path d="M20 6 9 17l-5-5"/>'),
+  shield:   lineIcon('<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>'),
+  download: lineIcon('<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>'),
+  send:     lineIcon('<path d="M21.5 2.5 10.8 13.2"/><path d="M21.5 2.5 14.7 21.5l-3.9-8.3-8.3-3.9z"/>'),
+  inbox:    lineIcon('<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>'),
+  pin:      lineIcon('<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>'),
+};
+const ic = name => `<span class="ic" aria-hidden="true">${IC[name]}</span>`;
+// 상태별 아이콘: 근무(사무실) · 외근(차량) · 외출(나감) · 출장(서류가방) · 휴가(해) · 복귀 지연(알람시계)
+const STATUS_ICON = { '근무': IC.office, '외근': IC.car, '외출': IC.out, '출장': IC.trip, '휴가': IC.leave, '복귀 지연': IC.alarm };
 const stLabel = s => `${STATUS_ICON[s] ? `<span class="st-ico" aria-hidden="true">${STATUS_ICON[s]}</span>` : ''}${esc(s)}`;
 
 function statusView(u) {
@@ -627,6 +917,7 @@ function topHTML() {
       </div>
       <div class="top-right">
         <span class="clock" id="clock">${fmtClock()}</span>
+        ${canInstall() ? `<button class="btn small install-btn" data-action="install">${ic('download')} 앱 설치</button>` : ''}
         ${u ? `<span class="userchip">${avatarHTML(u, 'sm')}
                  <span class="uname">${esc(u.name)}</span>
                  <button class="btn small" data-action="logout">변경</button></span>` : ''}
@@ -639,8 +930,13 @@ function topHTML() {
 }
 function navTabs(u) {
   const tabs = [{ id: 'board', label: '근무현황', short: '근무현황' }];
-  if (!isSup(u)) tabs.push({ id: 'request', label: '작업승인 요청', short: '작업승인 요청' });
-  else tabs.push({ id: 'approve', label: '승인 관리', short: '승인 관리', count: pendingRequests().length });
+  if (!isSup(u)) {
+    tabs.push({ id: 'request', label: '작업승인 요청', short: '작업승인 요청' });
+    tabs.push({ id: 'inbox', label: '받은 작업 요청', short: '받은 요청', count: unackedForMe() });
+  } else {
+    tabs.push({ id: 'approve', label: '승인 관리', short: '승인 관리', count: pendingRequests().length });
+    tabs.push({ id: 'orders', label: '작업 요청', short: '작업 요청' });
+  }
   tabs.push({ id: 'notice', label: '공지사항', short: '공지사항' });
   return tabs;
 }
@@ -650,6 +946,8 @@ const ICONS = {
   request: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
   approve: svg('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'),
   notice: svg('<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'),
+  orders: IC.send,
+  inbox: IC.inbox,
 };
 
 /* ---------- 화면 ①: 사용자 선택 ---------- */
@@ -817,18 +1115,99 @@ function reqLabel(r) {
 }
 const reqChip = r => { const l = reqLabel(r); return `<span class="chip st-${l.cls}">${l.label}</span>`; };
 
-function historyHTML() {
+const todayRequests = () => {
   const today = now();
-  const list = state.requests
+  return state.requests
     .filter(r => sameDay(new Date(r.departAt), today) || sameDay(new Date(r.requestedAt), today))
     .sort((a, b) => a.departAt.localeCompare(b.departAt));
+};
+const recentLogs = () => state.statusLogs.slice(-8).reverse();
+
+/* ---------- 오늘 외근 타임라인 ----------
+   시간축 위에 직원별 외근을 막대로 표시
+   · 진행(파랑) · 남은 예정(연파랑 점선) · 지연(빨강 빗금) · 복귀 완료(회색)
+   · 승인·출발 전(초록 점선) · 승인 대기(주황 점선) · 지금 시각(빨간 세로선) */
+const hm = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+function timelineHTML() {
+  const nowD = now();
+  const day0 = new Date(nowD); day0.setHours(0, 0, 0, 0);
+  const H = iso => (new Date(iso) - day0) / 3600000;
+  const nowH = (nowD - day0) / 3600000;
+  const list = todayRequests().filter(r => r.status !== '반려' && sameDay(new Date(r.departAt), nowD));
+
+  // 시간 범위: 기본 08~19시, 일정이 벗어나면 넓힘
+  let start = 8, end = 19;
+  list.forEach(r => {
+    start = Math.min(start, Math.floor(H(r.departAt)));
+    end = Math.max(end, Math.ceil(Math.max(H(r.expectedReturnAt), r.returnedAt ? H(r.returnedAt) : 0)));
+  });
+  if (nowH >= start) end = Math.max(end, Math.ceil(nowH));
+  start = Math.max(0, start); end = Math.min(24, end);
+  const span = end - start;
+  const pct = h => (Math.min(Math.max(h, start), end) - start) / span * 100;
+
+  const seg = (from, to, cls, label, title) => {
+    if (to <= from) return null;
+    return { from, to, cls, label, title };
+  };
+  function segments(r) {
+    const dep = H(r.departAt), exp = H(r.expectedReturnAt);
+    const where = r.location;
+    const info = `${r.id} · ${r.location}${r.locationDetail ? ' ' + r.locationDetail : ''} · ${fmtDT(r.departAt)}~${fmtDT(r.expectedReturnAt)}`;
+    if (r.status === '복귀 완료') {
+      const ret = H(r.returnedAt);
+      return [seg(dep, Math.min(ret, exp), 'done', where, `${info} · 복귀 ${fmtDT(r.returnedAt)}`),
+              ret > exp ? seg(exp, ret, 'late', `+${Math.round((ret - exp) * 60)}분`, '늦은 복귀') : null];
+    }
+    if (r.status === '외근 중') {
+      if (nowH <= exp) return [seg(dep, nowH, 'active', where, `${info} · 외근 중`), seg(Math.max(dep, nowH), exp, 'planned', '', '복귀 예정')];
+      return [seg(dep, exp, 'active', where, `${info} · 외근 중`), seg(exp, nowH, 'late', `+${Math.floor((nowH - exp) * 60)}분`, '복귀 지연')];
+    }
+    if (r.status === '승인') return [seg(dep, exp, 'approved', where, `${info} · 승인 · 출발 전`)];
+    if (r.status === '승인 대기') return [seg(dep, exp, 'pending', where, `${info} · 승인 대기`)];
+    return [];
+  }
+  const barsHTML = r => {
+    const s = segments(r).filter(Boolean);
+    return s.map((x, i) => `<div class="tl-bar ${x.cls}${i > 0 ? ' joinL' : ''}${i < s.length - 1 ? ' joinR' : ''}"
+        style="left:${pct(x.from)}%;width:${pct(x.to) - pct(x.from)}%" title="${esc(x.title)}"><span>${esc(x.label)}</span></div>`).join('');
+  };
+
+  const workers = state.users.filter(u => !isSup(u));
+  const rows = workers.map(u => {
+    const mine = list.filter(r => r.requesterId === u.id);
+    const empty = !mine.length ? `<span class="tl-empty">${u.status === '휴가' ? '휴가' : '외근 없음'}</span>` : '';
+    return `<div class="tl-row">
+      <div class="tl-who">${avatarHTML(u, 'xs')}<span>${esc(u.name)}</span></div>
+      <div class="tl-track" style="--n:${span}">${mine.map(barsHTML).join('')}${empty}</div>
+    </div>`;
+  }).join('');
+  const ticks = Array.from({ length: span + 1 }, (_, i) =>
+    `<span class="${i % 2 ? 'odd' : ''}" style="left:${i / span * 100}%">${start + i}시</span>`).join('');
+  const showNow = nowH >= start && nowH <= end;
+  const legend = [['active', '외근 중'], ['planned', '복귀 예정'], ['late', '지연'], ['done', '복귀 완료'], ['approved', '승인·출발 전'], ['pending', '승인 대기']]
+    .map(([c, t]) => `<span><i class="tl-key ${c}"></i>${t}</span>`).join('');
+
+  return `
+  <div class="panel timeline">
+    <div class="tl-head"><b>${ic('car')} 오늘 외근 타임라인</b><span class="muted">${hm(nowD)} 기준</span></div>
+    <div class="tl-body">
+      <div class="tl-row tl-axis"><div class="tl-who"></div><div class="tl-scale">${ticks}</div></div>
+      ${rows}
+      ${showNow ? `<div class="tl-nowwrap"><div class="tl-now" style="left:${pct(nowH)}%"><em>${hm(nowD)}</em></div></div>` : ''}
+    </div>
+    <div class="tl-legend">${legend}</div>
+  </div>`;
+}
+
+function historyHTML() {
+  const list = todayRequests();
   const lateTxt = r => {
     if (!r.returnedAt) return '';
     const m = Math.floor((new Date(r.returnedAt) - new Date(r.expectedReturnAt)) / 60000);
     return m > 0 ? ` <b class="late-txt">(+${m}분)</b>` : '';
   };
   return `
-  <h2>오늘 외근 이력</h2>
   <div class="panel tablewrap">${list.length ? `<table class="hist">
     <thead><tr><th>요청자</th><th>상태</th><th>작업장소 · 구분</th><th>요청 / 승인</th><th>출발 ~ 예상 복귀</th><th>실제 복귀</th></tr></thead>
     <tbody>${list.map(r => {
@@ -855,10 +1234,9 @@ function setStatus(u, to, note) {
 }
 
 function recentLogsHTML() {
-  const logs = state.statusLogs.slice(-8).reverse();
-  if (!logs.length) return '';
+  const logs = recentLogs();
+  if (!logs.length) return '<div class="panel"><p class="empty">최근 상태 변경이 없습니다.</p></div>';
   return `
-  <h2>최근 상태 변경</h2>
   <div class="panel"><ul class="loglist">${logs.map(l => {
     const u = userById(l.userId);
     return `<li><time>${fmtDT(l.at)}</time><b>${esc(u ? u.name : l.userId)}</b>
@@ -881,13 +1259,37 @@ function boardHTML() {
   ${noticeBarHTML()}
   ${pending ? `<div class="banner">승인 대기 ${pending}건이 있습니다.
      <button class="btn small" data-action="go" data-view="approve">승인 관리로 이동</button></div>` : ''}
-  ${myStatusHTML()}
-  <div class="grid six">${[...state.users.filter(isSup), ...state.users.filter(u => !isSup(u))].map(cardHTML).join('')}</div>
-  ${boardExtras()}
+  ${orderBannerHTML()}
+  ${boardTabsHTML()}
+  <div class="subtab-body">${
+    boardTab === 'history' ? timelineHTML() + historyHTML()
+    : boardTab === 'logs' ? recentLogsHTML()
+    : `${myStatusHTML()}
+       <div class="grid six">${[...state.users.filter(isSup), ...state.users.filter(u => !isSup(u))].map(cardHTML).join('')}</div>`
+  }</div>
   <p class="proto-note">시제품: 데이터는 이 브라우저에만 저장됩니다. 같은 브라우저의 다른 탭에서 다른 사용자로 들어가면 실시간 공유를 시험할 수 있습니다.
     <button class="btn small ghost" data-action="reset">더미 데이터로 초기화</button></p>`;
 }
-function boardExtras() { return historyHTML() + recentLogsHTML(); }
+// 근무현황 안의 탭: 근무현황 / 오늘 외근 이력 / 최근 상태 변경
+let boardTab = 'status';
+function boardTabsHTML() {
+  const tabs = [
+    { id: 'status',  full: '근무현황',       short: '근무현황',  count: null,
+      icon: svg('<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3.1 2.5-5.3 5.5-5.3s5.5 2.2 5.5 5.3"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 13.9c2.6.1 4.7 2 4.7 4.6"/>') },
+    { id: 'history', full: '오늘 외근 이력', short: '외근 이력', count: todayRequests().length,
+      icon: svg('<path d="M6 11l1.6-4.2A1.6 1.6 0 0 1 9.1 5.8h5.8a1.6 1.6 0 0 1 1.5 1L18 11"/><rect x="3" y="11" width="18" height="6.5" rx="2"/><path d="M6 17.5v2M18 17.5v2"/><circle cx="7.2" cy="14.2" r="1"/><circle cx="16.8" cy="14.2" r="1"/>') },
+    { id: 'logs',    full: '최근 상태 변경', short: '상태 변경', count: recentLogs().length,
+      icon: svg('<path d="M20 11a8 8 0 0 0-14.3-4.8L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.3 4.8L20 16"/><path d="M20 20v-4h-4"/>') },
+  ];
+  return `
+  <div class="subtabs" role="tablist" aria-label="근무현황 보기">
+    ${tabs.map(t => `<button role="tab" aria-label="${t.full}${t.count == null ? "" : ` ${t.count}건`}" aria-selected="${boardTab === t.id}" class="${boardTab === t.id ? 'on' : ''}"
+        data-action="board-tab" data-tab="${t.id}">
+        <span class="sub-ico">${t.icon}</span>
+        <span class="l-full">${t.full}</span><span class="l-short">${t.short}</span>
+        ${t.count == null ? "" : `<span class="sub-count">${t.count}</span>`}</button>`).join('')}
+  </div>`;
+}
 
 /* ---------- 화면 ③: 작업승인 요청 (용역직원) ---------- */
 const REQ_CLS = { '승인 대기': 'out', '승인': 'work', '외근 중': 'field', '복귀 완료': 'leave', '반려': 'late' };
@@ -901,20 +1303,32 @@ function defaultTimes() {
   return [toInputValue(d), toInputValue(back)];
 }
 
+// 승인 전(승인 대기) 본인 요청만 수정할 수 있다
+let editingId = null;
+const editableRequest = id => {
+  const r = reqById(id);
+  return r && r.status === '승인 대기' && r.requesterId === currentUserId ? r : null;
+};
+
 function requestHTML() {
-  const [dep, ret] = defaultTimes();
+  const er = editableRequest(editingId);
+  if (!er) editingId = null;
+  const [dep, ret] = er ? [er.departAt.slice(0, 16), er.expectedReturnAt.slice(0, 16)] : defaultTimes();
   const radios = (name, list, checked) => list.map(v =>
     `<label class="opt"><input type="radio" name="${name}" value="${v}" ${v === checked ? 'checked' : ''} required><span>${v}</span></label>`).join('');
+  const safetyOn = (s, req) => er ? (er.safetyChecked || []).includes(s.title) : false;
   return `
   <h1>작업승인 요청</h1>
-  <p class="muted">외근 작업 전에 감독원에게 승인을 요청합니다. 승인되면 현황판이 자동으로 "외근"으로 바뀝니다.</p>
+  <p class="muted">외근 작업 전에 감독원에게 승인을 요청합니다. 승인되면 현황판이 자동으로 "외근"으로 바뀝니다. 승인 전까지는 내 요청을 수정할 수 있습니다.</p>
   <div class="layout2">
-    <form class="panel form" id="req-form" novalidate>
+    <form class="panel form${er ? ' editing' : ''}" id="req-form" novalidate>
+      ${er ? `<div class="edit-banner"><span>${ic("pencil")} <b>${er.id}</b> 요청을 수정하고 있습니다</span>
+        <button type="button" class="btn small" data-action="cancel-edit">수정 취소</button></div>` : ''}
       <div class="field"><span class="lbl">작업 구분</span>
-        <div class="opts">${radios('workType', state.workTypes, state.workTypes[0])}</div></div>
+        <div class="opts">${radios('workType', state.workTypes, er ? er.workType : state.workTypes[0])}</div></div>
       <div class="field"><span class="lbl">작업 장소</span>
-        <div class="opts">${radios('location', state.locations)}</div>
-        <input class="inp mt6" name="locationDetail" maxlength="40" placeholder="상세 장소 (예: 2층 통신실) · 기타는 필수"></div>
+        <div class="opts">${radios('location', state.locations, er ? er.location : undefined)}</div>
+        <input class="inp mt6" name="locationDetail" maxlength="40" placeholder="상세 장소 (예: 2층 통신실) · 기타는 필수" value="${er ? esc(er.locationDetail || '') : ''}"></div>
       <div class="row2">
         <div class="field"><label class="lbl" for="departAt">작업 일시 (출발)</label>
           <input class="inp" type="datetime-local" id="departAt" name="departAt" value="${dep}" required></div>
@@ -922,17 +1336,17 @@ function requestHTML() {
           <input class="inp" type="datetime-local" id="expectedReturnAt" name="expectedReturnAt" value="${ret}" required></div>
       </div>
       <div class="field"><label class="lbl" for="description">작업 내용</label>
-        <textarea class="inp" id="description" name="description" maxlength="200" placeholder="예: 통신실 스위치 링크 다운 장애 조치" required></textarea></div>
+        <textarea class="inp" id="description" name="description" maxlength="200" placeholder="예: 통신실 스위치 링크 다운 장애 조치" required>${er ? esc(er.description) : ''}</textarea></div>
       <div class="field"><span class="lbl">안전 준수 확인 <small>(필수 항목은 모두 확인해야 요청할 수 있습니다)</small></span>
         <div class="checks">${state.safetyItems.map((s, i) => {
           const req = s.required !== false;
           return `
-          <label class="check"><input type="checkbox" name="safety" value="${i}" ${req ? 'required' : ''}>
+          <label class="check"><input type="checkbox" name="safety" value="${i}" ${req ? 'required' : ''} ${safetyOn(s) ? 'checked' : ''}>
             <span><b>${esc(s.title)} <em class="tag ${req ? 'req' : 'opt'}">${req ? '필수' : '선택'}</em></b><small>${esc(s.desc)}</small></span></label>`;
         }).join('')}
         </div></div>
       <p class="err" id="req-err" hidden></p>
-      <button class="btn primary">승인 요청</button>
+      <button class="btn primary">${er ? '수정 내용 저장' : '승인 요청'}</button>
     </form>
     <section>
       <h2 style="margin-top:0">내 요청</h2>
@@ -946,7 +1360,7 @@ function safetyText(r) {
   const done = r.safetyChecked || [];
   const missing = state.safetyItems.filter(s => s.required !== false && !done.includes(s.title));
   if (missing.length) return '<span class="late-txt">안전 준수 확인 없음</span>';
-  return `<span class="safety-ok">✔ ${done.map(esc).join(' · ')}</span>`;
+  return `<span class="safety-ok">${ic('check')} ${done.map(esc).join(' · ')}</span>`;
 }
 function reqSummary(r) {
   return `${esc(r.location)}${r.locationDetail ? ` · ${esc(r.locationDetail)}` : ''}`;
@@ -955,9 +1369,9 @@ function myRequestsHTML() {
   const list = state.requests.filter(r => r.requesterId === currentUserId).slice().reverse();
   if (!list.length) return '<p class="empty">아직 요청이 없습니다.</p>';
   return `<ul class="reqlist">${list.map(r => `
-    <li>
+    <li class="${r.id === editingId ? 'is-editing' : ''}">
       <div class="top"><b>${reqSummary(r)}</b>${reqChip(r)}</div>
-      <span class="muted">${esc(r.workType)} · ${fmtDT(r.departAt)} ~ ${fmtDT(r.expectedReturnAt)}${r.returnedAt ? ` · 복귀 ${fmtDT(r.returnedAt)}` : ''}</span>
+      <span class="muted">${esc(r.workType)} · ${fmtDT(r.departAt)} ~ ${fmtDT(r.expectedReturnAt)}${r.returnedAt ? ` · 복귀 ${fmtDT(r.returnedAt)}` : ''}${r.editedAt ? ` · <b class="edited">${editedText(r)}</b>` : ''}</span>
       <span>${esc(r.description)}</span>
       ${safetyText(r)}
       ${r.status === '반려' && r.rejectReason ? `<span class="reason">반려 사유: ${esc(r.rejectReason)}</span>` : ''}
@@ -969,6 +1383,10 @@ function myRequestActions(r) {
   const u = me();
   if (r.status === '외근 중' && u && u.currentRequestId === r.id)
     return '<div><button class="btn small primary" data-action="return">복귀 처리</button></div>';
+  if (r.status === '승인 대기' && u && r.requesterId === u.id)
+    return r.id === editingId
+      ? `<div><span class="editing-tag">${ic('pencil')} 왼쪽에서 수정 중</span></div>`
+      : `<div><button class="btn small" data-action="edit-req" data-id="${r.id}">${ic("pencil")} 수정</button></div>`;
   return '';
 }
 
@@ -989,11 +1407,64 @@ document.addEventListener('input', e => {
 function instructionHTML(r) {
   if (!r.instruction) return '';
   const a = userById(r.approverId);
-  return `<div class="instr"><b>📋 감독원 요청사항${a ? ` · ${esc(a.name)}` : ''}</b><span>${esc(r.instruction)}</span></div>`;
+  return `<div class="instr"><b>${ic("clipboard")} 감독원 요청사항${a ? ` · ${esc(a.name)}` : ''}</b><span>${esc(r.instruction)}</span></div>`;
+}
+
+// 요청 입력값 검사 (직원 요청서 · 감독원 수정 공통)
+function checkReqFields(x) {
+  if (!x.location) return '작업 장소를 선택하세요.';
+  if (x.location === '기타' && !x.locationDetail) return '"기타"를 선택하면 상세 장소를 적어야 합니다.';
+  if (!x.departAt || !x.expectedReturnAt) return '작업 일시와 예상 복귀 시각을 입력하세요.';
+  if (new Date(x.expectedReturnAt) <= new Date(x.departAt)) return '예상 복귀 시각은 출발 시각보다 늦어야 합니다.';
+  if (!x.description) return '작업 내용을 입력하세요.';
+  return '';
+}
+// 누가 언제 수정했는지 (직원 본인 / 감독원)
+function editedText(r) {
+  if (!r.editedAt) return '';
+  const by = userById(r.editedBy);
+  const who = by && by.id !== r.requesterId ? `${esc(by.name)} 감독원` : '본인';
+  return `수정됨 ${fmtDT(r.editedAt)} · ${who}`;
+}
+
+// 감독원: 승인 전 요청을 직접 수정
+let supEditId = null;
+function supEditFormHTML(r) {
+  const opts = (list, cur) => list.map(v => `<option value="${v}" ${v === cur ? 'selected' : ''}>${v}</option>`).join('');
+  return `
+    <form class="sup-edit" id="sup-edit-form" data-id="${r.id}" novalidate>
+      <div class="edit-banner"><span>${ic("pencil")} <b>${r.id}</b> 요청을 감독원이 수정합니다</span></div>
+      <label>작업 구분<select class="inp" name="workType">${opts(state.workTypes, r.workType)}</select></label>
+      <div class="row2">
+        <label>작업 장소<select class="inp" name="location">${opts(state.locations, r.location)}</select></label>
+        <label>상세 장소<input class="inp" name="locationDetail" maxlength="40" value="${esc(r.locationDetail || '')}" placeholder="기타는 필수"></label>
+      </div>
+      <div class="row2 dates">
+        <label>출발<input class="inp" type="datetime-local" name="departAt" value="${r.departAt.slice(0, 16)}"></label>
+        <label>예상 복귀<input class="inp" type="datetime-local" name="expectedReturnAt" value="${r.expectedReturnAt.slice(0, 16)}"></label>
+      </div>
+      <label>작업 내용<textarea class="inp" name="description" maxlength="200" rows="2">${esc(r.description)}</textarea></label>
+      <p class="hint">안전 준수 확인은 직원 본인이 체크한 항목 그대로 유지됩니다.</p>
+      <p class="err" id="sup-edit-err" hidden></p>
+      <div class="seg">
+        <button class="btn primary">수정 저장</button>
+        <button type="button" class="btn" data-action="cancel-sup-edit">취소</button>
+      </div>
+    </form>`;
 }
 
 function pendingCardHTML(r) {
   const u = userById(r.requesterId);
+  if (supEditId === r.id) {
+    return `
+    <article class="card st-out editing-card">
+      <header class="card-head">
+        <div><div class="name">${esc(u ? u.name : r.requesterId)}</div><div class="role">${r.id} · 요청 ${fmtDT(r.requestedAt)}</div></div>
+        <span class="badge">승인 대기</span>
+      </header>
+      ${supEditFormHTML(r)}
+    </article>`;
+  }
   const actionsHTML = rejectTarget === r.id
     ? `<form class="actions" id="reject-form" data-id="${r.id}">
          <input class="memo" name="reason" maxlength="60" placeholder="반려 사유 (필수) 예: 일정 재조정 필요" required>
@@ -1001,17 +1472,18 @@ function pendingCardHTML(r) {
            <button type="button" class="btn small" data-action="cancel-reject">취소</button></div>
        </form>`
     : `<div class="actions">
-         <label class="instr-lbl" for="instr-${r.id}">📋 추가 요청사항 <small>(선택 · 승인 시 직원에게 전달)</small></label>
+         <label class="instr-lbl" for="instr-${r.id}">${ic("clipboard")} 추가 요청사항 <small>(선택 · 승인 시 직원에게 전달)</small></label>
          <textarea class="inp instr-inp" id="instr-${r.id}" data-instr="${r.id}" maxlength="200" rows="2"
            placeholder="예: 작업 전 지사 담당자와 통화 후 진행, 작업 결과 사진 보고">${esc(instrDrafts[r.id] || '')}</textarea>
          <div class="seg">
          <button class="btn primary" data-action="approve" data-id="${r.id}">승인</button>
          <button class="btn" data-action="reject" data-id="${r.id}">반려</button>
+         <button class="btn" data-action="sup-edit" data-id="${r.id}">${ic("pencil")} 수정</button>
        </div></div>`;
   return `
   <article class="card st-out">
     <header class="card-head">
-      <div><div class="name">${esc(u ? u.name : r.requesterId)}</div><div class="role">${r.id} · 요청 ${fmtDT(r.requestedAt)}</div></div>
+      <div><div class="name">${esc(u ? u.name : r.requesterId)}</div><div class="role">${r.id} · 요청 ${fmtDT(r.requestedAt)}</div>${r.editedAt ? `<div class="role"><b class="edited">${ic("pencil")} ${editedText(r)}</b></div>` : ''}</div>
       <span class="badge">승인 대기</span>
     </header>
     <dl class="kv">
@@ -1077,11 +1549,11 @@ function noticeBarHTML() {
         const a = userById(n.authorId);
         return `<li><span class="nt-title">${esc(n.title)}</span><span class="nt-meta">${esc(a ? a.name : '')} · ${fmtDT(n.at)}</span></li>`;
       })
-    : [`<li class="nt-default"><span class="nt-title">${DEFAULT_NOTICE}</span></li>`];
+    : [`<li class="nt-default">${ic("shield")}<span class="nt-title">${DEFAULT_NOTICE}</span></li>`];
   const loop = items.length > 1 ? items.concat(items[0]) : items; // 끝에서 처음으로 자연스럽게 이어지도록 첫 줄 복제
   return `
   <div class="notice-bar" data-action="go" data-view="notice" role="button" tabindex="0" title="공지사항 게시판 열기">
-    <span class="nt-tag">📢 공지</span>
+    <span class="nt-tag">${ic("megaphone")} 공지</span>
     <div class="nt-window"><ul class="nt-list" id="nt-list" data-count="${items.length}">${loop.join('')}</ul></div>
     ${list.length > 1 ? `<span class="nt-count">${list.length}건</span>` : ''}
     <span class="nt-more" aria-hidden="true">›</span>
@@ -1142,8 +1614,126 @@ function noticeListHTML() {
   }).join('')}</ul>`;
 }
 
+/* ---------- 작업 요청 (감독원 → 용역직원, 직원 확인) ---------- */
+const workOrders = () => (state.workOrders || []).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+const ackOf = (o, id) => (o.acks || {})[id];
+const myInbox = () => workOrders().filter(o => o.toIds.includes(currentUserId));
+function unackedForMe() { return myInbox().filter(o => !ackOf(o, currentUserId)).length; }
+const unackedPeople = () => workOrders().reduce((n, o) => n + o.toIds.filter(id => !ackOf(o, id)).length, 0);
+// 회신 입력 중인 내용은 화면이 다시 그려져도 남도록 보관
+const ackDrafts = {};
+document.addEventListener('input', e => {
+  if (e.target.dataset && e.target.dataset.ack) ackDrafts[e.target.dataset.ack] = e.target.value;
+});
+function nextOrderId() {
+  const max = (state.workOrders || []).reduce((m, o) => Math.max(m, parseInt(o.id.slice(2), 10) || 0), 0);
+  return 'W-' + String(max + 1).padStart(3, '0');
+}
+
+// 근무현황 상단 안내: 직원은 새 요청, 감독원은 아직 확인 안 한 인원
+function orderBannerHTML() {
+  const u = me();
+  if (!isSup(u)) {
+    const n = unackedForMe();
+    return n ? `<div class="banner info"><span>${ic('inbox')} 새 작업 요청 ${n}건이 있습니다.</span>
+      <button class="btn small" data-action="go" data-view="inbox">확인하기</button></div>` : '';
+  }
+  const n = unackedPeople();
+  return n ? `<div class="banner info"><span>${ic('send')} 보낸 작업 요청 중 아직 확인하지 않은 직원 ${n}명</span>
+    <button class="btn small" data-action="go" data-view="orders">작업 요청 보기</button></div>` : '';
+}
+
+function orderMetaHTML(o) {
+  const parts = [];
+  if (o.location) parts.push(`${ic('pin')} ${esc(o.location)}`);
+  if (o.dueAt) parts.push(`${ic('alarm')} 기한 ${fmtDT(o.dueAt)}`);
+  const from = userById(o.fromId);
+  parts.push(`${ic('send')} ${esc(from ? from.name : '')} 감독원 · ${fmtDT(o.createdAt)}`);
+  return `<div class="wo-meta">${parts.map(p => `<span>${p}</span>`).join('')}</div>`;
+}
+const urgentChip = o => o.priority === '긴급' ? '<span class="chip st-late">긴급</span>' : '';
+
+// 감독원 화면: 작업 요청 보내기 + 보낸 요청의 확인 현황
+function ordersHTML() {
+  const workers = state.users.filter(u => !isSup(u));
+  return `
+  <h1>작업 요청</h1>
+  <p class="muted">용역직원에게 작업을 요청합니다. 직원이 확인하면 아래 목록에 확인 시각과 회신이 표시됩니다.</p>
+  <div class="layout2">
+    <form class="panel form" id="order-form" novalidate>
+      <div class="field"><span class="lbl">받는 직원 <small>(여러 명 선택 가능)</small></span>
+        <div class="opts wo-to">${workers.map(u => `<label class="opt"><input type="checkbox" name="to" value="${u.id}">
+          <span>${esc(u.name)}<small>${esc(u.part || u.role)}</small></span></label>`).join('')}</div></div>
+      <div class="field"><span class="lbl">우선순위</span>
+        <div class="opts wo-pri">${['보통', '긴급'].map((p, i) => `<label class="opt"><input type="radio" name="priority" value="${p}" ${i === 0 ? 'checked' : ''}><span>${p}</span></label>`).join('')}</div></div>
+      <div class="field"><label class="lbl" for="wo-title">요청 제목</label>
+        <input class="inp" id="wo-title" name="title" maxlength="60" placeholder="예: 담양지사 프린터 용지 걸림 점검" required></div>
+      <div class="row2">
+        <div class="field"><label class="lbl" for="wo-loc">작업 장소 <small>(선택)</small></label>
+          <select class="inp" id="wo-loc" name="location"><option value="">선택 안 함</option>${state.locations.map(l => `<option value="${l}">${l}</option>`).join('')}</select></div>
+        <div class="field"><label class="lbl" for="wo-due">완료 기한 <small>(선택)</small></label>
+          <input class="inp" type="datetime-local" id="wo-due" name="dueAt"></div>
+      </div>
+      <div class="field"><label class="lbl" for="wo-detail">요청 내용 <small>(선택)</small></label>
+        <textarea class="inp" id="wo-detail" name="detail" maxlength="300" placeholder="예: 오전 중 현장 확인 후 조치 결과를 공유해 주세요."></textarea></div>
+      <p class="err" id="wo-err" hidden></p>
+      <button class="btn primary">${ic('send')} 작업 요청 보내기</button>
+    </form>
+    <section>
+      <h2 style="margin-top:0">보낸 작업 요청</h2>
+      <div id="wo-list">${sentOrdersHTML()}</div>
+    </section>
+  </div>`;
+}
+function sentOrdersHTML() {
+  const list = workOrders();
+  if (!list.length) return '<div class="panel"><p class="empty">보낸 작업 요청이 없습니다.</p></div>';
+  return `<div class="wo-list">${list.map(o => {
+    const done = o.toIds.filter(id => ackOf(o, id)).length;
+    const all = done === o.toIds.length;
+    return `
+    <article class="panel wo-card${o.priority === '긴급' ? ' urgent' : ''}">
+      <div class="wo-top"><b class="wo-title">${esc(o.title)}</b>${urgentChip(o)}
+        <span class="wo-progress${all ? ' done' : ''}">${all ? ic('check') + ' ' : ''}확인 ${done}/${o.toIds.length}</span></div>
+      ${orderMetaHTML(o)}
+      ${o.detail ? `<p class="wo-detail">${esc(o.detail)}</p>` : ''}
+      <div class="wo-acks">${o.toIds.map(id => {
+        const w = userById(id), a = ackOf(o, id);
+        return a
+          ? `<div class="ack yes">${ic('check')}<b>${esc(w ? w.name : id)}</b><span>확인 ${fmtDT(a.at)}</span>${a.note ? `<em>“${esc(a.note)}”</em>` : ''}</div>`
+          : `<div class="ack no"><i class="dot"></i><b>${esc(w ? w.name : id)}</b><span>아직 확인 안 함</span></div>`;
+      }).join('')}</div>
+      ${o.fromId === currentUserId ? `<div class="wo-foot"><button class="btn small ghost" data-action="del-order" data-id="${o.id}">요청 삭제</button></div>` : ''}
+    </article>`;
+  }).join('')}</div>`;
+}
+
+// 직원 화면: 받은 작업 요청 + 확인(회신)
+function inboxHTML() {
+  const list = myInbox().sort((a, b) => (!!ackOf(a, currentUserId) - !!ackOf(b, currentUserId)) || b.createdAt.localeCompare(a.createdAt));
+  return `
+  <h1>받은 작업 요청</h1>
+  <p class="muted">감독원이 보낸 작업 요청입니다. 내용을 보고 "확인"을 누르면 감독원 화면에 확인 시각과 회신이 표시됩니다.</p>
+  <div class="wo-list inbox">${list.length ? list.map(o => {
+    const a = ackOf(o, currentUserId);
+    return `
+    <article class="panel wo-card${a ? '' : ' unread'}${o.priority === '긴급' ? ' urgent' : ''}">
+      <div class="wo-top"><b class="wo-title">${esc(o.title)}</b>${urgentChip(o)}
+        ${a ? '<span class="chip st-work">확인함</span>' : '<span class="chip st-field">새 요청</span>'}</div>
+      ${orderMetaHTML(o)}
+      ${o.detail ? `<p class="wo-detail">${esc(o.detail)}</p>` : ''}
+      ${a
+        ? `<div class="wo-myack">${ic('check')} ${fmtDT(a.at)}에 확인했습니다${a.note ? ` · 회신: “${esc(a.note)}”` : ''}</div>`
+        : `<div class="wo-ack-form">
+             <input class="memo" data-ack="${o.id}" maxlength="60" placeholder="회신 (선택) 예: 15시에 출발하겠습니다" value="${esc(ackDrafts[o.id] || '')}">
+             <button class="btn primary" data-action="ack-order" data-id="${o.id}">${ic('check')} 확인</button>
+           </div>`}
+    </article>`;
+  }).join('') : '<div class="panel"><p class="empty">받은 작업 요청이 없습니다.</p></div>'}</div>`;
+}
+
 /* ---------- 렌더링 ---------- */
-const VIEWS = { board: boardHTML, request: requestHTML, approve: approveHTML, notice: noticeHTML };
+const VIEWS = { board: boardHTML, request: requestHTML, approve: approveHTML, notice: noticeHTML, orders: ordersHTML, inbox: inboxHTML };
 
 // partial=true: 타이머·다른 탭 갱신. 요청서처럼 입력 중인 화면은 목록만 갱신한다.
 function render(partial = false) {
@@ -1153,6 +1743,11 @@ function render(partial = false) {
   if (!VIEWS[view] || !navTabs(me()).some(t => t.id === view)) view = 'board';
   if (partial && view === 'request' && document.getElementById('req-form')) {
     document.getElementById('my-req').innerHTML = myRequestsHTML();
+    return;
+  }
+  if (partial && view === 'approve' && document.getElementById('sup-edit-form')) return; // 감독원 수정 중에는 다시 그리지 않음
+  if (partial && view === 'orders' && document.getElementById('order-form')) {
+    document.getElementById('wo-list').innerHTML = sentOrdersHTML();
     return;
   }
   if (partial && view === 'notice' && document.getElementById('notice-form')) {
@@ -1192,7 +1787,30 @@ const actions = {
   },
   'cancel-pin'() { pinTarget = null; pinError = ''; render(); },
   logout() { currentUserId = null; setSessionUser(null); pinTarget = null; render(); },
-  go(el) { view = el.dataset.view; render(); window.scrollTo(0, 0); },
+  async install() {
+    if (installPrompt) {
+      installPrompt.prompt();
+      const choice = await installPrompt.userChoice.catch(() => null);
+      installPrompt = null;
+      render();
+      if (choice && choice.outcome === 'accepted') toast('홈 화면에 앱을 설치했습니다.');
+      return;
+    }
+    // 아이폰·아이패드(사파리)는 설치 창을 띄울 수 없어 방법을 안내
+    toast('사파리 아래쪽 공유 버튼 → "홈 화면에 추가"를 누르면 앱으로 설치됩니다.');
+  },
+  go(el) {
+    view = el.dataset.view; editingId = null; supEditId = null;
+    if (view === 'board') boardTab = 'status'; // 근무현황 메뉴는 항상 "근무현황" 탭부터
+    render(); window.scrollTo(0, 0);
+  },
+  'edit-req'(el) {
+    if (!editableRequest(el.dataset.id)) { toast('이미 처리된 요청이라 수정할 수 없습니다.'); render(); return; }
+    editingId = el.dataset.id;
+    render();
+    document.getElementById('req-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
+  'cancel-edit'() { editingId = null; render(); },
   approve(el) {
     const r = reqById(el.dataset.id);
     if (!r || r.status !== '승인 대기') return;
@@ -1212,6 +1830,34 @@ const actions = {
   return() { doReturn(); },
   reject(el) { rejectTarget = el.dataset.id; render(); const i = document.querySelector('#reject-form input'); if (i) i.focus(); },
   'cancel-reject'() { rejectTarget = null; render(); },
+  'sup-edit'(el) {
+    const r = reqById(el.dataset.id);
+    if (!r || r.status !== '승인 대기') { toast('이미 처리된 요청이라 수정할 수 없습니다.'); render(); return; }
+    supEditId = r.id; rejectTarget = null;
+    render();
+    const card = document.getElementById('sup-edit-form');
+    if (card) card.closest('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
+  'cancel-sup-edit'() { supEditId = null; render(); },
+  'board-tab'(el) { boardTab = el.dataset.tab; render(); },
+  'ack-order'(el) {
+    const o = (state.workOrders || []).find(x => x.id === el.dataset.id);
+    if (!o || !o.toIds.includes(currentUserId)) return;
+    const box = document.querySelector(`[data-ack="${o.id}"]`);
+    const note = ((box ? box.value : ackDrafts[o.id]) || '').trim().slice(0, 60);
+    o.acks = o.acks || {};
+    o.acks[currentUserId] = { at: toLocalISO(now()), note };
+    delete ackDrafts[o.id];
+    commit();
+    toast('확인했습니다. 감독원 화면에 확인 시각이 표시됩니다.');
+  },
+  'del-order'(el) {
+    const o = (state.workOrders || []).find(x => x.id === el.dataset.id);
+    if (!o || o.fromId !== currentUserId || !confirm(`"${o.title}" 작업 요청을 삭제할까요?`)) return;
+    state.workOrders = state.workOrders.filter(x => x.id !== o.id);
+    commit();
+    toast('작업 요청을 삭제했습니다.');
+  },
   'del-notice'(el) {
     const n = (state.notices || []).find(x => x.id === el.dataset.id);
     if (!n || !confirm(`"${n.title}" 공지를 삭제할까요?`)) return;
@@ -1242,7 +1888,7 @@ const actions = {
   },
 };
 function login(id) {
-  currentUserId = id; setSessionUser(id); pinTarget = null; pinError = ''; view = 'board'; render();
+  currentUserId = id; setSessionUser(id); pinTarget = null; pinError = ''; view = 'board'; boardTab = 'status'; render();
 }
 
 const forms = {
@@ -1250,6 +1896,25 @@ const forms = {
     const u = userById(pinTarget);
     if (f.pin.value === u.pin) login(u.id);
     else { pinError = 'PIN이 맞지 않습니다.'; render(); }
+  },
+  'sup-edit-form'(f) {
+    const err = document.getElementById('sup-edit-err');
+    const v = name => (f.elements[name].value || '').trim();
+    const x = {
+      workType: v('workType'), location: v('location'), locationDetail: v('locationDetail'),
+      departAt: v('departAt'), expectedReturnAt: v('expectedReturnAt'), description: v('description'),
+    };
+    const bad = checkReqFields(x);
+    if (bad) { err.textContent = bad; err.hidden = false; return; }
+    const r = reqById(f.dataset.id);
+    if (!r || r.status !== '승인 대기') { supEditId = null; render(); toast('이미 처리된 요청이라 수정할 수 없습니다.'); return; }
+    Object.assign(r, x, {
+      departAt: x.departAt + ':00', expectedReturnAt: x.expectedReturnAt + ':00',
+      editedAt: toLocalISO(now()), editedBy: currentUserId,
+    });
+    supEditId = null;
+    commit();
+    toast(`${r.id} 요청을 수정했습니다. 직원의 "내 요청"에도 감독원 수정으로 표시됩니다.`);
   },
   'reject-form'(f) {
     const reason = f.reason.value.trim();
@@ -1267,15 +1932,26 @@ const forms = {
     const v = name => (f.elements[name].value || '').trim();
     const workType = v('workType'), location = v('location'), locationDetail = v('locationDetail');
     const departAt = v('departAt'), expectedReturnAt = v('expectedReturnAt'), description = v('description');
-    if (!location) return fail('작업 장소를 선택하세요.');
-    if (location === '기타' && !locationDetail) return fail('"기타"를 선택하면 상세 장소를 적어야 합니다.');
-    if (!departAt || !expectedReturnAt) return fail('작업 일시와 예상 복귀 시각을 입력하세요.');
-    if (new Date(expectedReturnAt) <= new Date(departAt)) return fail('예상 복귀 시각은 출발 시각보다 늦어야 합니다.');
-    if (!description) return fail('작업 내용을 입력하세요.');
+    const bad = checkReqFields({ location, locationDetail, departAt, expectedReturnAt, description });
+    if (bad) return fail(bad);
     const checkedIdx = [...f.querySelectorAll('input[name="safety"]:checked')].map(c => +c.value);
     const safetyChecked = state.safetyItems.filter((s, i) => checkedIdx.includes(i)).map(s => s.title);
     if (state.safetyItems.some(s => s.required !== false && !safetyChecked.includes(s.title)))
       return fail('필수 안전 준수 항목(작업장 안전관리, 교통안전)을 확인해야 승인 요청을 할 수 있습니다.');
+    if (editingId) {
+      // 저장 직전에 다시 확인: 그사이 감독원이 승인·반려했으면 수정 불가
+      const r = editableRequest(editingId);
+      if (!r) { editingId = null; render(); toast('그사이 감독원이 처리한 요청이라 수정할 수 없습니다.'); return; }
+      Object.assign(r, {
+        workType, location, locationDetail, description, safetyChecked,
+        departAt: departAt + ':00', expectedReturnAt: expectedReturnAt + ':00', editedAt: toLocalISO(now()), editedBy: currentUserId,
+      });
+      const id = r.id;
+      editingId = null;
+      commit();
+      toast(`${id} 요청을 수정했습니다. 감독원 승인 화면에도 바로 반영됩니다.`);
+      return;
+    }
     state.requests.push({
       id: nextRequestId(), requesterId: currentUserId, workType, location, locationDetail,
       departAt: departAt + ':00', expectedReturnAt: expectedReturnAt + ':00', description,
@@ -1283,6 +1959,24 @@ const forms = {
     });
     commit();
     toast('승인을 요청했습니다. 감독원 승인을 기다립니다.');
+  },
+  'order-form'(f) {
+    const err = document.getElementById('wo-err');
+    const fail = msg => { err.textContent = msg; err.hidden = false; };
+    const toIds = [...f.querySelectorAll('input[name="to"]:checked')].map(c => c.value);
+    const title = f.elements.title.value.trim();
+    const dueAt = f.elements.dueAt.value;
+    if (!toIds.length) return fail('작업 요청을 받을 직원을 한 명 이상 선택하세요.');
+    if (!title) return fail('요청 제목을 입력하세요.');
+    if (!state.workOrders) state.workOrders = [];
+    state.workOrders.push({
+      id: nextOrderId(), fromId: currentUserId, toIds,
+      priority: f.elements.priority.value || '보통', title,
+      location: f.elements.location.value, dueAt: dueAt ? dueAt + ':00' : '',
+      detail: f.elements.detail.value.trim(), createdAt: toLocalISO(now()), acks: {},
+    });
+    commit();
+    toast(`${toIds.map(id => userById(id).name).join(', ')}에게 작업 요청을 보냈습니다.`);
   },
   'notice-form'(f) {
     const t = f.elements.title, b = f.elements.body; // f.title은 폼 자체 속성이라 elements로 접근
@@ -1321,6 +2015,17 @@ setInterval(() => {
   tick();
   safeRender();
 }, 30000);
+
+/* ---------- 앱 설치 (PWA) ---------- */
+let installPrompt = null; // 안드로이드·PC 크롬/엣지가 주는 설치 기회
+const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function canInstall() { return !isStandalone() && (!!installPrompt || isIOS()); }
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; render(); });
+window.addEventListener('appinstalled', () => { installPrompt = null; render(); });
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
+}
 
 tick();
 render();
