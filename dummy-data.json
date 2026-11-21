@@ -1,0 +1,137 @@
+{
+  "_note": "1단계 화면 시제품용 더미 데이터입니다. 이름과 PIN은 모두 가상 값이며, 화면의 '현재 시각'은 baseTime 기준입니다.",
+  "baseTime": "2026-11-20T14:30:00",
+
+  "users": [
+    { "id": "S1", "name": "김지훈", "role": "감독원",   "pin": "1111", "status": "근무" },
+    { "id": "S2", "name": "이현우", "role": "감독원",   "pin": "2222", "status": "출장", "statusNote": "본사 회의" },
+    { "id": "W1", "name": "박성민", "role": "용역직원", "part": "사무자동화기기", "status": "외근", "currentRequestId": "R-003" },
+    { "id": "W2", "name": "최준영", "role": "용역직원", "part": "사무자동화기기", "status": "외근", "currentRequestId": "R-002" },
+    { "id": "W3", "name": "정태윤", "role": "용역직원", "part": "네트워크", "status": "근무" },
+    { "id": "W4", "name": "강동현", "role": "용역직원", "part": "네트워크", "status": "휴가", "statusNote": "연차" }
+  ],
+
+  "statusOptions": {
+    "감독원":   ["근무", "외출", "출장", "휴가"],
+    "용역직원": ["근무", "휴가", "외출", "외근"]
+  },
+
+  "safetyItems": [
+    { "title": "작업장 안전관리 준수", "required": true, "desc": "작업 전 위험요소 확인, 정리정돈, 전기·고소작업 안전수칙 준수" },
+    { "title": "교통안전 준수", "required": true, "desc": "안전띠 착용, 규정속도 준수, 운전 중 휴대전화 사용 금지" },
+    { "title": "개인보호구 착용", "required": false, "desc": "작업장 상황에 따라 선택 — 안전모·안전화·안전조끼 등" }
+  ],
+  "workTypes": ["장애 대응", "정기 점검", "설치·교체", "기타"],
+
+  "locations": ["광주지사", "담양지사", "순천지사", "함평지사", "구례지사", "보성지사", "영암지사", "기타"],
+
+  "requests": [
+    {
+      "id": "R-001",
+      "requesterId": "W1",
+      "workType": "정기 점검",
+      "location": "함평지사",
+      "locationDetail": "1층 영업소 서버실",
+      "departAt": "2026-11-20T09:00:00",
+      "expectedReturnAt": "2026-11-20T11:30:00",
+      "description": "영업소 POS 서버 월간 점검 및 백업 확인",
+      "requestedAt": "2026-11-20T08:40:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"],
+      "status": "복귀 완료",
+      "approverId": "S1",
+      "decidedAt": "2026-11-20T08:45:00",
+      "returnedAt": "2026-11-20T11:20:00"
+    },
+    {
+      "id": "R-002",
+      "requesterId": "W2",
+      "workType": "장애 대응",
+      "location": "담양지사",
+      "locationDetail": "2층 통신실",
+      "departAt": "2026-11-20T10:00:00",
+      "expectedReturnAt": "2026-11-20T14:00:00",
+      "description": "통신실 L2 스위치 링크 다운 장애 조치",
+      "requestedAt": "2026-11-20T09:40:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"],
+      "status": "외근 중",
+      "approverId": "S1",
+      "decidedAt": "2026-11-20T09:42:00",
+      "instruction": "작업 전 담양지사 담당자와 통화 후 진행, 조치 결과 사진 보고",
+      "returnedAt": null,
+      "_screenHint": "baseTime(14:30)이 예상 복귀 시각(14:00)보다 늦으므로 화면에 '복귀 지연'(빨간색)으로 표시"
+    },
+    {
+      "id": "R-003",
+      "requesterId": "W1",
+      "workType": "설치·교체",
+      "location": "순천지사",
+      "locationDetail": "사무동 3층 업무용 PC 5대",
+      "departAt": "2026-11-20T13:00:00",
+      "expectedReturnAt": "2026-11-20T17:00:00",
+      "description": "노후 업무용 PC 교체 및 프린터 드라이버 설치",
+      "requestedAt": "2026-11-20T12:30:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"],
+      "status": "외근 중",
+      "approverId": "S2",
+      "decidedAt": "2026-11-20T12:35:00",
+      "instruction": "교체한 PC 자산번호 목록 작성 후 제출",
+      "returnedAt": null
+    },
+    {
+      "id": "R-004",
+      "requesterId": "W3",
+      "workType": "장애 대응",
+      "location": "광주지사",
+      "locationDetail": "민원실 무인발급기",
+      "departAt": "2026-11-20T15:00:00",
+      "expectedReturnAt": "2026-11-20T17:00:00",
+      "description": "무인발급기 영수증 출력 오류 점검",
+      "requestedAt": "2026-11-20T14:20:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"],
+      "status": "승인 대기",
+      "approverId": null,
+      "decidedAt": null,
+      "returnedAt": null
+    },
+    {
+      "id": "R-005",
+      "requesterId": "W3",
+      "workType": "기타",
+      "location": "기타",
+      "locationDetail": "본부 3층 대회의실",
+      "departAt": "2026-11-20T10:30:00",
+      "expectedReturnAt": "2026-11-20T11:30:00",
+      "description": "회의실 영상회의 장비 사전 점검",
+      "requestedAt": "2026-11-20T10:00:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"],
+      "status": "반려",
+      "approverId": "S1",
+      "decidedAt": "2026-11-20T10:05:00",
+      "rejectReason": "회의 일정이 다음 주로 연기되어 점검 불필요",
+      "returnedAt": null
+    },
+    {
+      "id": "R-006",
+      "requesterId": "W2",
+      "workType": "정기 점검",
+      "location": "영암지사",
+      "locationDetail": "요금소 CCTV 서버",
+      "departAt": "2026-11-23T09:30:00",
+      "expectedReturnAt": "2026-11-23T13:00:00",
+      "description": "요금소 CCTV 녹화서버 디스크 상태 점검",
+      "requestedAt": "2026-11-20T13:50:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"],
+      "status": "승인 대기",
+      "approverId": null,
+      "decidedAt": null,
+      "returnedAt": null
+    }
+  ],
+
+  "notices": [
+    { "id": "N-001", "authorId": "S1", "at": "2026-11-20T08:50:00", "title": "11/24(월) 09:00~10:00 본부 전산실 UPS 정기점검", "body": "점검 시간 동안 본부 전산실 출입을 자제하고, 서버 작업 일정은 점검 이후로 조정해 주세요." },
+    { "id": "N-002", "authorId": "S2", "at": "2026-11-20T11:05:00", "title": "동절기 결빙구간 운행 주의 — 외근 시 감속 운행", "body": "새벽·야간 교량 및 터널 출구 결빙 주의. 차량 이동 시 규정속도보다 낮춰 운행 바랍니다." },
+    { "id": "N-003", "authorId": "W1", "at": "2026-11-20T13:40:00", "title": "본부 3층 복합기 토너 교체 완료", "body": "" }
+  ],
+  "statusLogs": [
+    { "at": "2026-11-20T08:30:00", "userId": "W4", "from": "근무", "to": "휴가", "note": "연차" },
+    { "at": "2026-11-20T08:45:00", "userId": "W1", "from": "근무", "to": "외근", "note": "R-001 승인 (함평지사)" },
+    { "at": "2026-11-20T09:42:00", "userId": "W2", "from": "근무", "to": "외근", "note": "R-002 승인 (담양지사)" },
+    { "at": "2026-11-20T11:20:00", "userId": "W1", "from": "외근", "to": "근무", "note": "R-001 복귀" },
+    { "at": "2026-11-20T12:35:00", "userId": "W1", "from": "근무", "to": "외근", "note": "R-003 승인 (순천지사)" }
+  ]
+}

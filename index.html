@@ -1,0 +1,1329 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1f4b">
+<title>작업승인 · 근무현황</title>
+<!-- 글꼴: Pretendard (인터넷이 안 되면 맑은 고딕으로 표시) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  /* 한국도로공사 CI 색상 기반: ex Dark Blue(남색) · ex Blue(주색) · ex Red(포인트) */
+  :root {
+    --ex-navy: #0b1f4b;
+    --ex-navy-2: #15336f;
+    --ex-blue: #0072ce;
+    --ex-blue-weak: #e8f2fc;
+    --ex-red: #e4002b;
+
+    --bg: #f3f5f9;
+    --surface: #ffffff;
+    --surface-2: #f8f9fc;
+    --text: #111a2e;
+    --muted: #5b6577;
+    --line: #e3e7ee;
+    --primary: var(--ex-blue);
+    --primary-weak: var(--ex-blue-weak);
+
+    --work: #0d8a5b;   --work-bg: #e6f5ee;
+    --leave: #667085;  --leave-bg: #f0f2f5;
+    --out: #b86400;    --out-bg: #fff3e0;
+    --trip: #4b3fb8;   --trip-bg: #eeecfb;
+    --field: #0072ce;  --field-bg: #e8f2fc;
+    --late: #d92d20;   --late-bg: #feeceb;
+
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(11, 31, 75, .06), 0 6px 20px rgba(11, 31, 75, .05);
+    --shadow-lg: 0 10px 30px rgba(11, 31, 75, .12);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    font-size: 15px; line-height: 1.5; letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+  button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+  /* ---------- 상단 바 ---------- */
+  .topbar {
+    background: linear-gradient(135deg, var(--ex-navy) 0%, var(--ex-navy-2) 100%);
+    color: #fff; position: sticky; top: 0; z-index: 20;
+    box-shadow: 0 2px 0 var(--ex-red), 0 6px 18px rgba(11, 31, 75, .18);
+  }
+  .topbar-inner {
+    max-width: 1160px; margin: 0 auto; padding: 14px 20px 10px;
+    display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-right: auto; min-width: 0; }
+  .brand-mark { width: 4px; height: 34px; border-radius: 2px; background: var(--ex-red); flex: none; }
+  .brand small { display: block; color: rgba(255, 255, 255, .7); font-size: 12px; letter-spacing: .02em; }
+  .brand small.org { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; font-size: 13px; color: rgba(255, 255, 255, .85); }
+  .ex-logo { height: 28px; width: auto; display: block; flex: none; margin-left: -4px; }
+  .brand b { display: block; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .clock { font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, .75); font-size: 13px; white-space: nowrap; }
+  .clock b { color: #fff; font-size: 15px; font-weight: 700; }
+  .userchip {
+    display: flex; align-items: center; gap: 8px; padding: 3px 4px 3px 3px;
+    background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16); border-radius: 999px; font-size: 14px;
+  }
+  .userchip .uname { font-weight: 600; }
+  .userchip .btn { background: rgba(255, 255, 255, .14); border-color: transparent; color: #fff; border-radius: 999px; }
+  .userchip .btn:hover { background: rgba(255, 255, 255, .24); }
+
+  .nav { max-width: 1160px; margin: 0 auto; padding: 0 12px; display: flex; gap: 2px; }
+  .nav button {
+    position: relative; border: 0; background: none; padding: 10px 12px 12px; color: rgba(255, 255, 255, .7);
+    white-space: nowrap; font-weight: 600; display: flex; align-items: center; gap: 6px;
+  }
+  .nav button:hover { color: #fff; }
+  .nav button.on { color: #fff; }
+  .nav button.on::after {
+    content: ""; position: absolute; left: 12px; right: 12px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: #fff;
+  }
+  .nav svg { width: 18px; height: 18px; flex: none; }
+  .nav .l-short { display: none; }
+  .count {
+    display: inline-block; min-width: 20px; padding: 0 6px;
+    border-radius: 999px; background: var(--ex-red); color: #fff; font-size: 12px; font-weight: 700; line-height: 20px; text-align: center;
+  }
+
+  main { max-width: 1160px; margin: 0 auto; padding: 24px 20px 56px; }
+  h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 4px; }
+  h2 { font-size: 15px; font-weight: 700; margin: 32px 0 12px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  h2::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: var(--ex-blue); }
+  .muted { color: var(--muted); }
+
+  /* ---------- 버튼 · 입력 ---------- */
+  .btn {
+    border: 1px solid var(--line); background: var(--surface); color: var(--text);
+    border-radius: 10px; padding: 8px 14px; font-size: 14px; font-weight: 600;
+    transition: background .15s, border-color .15s, box-shadow .15s;
+  }
+  .btn:hover { border-color: #c9d0dc; }
+  .btn.primary { background: var(--ex-blue); border-color: var(--ex-blue); color: #fff; box-shadow: 0 2px 6px rgba(0, 114, 206, .25); }
+  .btn.primary:hover { background: #0063b4; }
+  .btn.danger { background: var(--late); border-color: var(--late); color: #fff; }
+  .btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  .btn.small { padding: 5px 12px; font-size: 13px; border-radius: 8px; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+  .btn.cur { background: var(--c); border-color: var(--c); color: #fff; opacity: 1; }
+  .inp, .memo {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .inp:focus, .memo:focus, .pin input:focus { outline: none; border-color: var(--ex-blue); box-shadow: 0 0 0 3px rgba(0, 114, 206, .15); }
+  .memo { font-size: 14px; }
+  textarea.inp { min-height: 80px; resize: vertical; }
+  .err { color: var(--late); font-size: 13px; width: 100%; margin: 0; font-weight: 600; }
+  .hint { font-size: 12px; color: var(--muted); margin: 0; }
+
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+
+  /* ---------- 아바타 ---------- */
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    background: var(--ex-blue-weak); color: var(--ex-navy-2); font-weight: 800; font-size: 16px;
+  }
+  .avatar.sup { background: var(--ex-navy); color: #fff; }
+  .avatar.sm { width: 28px; height: 28px; font-size: 13px; background: #fff; color: var(--ex-navy); }
+  .avatar.emoji, .emoji-opt {
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; font-weight: 400; line-height: 1;
+  }
+  .avatar.emoji { font-size: 23px; background: var(--ex-blue-weak); }
+  .avatar.sup.emoji { background: #e4e9f4; }
+  .avatar.sm.emoji { font-size: 17px; background: #fff; }
+
+  /* 내 아이콘 고르기 */
+  .avatar-btn { position: relative; border: 0; background: none; padding: 0; border-radius: 50%; flex: none; }
+  .avatar-btn:hover .avatar { box-shadow: 0 0 0 3px rgba(0, 114, 206, .18); }
+  .avatar-btn:focus-visible { outline: 2px solid var(--ex-blue); outline-offset: 2px; }
+  .avatar-btn .edit {
+    position: absolute; right: -3px; bottom: -3px; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--ex-blue); color: #fff; font-size: 10px; display: grid; place-items: center; border: 2px solid #fff;
+  }
+  .avatar-picker { width: 100%; border-top: 1px solid var(--line); padding-top: 12px; }
+  .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px; margin-top: 8px; }
+  .emoji-opt {
+    height: 46px; border: 1px solid var(--line); background: var(--surface); border-radius: 12px;
+    font-size: 25px; display: grid; place-items: center; transition: all .15s;
+  }
+  .emoji-opt:hover { border-color: #c9d0dc; background: var(--surface-2); }
+  .emoji-opt.on { border-color: var(--ex-blue); background: var(--ex-blue-weak); box-shadow: 0 0 0 2px rgba(0, 114, 206, .2); }
+  .emoji-opt .avatar { width: 30px; height: 30px; font-size: 13px; }
+  .avatar.svgav, .avatar.sup.svgav { background: #eef1f6; }
+  .avatar.svgav svg { width: 74%; height: 74%; margin-top: 18%; }
+  .avatar.svgav.center svg { width: 64%; height: 64%; margin-top: 0; }
+  .avatar.svgav.full { overflow: hidden; background: #e8f0fa; }
+  .avatar.svgav.full svg { width: 96%; height: 96%; margin-top: 10%; }
+  .emoji-opt.svgav svg { width: 30px; height: 30px; }
+
+  /* ---------- 사용자 선택 ---------- */
+  .login {
+    max-width: 560px; margin: 16px auto; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 18px; padding: 28px; box-shadow: var(--shadow-lg);
+  }
+  .login h2 { margin-top: 24px; }
+  .pick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .pick button {
+    display: flex; align-items: center; gap: 12px; text-align: left;
+    border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+  }
+  .pick button:hover, .pick button.on { border-color: var(--ex-blue); background: var(--ex-blue-weak); box-shadow: 0 0 0 3px rgba(0, 114, 206, .1); }
+  .pick b { display: block; font-size: 15px; }
+  .pick small { display: block; color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pick button > span:last-child { min-width: 0; }
+  .pin {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px; padding: 14px;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px;
+  }
+  .pin label { font-weight: 700; font-size: 14px; margin-right: 4px; }
+  .pin input { width: 120px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; letter-spacing: 6px; text-align: center; }
+
+  /* ---------- 현황판 ---------- */
+  .board-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; }
+  .board-head h1 { margin: 0; }
+  .board-head .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .summary { display: flex; gap: 6px; flex-wrap: wrap; }
+  .summary > span {
+    padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    color: var(--c); background: var(--cb); display: inline-flex; align-items: center; gap: 4px;
+  }
+  .summary b { font-weight: 800; }
+
+  /* 상태 아이콘 */
+  .st-ico {
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    font-weight: 400; font-size: 1.05em; line-height: 1; margin-right: 4px; display: inline-block; vertical-align: -1px;
+  }
+  .badge, .chip, .summary > span, .seg .btn { display: inline-flex; align-items: center; justify-content: center; }
+  .card.st-late .badge .st-ico {
+    background: #fff; border-radius: 50%; width: 1.35em; height: 1.35em; display: inline-grid; place-items: center; font-size: .95em;
+  }
+  .btn:disabled .st-ico { filter: grayscale(1); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .grid.six { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
+  .card {
+    position: relative; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 16px 18px 16px 20px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c, var(--line)); }
+  .card.mine { border-color: rgba(0, 114, 206, .45); box-shadow: 0 0 0 3px rgba(0, 114, 206, .1), var(--shadow); }
+  .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .who { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .name { font-weight: 800; font-size: 16px; letter-spacing: -0.02em; white-space: nowrap; }
+  .role { color: var(--muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .me { font-size: 10.5px; font-weight: 700; background: var(--ex-blue); color: #fff; border-radius: 4px; padding: 1px 5px; vertical-align: 2px; margin-left: 2px; }
+  .badge {
+    font-weight: 700; font-size: 13px; padding: 4px 11px; border-radius: 999px; color: var(--c); background: var(--cb);
+    white-space: nowrap; flex: none;
+  }
+  .kv {
+    display: grid; grid-template-columns: 64px 1fr; gap: 4px 10px; margin: 0; font-size: 14px;
+    padding: 10px 12px; background: var(--surface-2); border-radius: 10px;
+  }
+  .kv dt { color: var(--muted); }
+  .kv-mini { display: none; }
+  .kv dd { margin: 0; font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
+  .note { margin: 0; font-size: 14px; color: var(--text); padding: 8px 12px; background: var(--surface-2); border-radius: 10px; }
+  .late-txt { color: var(--late); }
+  .st-work  { --c: var(--work);  --cb: var(--work-bg); }
+  .st-leave { --c: var(--leave); --cb: var(--leave-bg); }
+  .st-out   { --c: var(--out);   --cb: var(--out-bg); }
+  .st-trip  { --c: var(--trip);  --cb: var(--trip-bg); }
+  .st-field { --c: var(--field); --cb: var(--field-bg); }
+  .st-late  { --c: var(--late);  --cb: var(--late-bg); }
+  .card.st-late { background: linear-gradient(180deg, #fff6f5 0%, #fff 100%); border-color: #f6c9c5; }
+  .card.st-late .badge { background: var(--late); color: #fff; }
+  .card.st-late .kv { background: #fff0ee; }
+
+  .mystatus { margin-top: 16px; padding: 12px 16px; display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
+  .mystatus .lbl { font-weight: 800; font-size: 14px; color: var(--ex-navy); }
+  .mystatus .memo { flex: 1; width: auto; min-width: 180px; }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .banner {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    margin-top: 16px; padding: 12px 16px; border-radius: 12px; font-weight: 700;
+    background: #fff8ec; color: var(--out); border: 1px solid #f7dfb5;
+  }
+
+  /* 최근 상태 변경 */
+  .loglist { list-style: none; margin: 0; padding: 4px 18px; }
+  .loglist li { display: flex; align-items: center; gap: 8px 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; flex-wrap: wrap; }
+  .loglist li:last-child { border-bottom: 0; }
+  .loglist time { color: var(--muted); font-variant-numeric: tabular-nums; min-width: 42px; }
+  .chip { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; color: var(--c); background: var(--cb); white-space: nowrap; }
+
+  /* ---------- 승인 요청 ---------- */
+  .layout2 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; margin-top: 16px; }
+  .form { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+  .field > .lbl { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .field > .lbl small { font-weight: 500; color: var(--muted); }
+  .opts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .opt { position: relative; }
+  .opt input { position: absolute; opacity: 0; inset: 0; }
+  .opt span {
+    display: flex; align-items: center; justify-content: center; text-align: center; min-height: 42px; padding: 6px 4px;
+    border: 1px solid var(--line); border-radius: 10px; font-size: 14px; font-weight: 600; background: var(--surface);
+    transition: all .15s;
+  }
+  .opt input:checked + span { border-color: var(--ex-blue); background: var(--ex-blue); color: #fff; box-shadow: 0 2px 6px rgba(0, 114, 206, .25); }
+  .opt input:focus-visible + span { outline: 2px solid var(--ex-blue); outline-offset: 2px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mt6 { margin-top: 8px; }
+  .form > .btn.primary { padding: 13px; font-size: 16px; border-radius: 12px; }
+
+  .checks { display: flex; flex-direction: column; gap: 8px; }
+  .check {
+    display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 12px; cursor: pointer; transition: all .15s;
+  }
+  .check:has(input:checked) { border-color: #9fd6bd; background: var(--work-bg); }
+  .check input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--work); flex: none; }
+  .check b { display: block; font-size: 14px; }
+  .check small { color: var(--muted); font-size: 13px; }
+  .safety-ok { color: var(--work); font-size: 13px; font-weight: 600; }
+  .tag { font-style: normal; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px; vertical-align: 1px; }
+  .tag.req { background: var(--late-bg); color: var(--late); }
+  .tag.opt { background: var(--leave-bg); color: var(--leave); }
+
+  .reqlist { list-style: none; margin: 0; padding: 0; }
+  .reqlist li { padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+  .reqlist li:last-child { border-bottom: 0; }
+  .reqlist .top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .reason { color: var(--late); background: var(--late-bg); border-radius: 8px; padding: 6px 10px; font-weight: 600; }
+  .empty { padding: 20px; color: var(--muted); margin: 0; text-align: center; }
+
+  /* ---------- 승인 관리 ---------- */
+  .actions { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .card .seg .btn:not(.small) { flex: 1; padding: 10px; }
+  .instr-lbl { font-weight: 700; font-size: 13px; color: var(--ex-navy); }
+  .instr-lbl small { font-weight: 500; color: var(--muted); }
+  .instr-inp { min-height: 0; font-size: 14px; resize: vertical; }
+  .instr {
+    display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border-radius: 10px;
+    background: var(--ex-blue-weak); border-left: 3px solid var(--ex-blue); font-size: 13.5px;
+  }
+  .instr b { color: var(--ex-navy-2); font-size: 12.5px; }
+  .mystatus-instr { width: 100%; }
+
+  /* ---------- 공지 티커 ---------- */
+  .notice-bar {
+    margin-top: 16px; display: flex; align-items: center; gap: 12px; height: 50px; padding: 0 10px 0 8px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
+    cursor: pointer; transition: border-color .15s, box-shadow .15s;
+  }
+  .notice-bar:hover { border-color: rgba(0, 114, 206, .45); }
+  .notice-bar:focus-visible { outline: 2px solid var(--ex-blue); outline-offset: 2px; }
+  .nt-tag {
+    flex: none; font-weight: 800; font-size: 13px; color: #fff; background: var(--ex-navy);
+    padding: 6px 12px; border-radius: 8px; letter-spacing: -0.01em;
+  }
+  .nt-window { flex: 1; min-width: 0; height: 26px; overflow: hidden; }
+  .nt-list { list-style: none; margin: 0; padding: 0; will-change: transform; }
+  .nt-list li { height: 26px; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+  .nt-title { font-weight: 700; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .nt-meta { flex: none; color: var(--muted); font-size: 12.5px; }
+  .nt-default .nt-title { color: var(--ex-navy-2); }
+  .nt-default .nt-title::before { content: "🦺 "; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
+  .nt-count { flex: none; font-size: 12px; font-weight: 700; color: var(--ex-blue); background: var(--ex-blue-weak); padding: 2px 8px; border-radius: 999px; }
+  .nt-more { flex: none; color: var(--muted); font-size: 22px; line-height: 1; padding: 0 2px; }
+  @media (prefers-reduced-motion: reduce) { .nt-list { transition: none !important; } }
+
+  /* ---------- 공지사항 게시판 ---------- */
+  .notice-list { list-style: none; margin: 0; padding: 0; }
+  .notice-list li { padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+  .notice-list li:last-child { border-bottom: 0; }
+  .nl-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .nl-title { font-size: 15px; }
+  .nl-meta { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; }
+  .nl-body { margin: 0; font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; padding: 8px 12px; background: var(--surface-2); border-radius: 10px; }
+  .avatar.xs { width: 22px; height: 22px; font-size: 11px; }
+  .avatar.xs.emoji { font-size: 14px; }
+
+  /* ---------- 오늘 외근 이력 ---------- */
+  .tablewrap { overflow-x: auto; }
+  table.hist { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .hist th, .hist td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+  .hist th { color: var(--muted); font-weight: 700; font-size: 12.5px; background: var(--surface-2); }
+  .hist tbody tr:hover { background: #fafbfd; }
+  .hist tr:last-child td { border-bottom: 0; }
+  .hist td.wrap { white-space: normal; min-width: 140px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+    background: var(--ex-navy); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600;
+    box-shadow: var(--shadow-lg); z-index: 50; max-width: calc(100% - 32px);
+  }
+  .proto-note { margin-top: 36px; font-size: 12px; color: var(--muted); text-align: center; }
+
+  /* ---------- 태블릿 ---------- */
+  @media (max-width: 860px) {
+    .layout2 { grid-template-columns: 1fr; }
+    .grid.six { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* ---------- 휴대폰 ---------- */
+  @media (max-width: 640px) {
+    body { font-size: 14px; }
+    .topbar-inner { padding: 12px 16px; gap: 8px; }
+    .brand-mark { height: 30px; }
+    .brand b { font-size: 15.5px; }
+    .brand small { font-size: 11px; }
+    .top-right { width: 100%; justify-content: space-between; }
+    .clock { font-size: 12px; }
+    .userchip { font-size: 13px; }
+
+    /* 메뉴는 화면 아래 고정 탭으로 */
+    .nav {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+      background: rgba(255, 255, 255, .97); border-top: 1px solid var(--line); box-shadow: 0 -4px 16px rgba(11, 31, 75, .08);
+      backdrop-filter: blur(8px);
+    }
+    .nav button {
+      flex: 1; flex-direction: column; gap: 2px; padding: 6px 4px; color: var(--muted); font-size: 11.5px; border-radius: 10px;
+    }
+    .nav button.on { color: var(--ex-blue); background: var(--ex-blue-weak); }
+    .nav button.on::after { display: none; }
+    .nav svg { width: 22px; height: 22px; }
+    .nav .l-full { display: none; }
+    .nav .l-short { display: inline; }
+    .nav .count { position: absolute; top: 2px; left: calc(50% + 6px); min-width: 18px; line-height: 18px; font-size: 11px; }
+
+    main { padding: 18px 16px 104px; }
+    h1 { font-size: 20px; }
+    h2 { margin-top: 26px; }
+    .board-head { align-items: flex-start; flex-direction: column; gap: 10px; }
+    .summary > span { padding: 4px 10px; font-size: 12px; }
+
+    .mystatus { padding: 12px; gap: 10px; }
+    .mystatus .lbl { flex: 1; }
+    .mystatus .seg { width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .mystatus .seg .btn { padding: 10px 0; font-size: 14px; }
+    .mystatus .memo { min-width: 0; width: 100%; flex: none; padding: 11px 12px; }
+
+    /* 6명 카드: 2칸 × 3줄 */
+    .grid.six { gap: 10px; }
+    .grid.six .card { padding: 12px 12px 12px 15px; gap: 8px; border-radius: 12px; }
+    .grid.six .who { gap: 8px; }
+    .grid.six .avatar { width: 28px; height: 28px; font-size: 12px; }
+    .grid.six .avatar.emoji { font-size: 18px; }
+    .grid.six .card-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .grid.six .name { font-size: 15px; }
+    .grid.six .badge { font-size: 12px; padding: 3px 9px; }
+    .grid.six .kv { display: none; }
+    .grid.six .kv-mini {
+      display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 10px;
+      background: var(--surface-2); font-size: 12.5px;
+    }
+    .card.st-late .kv-mini { background: #fff0ee; }
+    .kv-mini .loc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 600; }
+    .kv-mini .time { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .grid.six .note { font-size: 12.5px; padding: 6px 10px; }
+    .notice-bar { height: 46px; gap: 8px; margin-top: 12px; }
+    .nt-tag { font-size: 12px; padding: 5px 9px; }
+    .nt-meta { display: none; }
+    .nt-title { font-size: 13.5px; }
+
+    .grid { grid-template-columns: 1fr; }
+    .login { padding: 22px 18px; border-radius: 16px; margin-top: 4px; }
+    .pick { gap: 8px; }
+    .pick button { padding: 10px; gap: 8px; }
+    .pick .avatar { width: 30px; height: 30px; font-size: 13px; }
+    .pick small { font-size: 11.5px; letter-spacing: -0.03em; }
+
+    .form { padding: 18px 16px; }
+    .opts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .opt span { min-height: 46px; font-size: 15px; }
+    .row2 { grid-template-columns: 1fr; }
+    .inp, .memo { font-size: 16px; } /* 아이폰 입력 시 자동 확대 방지 */
+    .btn { min-height: 40px; }
+    .btn.small { min-height: 36px; }
+
+    /* 이력 표 → 카드형 목록 */
+    .tablewrap { overflow: visible; background: transparent; border: 0; box-shadow: none; }
+    table.hist, .hist tbody, .hist tr, .hist td { display: block; }
+    .hist thead { display: none; }
+    .hist tr {
+      background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
+      padding: 10px 14px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px;
+    }
+    .hist td { border: 0; padding: 2px 0; white-space: normal; font-size: 13px; }
+    .hist td[data-label]::before { content: attr(data-label); display: inline-block; width: 78px; color: var(--muted); font-size: 12px; }
+    .hist td.c-name { font-size: 15px; grid-column: 1; }
+    .hist td.c-status { grid-column: 2; grid-row: 1; justify-self: end; }
+    .hist td.wrap, .hist td.c-wide { grid-column: 1 / -1; min-width: 0; }
+    .hist td.wrap br, .hist td.c-wide br { display: none; }
+    .hist td.wrap small, .hist td.c-wide small { margin-left: 6px; }
+
+    .toast { bottom: calc(84px + env(safe-area-inset-bottom)); }
+  }
+</style>
+</head>
+<body>
+<div id="top"></div>
+<main id="app"></main>
+<div id="toast" class="toast" hidden></div>
+
+<!-- 시제품용 더미 데이터 (dummy-data.json 사본). 브라우저에서 파일로 바로 열 수 있도록 내장. -->
+<script id="seed" type="application/json">
+{
+  "baseTime": "2026-11-20T14:30:00",
+  "users": [
+    { "id": "S1", "name": "김지훈", "role": "감독원",   "pin": "1111", "status": "근무" },
+    { "id": "S2", "name": "이현우", "role": "감독원",   "pin": "2222", "status": "출장", "statusNote": "본사 회의" },
+    { "id": "W1", "name": "박성민", "role": "용역직원", "part": "사무자동화기기", "status": "외근", "currentRequestId": "R-003" },
+    { "id": "W2", "name": "최준영", "role": "용역직원", "part": "사무자동화기기", "status": "외근", "currentRequestId": "R-002" },
+    { "id": "W3", "name": "정태윤", "role": "용역직원", "part": "네트워크", "status": "근무" },
+    { "id": "W4", "name": "강동현", "role": "용역직원", "part": "네트워크", "status": "휴가", "statusNote": "연차" }
+  ],
+  "statusOptions": {
+    "감독원":   ["근무", "외출", "출장", "휴가"],
+    "용역직원": ["근무", "휴가", "외출", "외근"]
+  },
+  "safetyItems": [
+    { "title": "작업장 안전관리 준수", "required": true, "desc": "작업 전 위험요소 확인, 정리정돈, 전기·고소작업 안전수칙 준수" },
+    { "title": "교통안전 준수", "required": true, "desc": "안전띠 착용, 규정속도 준수, 운전 중 휴대전화 사용 금지" },
+    { "title": "개인보호구 착용", "required": false, "desc": "작업장 상황에 따라 선택 — 안전모·안전화·안전조끼 등" }
+  ],
+  "workTypes": ["장애 대응", "정기 점검", "설치·교체", "기타"],
+  "locations": ["광주지사", "담양지사", "순천지사", "함평지사", "구례지사", "보성지사", "영암지사", "기타"],
+  "requests": [
+    { "id": "R-001", "requesterId": "W1", "workType": "정기 점검", "location": "함평지사", "locationDetail": "1층 영업소 서버실",
+      "departAt": "2026-11-20T09:00:00", "expectedReturnAt": "2026-11-20T11:30:00", "description": "영업소 POS 서버 월간 점검 및 백업 확인",
+      "requestedAt": "2026-11-20T08:40:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"], "status": "복귀 완료", "approverId": "S1", "decidedAt": "2026-11-20T08:45:00", "returnedAt": "2026-11-20T11:20:00" },
+    { "id": "R-002", "requesterId": "W2", "workType": "장애 대응", "location": "담양지사", "locationDetail": "2층 통신실",
+      "departAt": "2026-11-20T10:00:00", "expectedReturnAt": "2026-11-20T14:00:00", "description": "통신실 L2 스위치 링크 다운 장애 조치",
+      "requestedAt": "2026-11-20T09:40:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "외근 중", "approverId": "S1", "decidedAt": "2026-11-20T09:42:00", "instruction": "작업 전 담양지사 담당자와 통화 후 진행, 조치 결과 사진 보고", "returnedAt": null },
+    { "id": "R-003", "requesterId": "W1", "workType": "설치·교체", "location": "순천지사", "locationDetail": "사무동 3층 업무용 PC 5대",
+      "departAt": "2026-11-20T13:00:00", "expectedReturnAt": "2026-11-20T17:00:00", "description": "노후 업무용 PC 교체 및 프린터 드라이버 설치",
+      "requestedAt": "2026-11-20T12:30:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수", "개인보호구 착용"], "status": "외근 중", "approverId": "S2", "decidedAt": "2026-11-20T12:35:00", "instruction": "교체한 PC 자산번호 목록 작성 후 제출", "returnedAt": null },
+    { "id": "R-004", "requesterId": "W3", "workType": "장애 대응", "location": "광주지사", "locationDetail": "민원실 무인발급기",
+      "departAt": "2026-11-20T15:00:00", "expectedReturnAt": "2026-11-20T17:00:00", "description": "무인발급기 영수증 출력 오류 점검",
+      "requestedAt": "2026-11-20T14:20:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"], "status": "승인 대기", "approverId": null, "decidedAt": null, "returnedAt": null },
+    { "id": "R-005", "requesterId": "W3", "workType": "기타", "location": "기타", "locationDetail": "본부 3층 대회의실",
+      "departAt": "2026-11-20T10:30:00", "expectedReturnAt": "2026-11-20T11:30:00", "description": "회의실 영상회의 장비 사전 점검",
+      "requestedAt": "2026-11-20T10:00:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"], "status": "반려", "approverId": "S1", "decidedAt": "2026-11-20T10:05:00",
+      "rejectReason": "회의 일정이 다음 주로 연기되어 점검 불필요", "returnedAt": null },
+    { "id": "R-006", "requesterId": "W2", "workType": "정기 점검", "location": "영암지사", "locationDetail": "요금소 CCTV 서버",
+      "departAt": "2026-11-23T09:30:00", "expectedReturnAt": "2026-11-23T13:00:00", "description": "요금소 CCTV 녹화서버 디스크 상태 점검",
+      "requestedAt": "2026-11-20T13:50:00", "safetyChecked": ["작업장 안전관리 준수", "교통안전 준수"], "status": "승인 대기", "approverId": null, "decidedAt": null, "returnedAt": null }
+  ],
+  "notices": [
+    { "id": "N-001", "authorId": "S1", "at": "2026-11-20T08:50:00", "title": "11/24(월) 09:00~10:00 본부 전산실 UPS 정기점검", "body": "점검 시간 동안 본부 전산실 출입을 자제하고, 서버 작업 일정은 점검 이후로 조정해 주세요." },
+    { "id": "N-002", "authorId": "S2", "at": "2026-11-20T11:05:00", "title": "동절기 결빙구간 운행 주의 — 외근 시 감속 운행", "body": "새벽·야간 교량 및 터널 출구 결빙 주의. 차량 이동 시 규정속도보다 낮춰 운행 바랍니다." },
+    { "id": "N-003", "authorId": "W1", "at": "2026-11-20T13:40:00", "title": "본부 3층 복합기 토너 교체 완료", "body": "" }
+  ],
+  "statusLogs": [
+    { "at": "2026-11-20T08:30:00", "userId": "W4", "from": "근무", "to": "휴가", "note": "연차" },
+    { "at": "2026-11-20T08:45:00", "userId": "W1", "from": "근무", "to": "외근", "note": "R-001 승인 (함평지사)" },
+    { "at": "2026-11-20T09:42:00", "userId": "W2", "from": "근무", "to": "외근", "note": "R-002 승인 (담양지사)" },
+    { "at": "2026-11-20T11:20:00", "userId": "W1", "from": "외근", "to": "근무", "note": "R-001 복귀" },
+    { "at": "2026-11-20T12:35:00", "userId": "W1", "from": "근무", "to": "외근", "note": "R-003 승인 (순천지사)" }
+  ]
+}
+</script>
+
+<script>
+/* =========================================================
+   저장소 — 1단계는 브라우저 localStorage.
+   2단계에서는 load()/save()만 서버 API 호출로 바꾸면 된다.
+   ========================================================= */
+const STORE_KEY = 'gj-maint-proto-v9';
+const SESSION_KEY = 'gj-maint-proto-user';
+const SEED = JSON.parse(document.getElementById('seed').textContent);
+
+function freshState() {
+  const s = JSON.parse(JSON.stringify(SEED));
+  s.clockStart = Date.now(); // 시제품 시계: baseTime부터 실제 시간만큼 흐른다
+  return s;
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  const s = freshState();
+  save(s);
+  return s;
+}
+function save(s = state) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch (e) {}
+}
+function getSessionUser() { try { return sessionStorage.getItem(SESSION_KEY); } catch (e) { return null; } }
+function setSessionUser(id) {
+  try { id ? sessionStorage.setItem(SESSION_KEY, id) : sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+}
+
+let state = load();
+let currentUserId = getSessionUser();
+let view = 'board';
+let pinTarget = null;
+let pinError = '';
+
+/* ---------- 시간 ---------- */
+const pad = n => String(n).padStart(2, '0');
+function now() { return new Date(new Date(state.baseTime).getTime() + (Date.now() - state.clockStart)); }
+function toLocalISO(d) {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+}
+function sameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+function fmtDT(iso) {
+  if (!iso) return '-';
+  const d = new Date(iso);
+  const hm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return sameDay(d, now()) ? hm : `${d.getMonth() + 1}/${d.getDate()} ${hm}`;
+}
+const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+function fmtClock() {
+  const d = now();
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${DAYS[d.getDay()]}) <b>${pad(d.getHours())}:${pad(d.getMinutes())}</b>`;
+}
+
+/* ---------- 데이터 도우미 ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const userById = id => state.users.find(u => u.id === id);
+const reqById = id => state.requests.find(r => r.id === id);
+const isSup = u => u && u.role === '감독원';
+const me = () => userById(currentUserId);
+
+const STATUS_CLS = { '근무': 'work', '휴가': 'leave', '외출': 'out', '출장': 'trip', '외근': 'field', '복귀 지연': 'late' };
+// 상태별 아이콘: 근무(사무실) · 외근(차량 이동) · 외출(도보) · 출장(여행가방) · 휴가(야자수) · 복귀 지연(알람시계)
+const STATUS_ICON = { '근무': '🏢', '외근': '🚗', '외출': '🚶', '출장': '🧳', '휴가': '🌴', '복귀 지연': '⏰' };
+const stLabel = s => `${STATUS_ICON[s] ? `<span class="st-ico" aria-hidden="true">${STATUS_ICON[s]}</span>` : ''}${esc(s)}`;
+
+function statusView(u) {
+  if (u.status === '외근') {
+    const r = reqById(u.currentRequestId);
+    if (r && new Date(r.expectedReturnAt) < now()) {
+      const lateMin = Math.floor((now() - new Date(r.expectedReturnAt)) / 60000);
+      return { label: '복귀 지연', cls: 'late', req: r, lateMin };
+    }
+    return { label: '외근', cls: 'field', req: r };
+  }
+  return { label: u.status, cls: STATUS_CLS[u.status] || 'work' };
+}
+
+/* ---------- 화면: 상단 바 ---------- */
+// 한국도로공사 공식 CI (ex.co.kr 공사소개 > CI 페이지의 어두운 배경용 로고 logo_white.png, 210×56)
+// 내부망·오프라인에서도 보이도록 파일 안에 내장
+const EX_LOGO = 'data:image/png;base64,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';
+function topHTML() {
+  const u = me();
+  const tabs = u ? navTabs(u) : [];
+  return `
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div><small class="org"><img class="ex-logo" src="${EX_LOGO}" alt="한국도로공사" width="105" height="28"><span>광주전남본부</span></small><b>전산유지보수 작업관리 · 근무현황</b></div>
+      </div>
+      <div class="top-right">
+        <span class="clock" id="clock">${fmtClock()}</span>
+        ${u ? `<span class="userchip">${avatarHTML(u, 'sm')}
+                 <span class="uname">${esc(u.name)}</span>
+                 <button class="btn small" data-action="logout">변경</button></span>` : ''}
+      </div>
+    </div>
+    ${tabs.length ? `<nav class="nav">${tabs.map(t =>
+      `<button class="${view === t.id ? 'on' : ''}" data-action="go" data-view="${t.id}">${ICONS[t.id] || ''}<span class="l-full">${t.label}</span><span class="l-short">${t.short || t.label}</span>${t.count ? `<span class="count">${t.count}</span>` : ''}</button>`
+    ).join('')}</nav>` : ''}
+  </header>`;
+}
+function navTabs(u) {
+  const tabs = [{ id: 'board', label: '근무현황', short: '근무현황' }];
+  if (!isSup(u)) tabs.push({ id: 'request', label: '승인 요청 · 내 요청', short: '승인 요청' });
+  else tabs.push({ id: 'approve', label: '승인 관리', short: '승인 관리', count: pendingRequests().length });
+  tabs.push({ id: 'notice', label: '공지사항', short: '공지사항' });
+  return tabs;
+}
+const svg = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICONS = {
+  board: svg('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'),
+  request: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
+  approve: svg('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'),
+  notice: svg('<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'),
+};
+
+/* ---------- 화면 ①: 사용자 선택 ---------- */
+function loginHTML() {
+  const pickBtn = u => `<button class="${pinTarget === u.id ? 'on' : ''}" data-action="pick" data-id="${u.id}">
+      ${avatarHTML(u)}
+      <span><b>${esc(u.name)}</b><small>${esc(u.part || u.role)}</small></span></button>`;
+  const t = userById(pinTarget);
+  return `
+  <section class="login">
+    <h1>사용자 선택</h1>
+    <p class="muted">본인 이름을 선택하세요. 감독원은 PIN 4자리를 입력합니다.</p>
+    <h2>감독원</h2>
+    <div class="pick">${state.users.filter(isSup).map(pickBtn).join('')}</div>
+    ${t ? `<form class="pin" id="pin-form">
+        <label for="pin">${esc(t.name)} PIN</label>
+        <input id="pin" name="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" required>
+        <button class="btn primary">확인</button>
+        <button class="btn" type="button" data-action="cancel-pin">취소</button>
+        ${pinError ? `<p class="err">${pinError}</p>` : ''}
+      </form>` : ''}
+    <h2>용역직원</h2>
+    <div class="pick">${state.users.filter(u => !isSup(u)).map(pickBtn).join('')}</div>
+    <p class="proto-note">시제품용 감독원 PIN은 dummy-data.json에 있습니다.</p>
+  </section>`;
+}
+
+/* ---------- 화면 ②: 근무현황 ---------- */
+function cardHTML(u) {
+  const sv = statusView(u);
+  const mine = u.id === currentUserId;
+  let body;
+  if (sv.req) {
+    const r = sv.req;
+    body = `<dl class="kv">
+      <dt>작업장소</dt><dd>${esc(r.location)}${r.locationDetail ? ` · ${esc(r.locationDetail)}` : ''}</dd>
+      <dt>출발</dt><dd>${fmtDT(r.departAt)}</dd>
+      <dt>예상 복귀</dt><dd>${fmtDT(r.expectedReturnAt)}${sv.cls === 'late' ? ` <b class="late-txt">(${sv.lateMin}분 지연)</b>` : ''}</dd>
+      <dt class="opt-row">작업</dt><dd class="opt-row">${esc(r.workType)}</dd>
+    </dl>
+    <div class="kv-mini">
+      <span class="loc">${esc(r.location)}${r.locationDetail ? ` · ${esc(r.locationDetail)}` : ''}</span>
+      <span class="time">${fmtDT(r.departAt)} → ${fmtDT(r.expectedReturnAt)}${sv.cls === 'late' ? ` <b class="late-txt">+${sv.lateMin}분</b>` : ''}</span>
+    </div>`;
+  } else {
+    // 추가 기재 내용이 있을 때만 표시 (없으면 비워 둠)
+    body = u.statusNote ? `<p class="note">${esc(u.statusNote)}</p>` : '';
+  }
+  return `
+  <article class="card st-${sv.cls}${mine ? ' mine' : ''}">
+    <header class="card-head">
+      <div class="who">${avatarHTML(u)}
+        <div><div class="name">${esc(u.name)}${mine ? '<span class="me">본인</span>' : ''}</div><div class="role">${esc(u.part || u.role)}</div></div></div>
+      <span class="badge">${stLabel(sv.label)}</span>
+    </header>
+    ${body}
+  </article>`;
+}
+// 이름 앞 동그라미: 본인이 고른 이모티콘·이미지, 없으면 성 한 글자
+// 정장 차림(👨🏻‍💼 형태, 검정 · 파랑 · 남색 · 회색) → 여성(정비 · 현장) → 전산 장비(노트북 · 네트워크 · 프린터 · PC)
+// (🧑‍💼 같은 성별 중립형은 윈도우 10에서 두 글자로 쪼개져 보여 쓰지 않음)
+// 1번 이모티콘과 같은 모양(얼굴 · 머리 · 셔츠 · 넥타이)에 정장 색만 바꾼 그림
+const OFFICE_MAN = (suit, lapel, tie) => `<svg viewBox="0 0 32 32" aria-hidden="true">
+  <path d="M3.5 32c0-6.6 4.6-10.6 12.5-10.6S28.5 25.4 28.5 32z" fill="${suit}"/>
+  <path d="M12.2 21.8 16 28.6l3.8-6.8c-1.1-.3-2.4-.4-3.8-.4s-2.7.1-3.8.4z" fill="#fff"/>
+  <path d="M12.2 21.8 16 28.6l-2.6 3.4-3.6-9.2zM19.8 21.8 16 28.6l2.6 3.4 3.6-9.2z" fill="${lapel}"/>
+  <path d="M16 22.6l-1.4 1.5 1.4 6.6 1.4-6.6z" fill="${tie}"/>
+  <path d="M14.7 22.4h2.6l-.4 1.5h-1.8z" fill="${tie}"/>
+  <path d="M13.6 17.6h4.8v4.2c-.7.6-1.5.9-2.4.9s-1.7-.3-2.4-.9z" fill="#e7b48f"/>
+  <circle cx="9.9" cy="12.4" r="1.4" fill="#f2c4a2"/><circle cx="22.1" cy="12.4" r="1.4" fill="#f2c4a2"/>
+  <ellipse cx="16" cy="12" rx="6.1" ry="6.9" fill="#f6d3b7"/>
+  <path d="M9.8 12.2C9.2 6.4 12.4 4 16.2 4c4 0 6.7 2.3 6 8.2-.6-2.3-2.4-4-5.2-4.1-2.6-.1-4.4.5-5.6 1.6-.8.7-1.3 1.5-1.6 2.5z" fill="#3b2a20"/>
+  <circle cx="13.6" cy="12.7" r=".85" fill="#2b2b2b"/><circle cx="18.4" cy="12.7" r=".85" fill="#2b2b2b"/>
+  <path d="M14.5 15.6c.9.7 2.1.7 3 0" stroke="#c4805f" stroke-width=".9" stroke-linecap="round" fill="none"/></svg>`;
+// 네트워크: 상위 장비 1대에 하위 장비 3대가 연결된 구성도
+const NETWORK = `<svg viewBox="0 0 32 32" aria-hidden="true">
+  <path d="M16 10v5M6 15h20M6 15v5M16 15v5M26 15v5" stroke="#0b1f4b" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <rect x="11" y="2.5" width="10" height="7.5" rx="1.8" fill="#0072ce"/>
+  <rect x="1.5" y="20" width="9" height="7" rx="1.6" fill="#0072ce"/>
+  <rect x="11.5" y="20" width="9" height="7" rx="1.6" fill="#0072ce"/>
+  <rect x="21.5" y="20" width="9" height="7" rx="1.6" fill="#0072ce"/>
+  <circle cx="14" cy="6.2" r="1" fill="#7fe0a8"/><circle cx="17" cy="6.2" r="1" fill="#fff"/></svg>`;
+const SVG_AVATARS = {
+  'network':   { svg: NETWORK, title: '네트워크', center: true },
+  'office-black': { svg: OFFICE_MAN('#24272e', '#16181d', '#8a1c2b'), title: '정장 (검정)', full: true },
+  'office-blue':  { svg: OFFICE_MAN('#0072ce', '#005aa3', '#0b1f4b'), title: '정장 (파랑)', full: true },
+  'office-navy':  { svg: OFFICE_MAN('#0b1f4b', '#07152f', '#0072ce'), title: '정장 (남색)', full: true },
+  'office-gray':  { svg: OFFICE_MAN('#6b7280', '#565d69', '#0b1f4b'), title: '정장 (회색)', full: true },
+};
+const AVATARS = ['office-black', 'office-blue', 'office-navy', 'office-gray', '👩‍🔧', '👷‍♀️',
+                 '💻', 'network', '🖨️', '🖥️'];
+const avatarContent = key => SVG_AVATARS[key] ? SVG_AVATARS[key].svg : key;
+let avatarOpen = false;
+function avatarHTML(u, extra = '') {
+  const key = AVATARS.includes(u.avatar) ? u.avatar : '';
+  const svgCls = SVG_AVATARS[key] ? ` svgav${SVG_AVATARS[key].center ? ' center' : ''}${SVG_AVATARS[key].full ? ' full' : ''}` : '';
+  const cls = key ? ' emoji' + svgCls : '';
+  return `<span class="avatar${isSup(u) ? ' sup' : ''}${cls}${extra ? ' ' + extra : ''}">${key ? avatarContent(key) : esc(u.name.charAt(0))}</span>`;
+}
+function avatarButtonHTML(u) {
+  return `<button class="avatar-btn" data-action="avatar-toggle" title="내 아이콘 바꾸기" aria-expanded="${avatarOpen}">
+      ${avatarHTML(u)}<span class="edit" aria-hidden="true">✎</span></button>`;
+}
+function avatarPickerHTML(u) {
+  if (!avatarOpen) return '';
+  return `
+    <div class="avatar-picker">
+      <p class="hint">이름 앞 동그라미에 넣을 모양을 고르세요. 모든 사용자 현황판에 함께 표시됩니다.</p>
+      <div class="emoji-grid">
+        <button class="emoji-opt${u.avatar ? '' : ' on'}" data-action="set-avatar" data-emoji="" title="기본 (성 한 글자)">
+          <span class="avatar${isSup(u) ? ' sup' : ''}">${esc(u.name.charAt(0))}</span></button>
+        ${AVATARS.map(e => `<button class="emoji-opt${SVG_AVATARS[e] ? ' svgav' : ''}${u.avatar === e ? ' on' : ''}" data-action="set-avatar" data-emoji="${e}"
+            ${SVG_AVATARS[e] ? `title="${SVG_AVATARS[e].title}"` : ''}>${avatarContent(e)}</button>`).join('')}
+      </div>
+    </div>`;
+}
+
+// 현황판 상단: 내 상태 입력 (상태 + 추가 기재)
+function myStatusHTML() {
+  const u = me();
+  if (u.status === '외근') {
+    const sv = statusView(u);
+    return `
+    <div class="panel mystatus">
+      ${avatarButtonHTML(u)}
+      <span class="lbl">내 상태</span>
+      <span class="chip st-${sv.cls}">${stLabel(sv.label)}</span>
+      ${sv.req ? `<span class="muted">${reqSummary(sv.req)}</span>` : ''}
+      <button class="btn small primary" data-action="return">복귀 처리</button>
+      ${sv.req && sv.req.instruction ? `<div class="mystatus-instr">${instructionHTML(sv.req)}</div>` : ''}
+      ${avatarPickerHTML(u)}
+    </div>`;
+  }
+  return `
+    <div class="panel mystatus">
+      ${avatarButtonHTML(u)}
+      <span class="lbl">내 상태</span>
+      <div class="seg">${state.statusOptions[u.role].map(s => {
+        const field = s === '외근';
+        const cur = u.status === s;
+        return `<button class="btn small st-${STATUS_CLS[s]}${cur ? ' cur' : ''}" data-action="set-status" data-status="${s}"
+                  ${field ? 'disabled title="작업승인이 나면 자동으로 바뀝니다"' : ''}>${stLabel(s)}</button>`;
+      }).join('')}</div>
+      <input class="memo" id="memo" maxlength="40" placeholder="추가 기재 (선택)">
+      ${avatarPickerHTML(u)}
+    </div>`;
+}
+
+function doReturn() {
+  const u = me();
+  const r = reqById(u.currentRequestId);
+  const at = toLocalISO(now());
+  if (r) { r.status = '복귀 완료'; r.returnedAt = at; }
+  setStatus(u, '근무', r ? `${r.id} 복귀` : '복귀');
+  commit();
+  const late = r ? Math.floor((new Date(at) - new Date(r.expectedReturnAt)) / 60000) : 0;
+  toast(late > 0 ? `복귀 처리했습니다. (예상보다 ${late}분 늦음)` : '복귀 처리했습니다. "근무"로 표시됩니다.');
+}
+
+// 요청 상태 표시 (출발 전 승인 / 복귀 지연 구분)
+function reqLabel(r) {
+  if (r.status === '외근 중' && new Date(r.expectedReturnAt) < now()) return { label: '복귀 지연', cls: 'late' };
+  if (r.status === '승인') return { label: '승인 · 출발 전', cls: 'work' };
+  return { label: r.status, cls: REQ_CLS[r.status] };
+}
+const reqChip = r => { const l = reqLabel(r); return `<span class="chip st-${l.cls}">${l.label}</span>`; };
+
+function historyHTML() {
+  const today = now();
+  const list = state.requests
+    .filter(r => sameDay(new Date(r.departAt), today) || sameDay(new Date(r.requestedAt), today))
+    .sort((a, b) => a.departAt.localeCompare(b.departAt));
+  const lateTxt = r => {
+    if (!r.returnedAt) return '';
+    const m = Math.floor((new Date(r.returnedAt) - new Date(r.expectedReturnAt)) / 60000);
+    return m > 0 ? ` <b class="late-txt">(+${m}분)</b>` : '';
+  };
+  return `
+  <h2>오늘 외근 이력</h2>
+  <div class="panel tablewrap">${list.length ? `<table class="hist">
+    <thead><tr><th>요청자</th><th>상태</th><th>작업장소 · 구분</th><th>요청 / 승인</th><th>출발 ~ 예상 복귀</th><th>실제 복귀</th></tr></thead>
+    <tbody>${list.map(r => {
+      const u = userById(r.requesterId), a = userById(r.approverId);
+      const decided = r.decidedAt ? `${r.status === '반려' ? '반려' : '승인'} ${fmtDT(r.decidedAt)} ${esc(a ? a.name : '')}` : '승인 대기';
+      return `<tr>
+        <td class="c-name"><b>${esc(u ? u.name : '')}</b></td>
+        <td class="c-status">${reqChip(r)}</td>
+        <td class="wrap">${reqSummary(r)}<br><small class="muted">${esc(r.workType)}</small></td>
+        <td class="c-wide" data-label="요청 / 승인">요청 ${fmtDT(r.requestedAt)}<br><small class="muted">${decided}</small></td>
+        <td class="c-wide" data-label="출발 ~ 복귀">${fmtDT(r.departAt)} ~ ${fmtDT(r.expectedReturnAt)}</td>
+        <td class="c-wide" data-label="실제 복귀">${r.returnedAt ? fmtDT(r.returnedAt) + lateTxt(r) : '-'}</td>
+      </tr>`;
+    }).join('')}</tbody></table>` : '<p class="empty">오늘 외근 이력이 없습니다.</p>'}</div>`;
+}
+
+// 감독원은 상태만 표시하고 변경 시각은 기록하지 않는다
+function setStatus(u, to, note) {
+  if (!isSup(u) && u.status !== to)
+    state.statusLogs.push({ at: toLocalISO(now()), userId: u.id, from: u.status, to, note: note || '' });
+  u.status = to;
+  u.statusNote = note || '';
+  if (to !== '외근') u.currentRequestId = null;
+}
+
+function recentLogsHTML() {
+  const logs = state.statusLogs.slice(-8).reverse();
+  if (!logs.length) return '';
+  return `
+  <h2>최근 상태 변경</h2>
+  <div class="panel"><ul class="loglist">${logs.map(l => {
+    const u = userById(l.userId);
+    return `<li><time>${fmtDT(l.at)}</time><b>${esc(u ? u.name : l.userId)}</b>
+      <span class="chip st-${STATUS_CLS[l.from] || 'work'}">${stLabel(l.from)}</span>→
+      <span class="chip st-${STATUS_CLS[l.to] || 'work'}">${stLabel(l.to)}</span>
+      ${l.note ? `<span class="muted">${esc(l.note)}</span>` : ''}</li>`;
+  }).join('')}</ul></div>`;
+}
+
+function boardHTML() {
+  const counts = {};
+  state.users.forEach(u => { const l = statusView(u).label; counts[l] = (counts[l] || 0) + 1; });
+  const order = ['근무', '외근', '복귀 지연', '외출', '출장', '휴가'];
+  const pending = isSup(me()) ? pendingRequests().length : 0;
+  return `
+  <div class="board-head">
+    <h1>근무현황</h1>
+    <div class="summary">${order.filter(l => counts[l]).map(l => `<span class="st-${STATUS_CLS[l]}">${stLabel(l)} <b>${counts[l]}</b></span>`).join('')}</div>
+  </div>
+  ${noticeBarHTML()}
+  ${pending ? `<div class="banner">승인 대기 ${pending}건이 있습니다.
+     <button class="btn small" data-action="go" data-view="approve">승인 관리로 이동</button></div>` : ''}
+  ${myStatusHTML()}
+  <div class="grid six">${[...state.users.filter(isSup), ...state.users.filter(u => !isSup(u))].map(cardHTML).join('')}</div>
+  ${boardExtras()}
+  <p class="proto-note">시제품: 데이터는 이 브라우저에만 저장됩니다. 같은 브라우저의 다른 탭에서 다른 사용자로 들어가면 실시간 공유를 시험할 수 있습니다.
+    <button class="btn small ghost" data-action="reset">더미 데이터로 초기화</button></p>`;
+}
+function boardExtras() { return historyHTML() + recentLogsHTML(); }
+
+/* ---------- 화면 ③: 승인 요청 · 내 요청 (용역직원) ---------- */
+const REQ_CLS = { '승인 대기': 'out', '승인': 'work', '외근 중': 'field', '복귀 완료': 'leave', '반려': 'late' };
+
+function toInputValue(d) { return toLocalISO(d).slice(0, 16); }
+function defaultTimes() {
+  const d = now();
+  d.setSeconds(0, 0);
+  d.setMinutes(Math.ceil((d.getMinutes() + 1) / 10) * 10); // 다음 10분 단위
+  const back = new Date(d.getTime() + 2 * 3600 * 1000);
+  return [toInputValue(d), toInputValue(back)];
+}
+
+function requestHTML() {
+  const [dep, ret] = defaultTimes();
+  const radios = (name, list, checked) => list.map(v =>
+    `<label class="opt"><input type="radio" name="${name}" value="${v}" ${v === checked ? 'checked' : ''} required><span>${v}</span></label>`).join('');
+  return `
+  <h1>작업승인 요청</h1>
+  <p class="muted">외근 작업 전에 감독원에게 승인을 요청합니다. 승인되면 현황판이 자동으로 "외근"으로 바뀝니다.</p>
+  <div class="layout2">
+    <form class="panel form" id="req-form" novalidate>
+      <div class="field"><span class="lbl">작업 구분</span>
+        <div class="opts">${radios('workType', state.workTypes, state.workTypes[0])}</div></div>
+      <div class="field"><span class="lbl">작업 장소</span>
+        <div class="opts">${radios('location', state.locations)}</div>
+        <input class="inp mt6" name="locationDetail" maxlength="40" placeholder="상세 장소 (예: 2층 통신실) · 기타는 필수"></div>
+      <div class="row2">
+        <div class="field"><label class="lbl" for="departAt">작업 일시 (출발)</label>
+          <input class="inp" type="datetime-local" id="departAt" name="departAt" value="${dep}" required></div>
+        <div class="field"><label class="lbl" for="expectedReturnAt">예상 복귀 시각</label>
+          <input class="inp" type="datetime-local" id="expectedReturnAt" name="expectedReturnAt" value="${ret}" required></div>
+      </div>
+      <div class="field"><label class="lbl" for="description">작업 내용</label>
+        <textarea class="inp" id="description" name="description" maxlength="200" placeholder="예: 통신실 스위치 링크 다운 장애 조치" required></textarea></div>
+      <div class="field"><span class="lbl">안전 준수 확인 <small>(필수 항목은 모두 확인해야 요청할 수 있습니다)</small></span>
+        <div class="checks">${state.safetyItems.map((s, i) => {
+          const req = s.required !== false;
+          return `
+          <label class="check"><input type="checkbox" name="safety" value="${i}" ${req ? 'required' : ''}>
+            <span><b>${esc(s.title)} <em class="tag ${req ? 'req' : 'opt'}">${req ? '필수' : '선택'}</em></b><small>${esc(s.desc)}</small></span></label>`;
+        }).join('')}
+        </div></div>
+      <p class="err" id="req-err" hidden></p>
+      <button class="btn primary">승인 요청</button>
+    </form>
+    <section>
+      <h2 style="margin-top:0">내 요청</h2>
+      <div class="panel" id="my-req">${myRequestsHTML()}</div>
+    </section>
+  </div>`;
+}
+
+// 필수 항목 확인 여부 + 선택 항목(개인보호구 등)은 체크했을 때만 함께 표시
+function safetyText(r) {
+  const done = r.safetyChecked || [];
+  const missing = state.safetyItems.filter(s => s.required !== false && !done.includes(s.title));
+  if (missing.length) return '<span class="late-txt">안전 준수 확인 없음</span>';
+  return `<span class="safety-ok">✔ ${done.map(esc).join(' · ')}</span>`;
+}
+function reqSummary(r) {
+  return `${esc(r.location)}${r.locationDetail ? ` · ${esc(r.locationDetail)}` : ''}`;
+}
+function myRequestsHTML() {
+  const list = state.requests.filter(r => r.requesterId === currentUserId).slice().reverse();
+  if (!list.length) return '<p class="empty">아직 요청이 없습니다.</p>';
+  return `<ul class="reqlist">${list.map(r => `
+    <li>
+      <div class="top"><b>${reqSummary(r)}</b>${reqChip(r)}</div>
+      <span class="muted">${esc(r.workType)} · ${fmtDT(r.departAt)} ~ ${fmtDT(r.expectedReturnAt)}${r.returnedAt ? ` · 복귀 ${fmtDT(r.returnedAt)}` : ''}</span>
+      <span>${esc(r.description)}</span>
+      ${safetyText(r)}
+      ${r.status === '반려' && r.rejectReason ? `<span class="reason">반려 사유: ${esc(r.rejectReason)}</span>` : ''}
+      ${instructionHTML(r)}
+      ${myRequestActions(r)}
+    </li>`).join('')}</ul>`;
+}
+function myRequestActions(r) {
+  const u = me();
+  if (r.status === '외근 중' && u && u.currentRequestId === r.id)
+    return '<div><button class="btn small primary" data-action="return">복귀 처리</button></div>';
+  return '';
+}
+
+function nextRequestId() {
+  const max = state.requests.reduce((m, r) => Math.max(m, parseInt(r.id.slice(2), 10) || 0), 0);
+  return 'R-' + String(max + 1).padStart(3, '0');
+}
+
+/* ---------- 화면 ④: 승인 관리 (감독원) ---------- */
+let rejectTarget = null;
+const pendingRequests = () => state.requests.filter(r => r.status === '승인 대기');
+
+// 감독원 추가 요청사항: 입력 중인 내용은 화면이 다시 그려져도 남도록 따로 보관
+const instrDrafts = {};
+document.addEventListener('input', e => {
+  if (e.target.dataset && e.target.dataset.instr) instrDrafts[e.target.dataset.instr] = e.target.value;
+});
+function instructionHTML(r) {
+  if (!r.instruction) return '';
+  const a = userById(r.approverId);
+  return `<div class="instr"><b>📋 감독원 요청사항${a ? ` · ${esc(a.name)}` : ''}</b><span>${esc(r.instruction)}</span></div>`;
+}
+
+function pendingCardHTML(r) {
+  const u = userById(r.requesterId);
+  const actionsHTML = rejectTarget === r.id
+    ? `<form class="actions" id="reject-form" data-id="${r.id}">
+         <input class="memo" name="reason" maxlength="60" placeholder="반려 사유 (필수) 예: 일정 재조정 필요" required>
+         <div class="seg"><button class="btn small danger">반려 확정</button>
+           <button type="button" class="btn small" data-action="cancel-reject">취소</button></div>
+       </form>`
+    : `<div class="actions">
+         <label class="instr-lbl" for="instr-${r.id}">📋 추가 요청사항 <small>(선택 · 승인 시 직원에게 전달)</small></label>
+         <textarea class="inp instr-inp" id="instr-${r.id}" data-instr="${r.id}" maxlength="200" rows="2"
+           placeholder="예: 작업 전 지사 담당자와 통화 후 진행, 작업 결과 사진 보고">${esc(instrDrafts[r.id] || '')}</textarea>
+         <div class="seg">
+         <button class="btn primary" data-action="approve" data-id="${r.id}">승인</button>
+         <button class="btn" data-action="reject" data-id="${r.id}">반려</button>
+       </div></div>`;
+  return `
+  <article class="card st-out">
+    <header class="card-head">
+      <div><div class="name">${esc(u ? u.name : r.requesterId)}</div><div class="role">${r.id} · 요청 ${fmtDT(r.requestedAt)}</div></div>
+      <span class="badge">승인 대기</span>
+    </header>
+    <dl class="kv">
+      <dt>작업</dt><dd>${esc(r.workType)}</dd>
+      <dt>작업장소</dt><dd>${reqSummary(r)}</dd>
+      <dt>출발</dt><dd>${fmtDT(r.departAt)}</dd>
+      <dt>예상 복귀</dt><dd>${fmtDT(r.expectedReturnAt)}</dd>
+      <dt>내용</dt><dd>${esc(r.description)}</dd>
+      <dt>안전</dt><dd>${safetyText(r)}</dd>
+    </dl>
+    ${actionsHTML}
+  </article>`;
+}
+
+function approveHTML() {
+  const pending = pendingRequests();
+  const decided = state.requests.filter(r => r.decidedAt && sameDay(new Date(r.decidedAt), now()))
+    .sort((a, b) => b.decidedAt.localeCompare(a.decidedAt));
+  return `
+  <h1>승인 관리</h1>
+  <p class="muted">승인하면 해당 직원이 출발 시각에 맞춰 자동으로 "외근"이 됩니다. 반려할 때는 사유를 한 줄 적습니다.</p>
+  <h2>승인 대기 ${pending.length}건</h2>
+  ${pending.length ? `<div class="grid">${pending.map(pendingCardHTML).join('')}</div>`
+                   : '<div class="panel"><p class="empty">승인 대기 중인 요청이 없습니다.</p></div>'}
+  <h2>오늘 처리한 요청</h2>
+  <div class="panel">${decided.length ? `<ul class="reqlist">${decided.map(r => {
+      const u = userById(r.requesterId), a = userById(r.approverId);
+      return `<li><div class="top"><b>${esc(u ? u.name : '')} · ${reqSummary(r)}</b>${reqChip(r)}</div>
+        <span class="muted">${fmtDT(r.decidedAt)} ${esc(a ? a.name : '')} ${r.status === '반려' ? '반려' : '승인'}</span>
+        ${r.status === '반려' && r.rejectReason ? `<span class="reason">반려 사유: ${esc(r.rejectReason)}</span>` : ''}
+        ${instructionHTML(r)}</li>`;
+    }).join('')}</ul>` : '<p class="empty">오늘 처리한 요청이 없습니다.</p>'}</div>`;
+}
+
+// 승인된 요청 → 외근 시작
+function startField(r) {
+  const u = userById(r.requesterId);
+  r.status = '외근 중';
+  setStatus(u, '외근', `${r.id} 승인 (${r.location})`);
+  u.currentRequestId = r.id;
+}
+// 출발 시각이 된 '승인' 요청을 외근으로 전환 (출발 전 승인 건 처리)
+function tick() {
+  let changed = false;
+  state.requests.forEach(r => {
+    if (r.status !== '승인' || new Date(r.departAt) > now()) return;
+    const u = userById(r.requesterId);
+    if (u && u.status !== '외근') { startField(r); changed = true; }
+  });
+  if (changed) save();
+}
+
+/* ---------- 공지사항 (6명 누구나 게시) ---------- */
+const DEFAULT_NOTICE = '작업장 안전수칙 및 교통안전 준수';
+const notices = () => (state.notices || []).slice().sort((a, b) => b.at.localeCompare(a.at));
+
+// 근무현황 상단 공지 1칸: 없으면 기본 문구, 여러 건이면 위로 올라가는 티커
+let tickerIdx = 0;
+function noticeBarHTML() {
+  const list = notices();
+  const items = list.length
+    ? list.map(n => {
+        const a = userById(n.authorId);
+        return `<li><span class="nt-title">${esc(n.title)}</span><span class="nt-meta">${esc(a ? a.name : '')} · ${fmtDT(n.at)}</span></li>`;
+      })
+    : [`<li class="nt-default"><span class="nt-title">${DEFAULT_NOTICE}</span></li>`];
+  const loop = items.length > 1 ? items.concat(items[0]) : items; // 끝에서 처음으로 자연스럽게 이어지도록 첫 줄 복제
+  return `
+  <div class="notice-bar" data-action="go" data-view="notice" role="button" tabindex="0" title="공지사항 게시판 열기">
+    <span class="nt-tag">📢 공지</span>
+    <div class="nt-window"><ul class="nt-list" id="nt-list" data-count="${items.length}">${loop.join('')}</ul></div>
+    ${list.length > 1 ? `<span class="nt-count">${list.length}건</span>` : ''}
+    <span class="nt-more" aria-hidden="true">›</span>
+  </div>`;
+}
+function placeTicker(animate) {
+  const ul = document.getElementById('nt-list');
+  if (!ul) return;
+  const n = +ul.dataset.count;
+  if (tickerIdx > n) tickerIdx = 0;
+  const h = ul.firstElementChild ? ul.firstElementChild.offsetHeight : 26;
+  ul.style.transition = animate ? 'transform .5s ease' : 'none';
+  ul.style.transform = `translateY(-${tickerIdx * h}px)`;
+}
+setInterval(() => {
+  const ul = document.getElementById('nt-list');
+  if (!ul || +ul.dataset.count < 2 || ul.closest('.notice-bar').matches(':hover')) return;
+  const n = +ul.dataset.count;
+  tickerIdx++;
+  placeTicker(true);
+  if (tickerIdx >= n) setTimeout(() => { tickerIdx = 0; placeTicker(false); }, 550);
+}, 3500);
+
+function noticeHTML() {
+  const list = notices();
+  return `
+  <h1>공지사항</h1>
+  <div class="layout2">
+    <form class="panel form" id="notice-form">
+      <div class="field"><label class="lbl" for="nt-title">제목</label>
+        <input class="inp" id="nt-title" name="title" maxlength="60" placeholder="예: 11/24 전산실 UPS 점검 안내" required></div>
+      <div class="field"><label class="lbl" for="nt-body">내용 <small>(선택)</small></label>
+        <textarea class="inp" id="nt-body" name="body" maxlength="500" placeholder="자세한 내용을 적어 주세요."></textarea></div>
+      <button class="btn primary">공지 게시</button>
+    </form>
+    <section>
+      <h2 style="margin-top:0">게시된 공지 ${list.length}건</h2>
+      <div class="panel" id="notice-list">${noticeListHTML()}</div>
+    </section>
+  </div>`;
+}
+function noticeListHTML() {
+  const list = notices();
+  if (!list.length) return `<p class="empty">게시된 공지사항이 없습니다.<br>근무현황에는 기본 문구 "${DEFAULT_NOTICE}"가 표시됩니다.</p>`;
+  const u = me();
+  return `<ul class="notice-list">${list.map(n => {
+    const a = userById(n.authorId);
+    const canDelete = u && (u.id === n.authorId || isSup(u));
+    return `
+    <li>
+      <div class="nl-head">
+        <b class="nl-title">${esc(n.title)}</b>
+        ${canDelete ? `<button class="btn small ghost" data-action="del-notice" data-id="${n.id}">삭제</button>` : ''}
+      </div>
+      <div class="nl-meta">${a ? avatarHTML(a, 'xs') : ''}<span>${esc(a ? a.name : '')}</span><span>·</span><time>${fmtDT(n.at)}</time></div>
+      ${n.body ? `<p class="nl-body">${esc(n.body)}</p>` : ''}
+    </li>`;
+  }).join('')}</ul>`;
+}
+
+/* ---------- 렌더링 ---------- */
+const VIEWS = { board: boardHTML, request: requestHTML, approve: approveHTML, notice: noticeHTML };
+
+// partial=true: 타이머·다른 탭 갱신. 요청서처럼 입력 중인 화면은 목록만 갱신한다.
+function render(partial = false) {
+  document.getElementById('top').innerHTML = topHTML();
+  const app = document.getElementById('app');
+  if (!me()) { app.innerHTML = loginHTML(); const p = document.getElementById('pin'); if (p) p.focus(); return; }
+  if (!VIEWS[view] || !navTabs(me()).some(t => t.id === view)) view = 'board';
+  if (partial && view === 'request' && document.getElementById('req-form')) {
+    document.getElementById('my-req').innerHTML = myRequestsHTML();
+    return;
+  }
+  if (partial && view === 'notice' && document.getElementById('notice-form')) {
+    document.getElementById('notice-list').innerHTML = noticeListHTML();
+    return;
+  }
+  app.innerHTML = VIEWS[view]();
+  placeTicker(false);
+}
+
+// 입력 중일 때는 다시 그리지 않는다 (입력 내용이 지워지지 않도록)
+let pendingRender = false;
+function safeRender() {
+  const a = document.activeElement;
+  if (a && a.closest && a.closest('#app') && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) { pendingRender = true; return; }
+  render(true);
+}
+document.addEventListener('focusout', () => {
+  if (pendingRender) setTimeout(() => { if (pendingRender) { pendingRender = false; safeRender(); } }, 0);
+});
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2500);
+}
+
+function commit() { save(); render(); }
+
+/* ---------- 동작 ---------- */
+const actions = {
+  pick(el) {
+    const u = userById(el.dataset.id);
+    if (isSup(u)) { pinTarget = u.id; pinError = ''; render(); return; }
+    login(u.id);
+  },
+  'cancel-pin'() { pinTarget = null; pinError = ''; render(); },
+  logout() { currentUserId = null; setSessionUser(null); pinTarget = null; render(); },
+  go(el) { view = el.dataset.view; render(); window.scrollTo(0, 0); },
+  approve(el) {
+    const r = reqById(el.dataset.id);
+    if (!r || r.status !== '승인 대기') return;
+    const box = document.getElementById(`instr-${r.id}`);
+    const instruction = ((box ? box.value : instrDrafts[r.id]) || '').trim().slice(0, 200);
+    r.approverId = currentUserId;
+    r.decidedAt = toLocalISO(now());
+    r.status = '승인';
+    if (instruction) r.instruction = instruction;
+    delete instrDrafts[r.id];
+    tick(); // 출발 시각이 이미 지났으면 바로 외근으로
+    commit();
+    const u = userById(r.requesterId);
+    const extra = instruction ? ' 요청사항도 전달했습니다.' : '';
+    toast((r.status === '외근 중' ? `${u.name}: 승인 완료, 외근으로 표시합니다.` : `${u.name}: 승인 완료, ${fmtDT(r.departAt)}에 외근으로 바뀝니다.`) + extra);
+  },
+  return() { doReturn(); },
+  reject(el) { rejectTarget = el.dataset.id; render(); const i = document.querySelector('#reject-form input'); if (i) i.focus(); },
+  'cancel-reject'() { rejectTarget = null; render(); },
+  'del-notice'(el) {
+    const n = (state.notices || []).find(x => x.id === el.dataset.id);
+    if (!n || !confirm(`"${n.title}" 공지를 삭제할까요?`)) return;
+    state.notices = state.notices.filter(x => x.id !== n.id);
+    tickerIdx = 0;
+    commit();
+    toast('공지사항을 삭제했습니다.');
+  },
+  'avatar-toggle'() { avatarOpen = !avatarOpen; render(); },
+  'set-avatar'(el) {
+    const e = el.dataset.emoji;
+    me().avatar = AVATARS.includes(e) ? e : '';
+    avatarOpen = false;
+    commit();
+    toast(me().avatar ? '내 아이콘을 바꿨습니다.' : '기본(성 한 글자)으로 되돌렸습니다.');
+  },
+  'set-status'(el) {
+    const to = el.dataset.status;
+    const memoEl = document.getElementById('memo');
+    const same = me().status === to;
+    setStatus(me(), to, memoEl ? memoEl.value.trim() : '');
+    commit();
+    toast(same ? '추가 기재 내용을 반영했습니다.' : `'${to}' 상태로 변경했습니다. 모든 사용자 현황판에 반영됩니다.`);
+  },
+  reset() {
+    if (!confirm('시제품 데이터를 처음 더미 데이터로 되돌릴까요?')) return;
+    state = freshState(); save(); render(); toast('더미 데이터로 초기화했습니다.');
+  },
+};
+function login(id) {
+  currentUserId = id; setSessionUser(id); pinTarget = null; pinError = ''; view = 'board'; render();
+}
+
+const forms = {
+  'pin-form'(f) {
+    const u = userById(pinTarget);
+    if (f.pin.value === u.pin) login(u.id);
+    else { pinError = 'PIN이 맞지 않습니다.'; render(); }
+  },
+  'reject-form'(f) {
+    const reason = f.reason.value.trim();
+    if (!reason) { f.reason.focus(); return; }
+    const r = reqById(f.dataset.id);
+    if (!r || r.status !== '승인 대기') { rejectTarget = null; render(); return; }
+    Object.assign(r, { status: '반려', rejectReason: reason, approverId: currentUserId, decidedAt: toLocalISO(now()) });
+    rejectTarget = null;
+    commit();
+    toast('반려했습니다. 요청한 직원 화면에 사유가 표시됩니다.');
+  },
+  'req-form'(f) {
+    const err = document.getElementById('req-err');
+    const fail = msg => { err.textContent = msg; err.hidden = false; };
+    const v = name => (f.elements[name].value || '').trim();
+    const workType = v('workType'), location = v('location'), locationDetail = v('locationDetail');
+    const departAt = v('departAt'), expectedReturnAt = v('expectedReturnAt'), description = v('description');
+    if (!location) return fail('작업 장소를 선택하세요.');
+    if (location === '기타' && !locationDetail) return fail('"기타"를 선택하면 상세 장소를 적어야 합니다.');
+    if (!departAt || !expectedReturnAt) return fail('작업 일시와 예상 복귀 시각을 입력하세요.');
+    if (new Date(expectedReturnAt) <= new Date(departAt)) return fail('예상 복귀 시각은 출발 시각보다 늦어야 합니다.');
+    if (!description) return fail('작업 내용을 입력하세요.');
+    const checkedIdx = [...f.querySelectorAll('input[name="safety"]:checked')].map(c => +c.value);
+    const safetyChecked = state.safetyItems.filter((s, i) => checkedIdx.includes(i)).map(s => s.title);
+    if (state.safetyItems.some(s => s.required !== false && !safetyChecked.includes(s.title)))
+      return fail('필수 안전 준수 항목(작업장 안전관리, 교통안전)을 확인해야 승인 요청을 할 수 있습니다.');
+    state.requests.push({
+      id: nextRequestId(), requesterId: currentUserId, workType, location, locationDetail,
+      departAt: departAt + ':00', expectedReturnAt: expectedReturnAt + ':00', description,
+      requestedAt: toLocalISO(now()), safetyChecked, status: '승인 대기', approverId: null, decidedAt: null, returnedAt: null,
+    });
+    commit();
+    toast('승인을 요청했습니다. 감독원 승인을 기다립니다.');
+  },
+  'notice-form'(f) {
+    const t = f.elements.title, b = f.elements.body; // f.title은 폼 자체 속성이라 elements로 접근
+    const title = t.value.trim(), body = b.value.trim();
+    if (!title) { t.focus(); return; }
+    if (!state.notices) state.notices = [];
+    state.notices.push({ id: 'N-' + Date.now(), authorId: currentUserId, at: toLocalISO(now()), title, body });
+    tickerIdx = 0;
+    commit();
+    toast('공지사항을 게시했습니다. 근무현황 상단에 표시됩니다.');
+  },
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (el && actions[el.dataset.action]) actions[el.dataset.action](el, e);
+});
+// 공지 바처럼 버튼 역할을 하는 영역은 키보드 Enter/Space로도 열리게
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[role="button"][data-action]')) {
+    e.preventDefault(); e.target.click();
+  }
+});
+document.addEventListener('submit', e => {
+  const f = e.target;
+  if (forms[f.id]) { e.preventDefault(); forms[f.id](f); }
+});
+
+// 다른 탭에서 바뀐 내용을 실시간 반영
+window.addEventListener('storage', e => {
+  if (e.key === STORE_KEY) { state = load(); safeRender(); }
+});
+// 시계와 복귀 지연 표시를 30초마다 갱신
+setInterval(() => {
+  const c = document.getElementById('clock'); if (c) c.innerHTML = fmtClock();
+  tick();
+  safeRender();
+}, 30000);
+
+tick();
+render();
+</script>
+</body>
+</html>
