@@ -239,14 +239,12 @@
 @layer components {
   .skip-link { @apply absolute left-3 -top-16 z-[100] rounded-md bg-navy px-4 py-2.5 font-bold text-white no-underline shadow-lg focus:top-3; }
   .topbar { @apply sticky top-0 z-20 bg-navy text-white shadow-sm; }
-  .topbar-inner { @apply mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-5 gap-y-3 px-5 pt-3.5 pb-2.5 phone:flex-nowrap phone:gap-2 phone:px-3 phone:py-2; }
-  .brand { @apply mr-auto flex min-w-0 items-center gap-3 phone:gap-2; }
-  .brand-mark { @apply h-[38px] w-1 shrink-0 rounded-sm bg-brand-red phone:h-[26px]; }
+  .topbar-inner { @apply mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-5 gap-y-3 px-5 py-5 phone:flex-nowrap phone:gap-2 phone:px-3 phone:py-2; }
+  .brand { @apply mr-auto flex min-w-0 items-center gap-4 phone:gap-2; }
+  .brand-mark { @apply h-9 w-1 shrink-0 rounded-sm bg-brand-red phone:h-[26px] phone:w-1; }
   .brand-txt { @apply min-w-0; }
-  /* 앱 이름 Safe-전산ON (휴대폰은 이름만, PC는 아래에 기관 · 시스템 안내) */
+  /* 앱 이름 Safe-전산ON (휴대폰 · PC 모두 이름만) */
   .app-name { @apply block whitespace-nowrap text-[22px] leading-tight font-extrabold tracking-[0.01em] text-white phone:text-[21px]; }
-  .brand small.org { @apply mt-0.5 flex items-center gap-2 text-xs text-white/70 phone:hidden; }
-  .ex-logo { @apply -ml-1 block h-[18px] w-auto shrink-0 opacity-90; }
   .top-right { @apply flex min-w-0 items-center gap-3 phone:gap-2; }
   .topbar .clock { @apply phone:hidden; }
   .clock { @apply shrink-0 whitespace-nowrap text-[13px] text-white/75 tabular-nums phone:text-xs; & b { @apply text-[15px] font-bold text-white phone:text-sm; } & .ck-short { @apply hidden slim:inline; } & .ck-long { @apply slim:hidden; } }
@@ -317,11 +315,6 @@
   .toast[data-type="error"] .toast-ic { @apply bg-late; }
   .toast[data-type="info"] .toast-ic { @apply bg-primary; }
   .proto-note { @apply mt-9 text-center text-xs text-muted-foreground; }
-  .fab {
-    @apply fixed right-4 bottom-[calc(92px+env(safe-area-inset-bottom))] z-[25] hidden h-12 items-center gap-1.5 rounded-full border-0 bg-primary pr-5 pl-4 text-[15px] font-bold text-white
-      shadow-[0_8px_20px_rgba(0,114,206,.35)] active:scale-95 phone:inline-flex [&_svg]:size-5 [&_svg]:stroke-[2.5];
-  }
-  body.modal-open .fab { @apply hidden; }
 }
 
 /* =========================================================================
@@ -1415,7 +1408,6 @@
     .cat-field { @apply [--cb:#1c2a44]; }
     .cat-access { @apply [--c:var(--muted-foreground)]; }
     .hist tbody tr:hover, .cal-row:hover { @apply bg-white/[.03]; }
-    .fab { @apply shadow-[0_8px_20px_rgba(0,0,0,.45)]; }
     .nav { @apply phone:shadow-[0_12px_32px_rgba(0,0,0,.5)]; }
     .modal-bg, .np-bg, .cf-bg { @apply bg-black/65; }
   }
