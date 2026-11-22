@@ -1,7 +1,7 @@
 {
-  "name": "전산유지보수 작업관리 · 근무현황",
-  "short_name": "작업관리",
-  "description": "한국도로공사 광주전남본부 전산유지보수 작업승인·근무현황 (시제품)",
+  "name": "Safe-전산ON (전산 작업관리 소통포털)",
+  "short_name": "Safe-전산ON",
+  "description": "Safe-전산ON — 한국도로공사 광주전남본부 전산 작업관리 소통포털 (시제품)",
   "lang": "ko",
   "id": "./",
   "start_url": "./",

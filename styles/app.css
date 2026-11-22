@@ -41,6 +41,8 @@
 
   --navy: #0b1f4b;               /* ex Dark Blue */
   --navy-2: #15336f;
+  --ink: #0b1f4b;                /* 남색 글자 (다크 모드에서는 밝은 색) */
+  --ink-2: #15336f;
   --brand-red: #e4002b;          /* ex Red */
 
   /* 근무상태 · 구분 색 */
@@ -52,6 +54,7 @@
   --late: #d92d20;  --late-bg: #feeceb;
   --co: #8c3a86;    --co-bg: #f6ebf5;
   --res: #0e7490;   --res-bg: #e3f4f7;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -77,6 +80,8 @@
   --color-ring: var(--ring);
   --color-navy: var(--navy);
   --color-navy-2: var(--navy-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
   --color-brand-red: var(--brand-red);
   --color-work: var(--work);   --color-work-bg: var(--work-bg);
   --color-leave: var(--leave); --color-leave-bg: var(--leave-bg);
@@ -172,7 +177,7 @@
       bg-(--cb,var(--muted)) px-2 py-0.5 text-xs font-semibold text-(--c,var(--foreground));
   }
   .badge { @apply px-2.5 py-1 text-[13px]; }
-  .tag { @apply ml-1 rounded-sm px-1.5 py-px align-[1px] text-[11px] font-bold not-italic; &.req { @apply bg-late-bg text-late; } &.opt { @apply bg-leave-bg text-leave; } }
+  .tag { @apply ml-1 rounded-sm px-1.5 py-px align-[1px] text-[11px] font-bold not-italic; &.req { @apply bg-late-bg text-late; } &.opt { @apply bg-leave-bg text-leave; } &.scope { @apply bg-field-bg text-field; } }
   .tag-sm { @apply px-[7px] py-px text-[11px]; }
   .count { @apply inline-block min-w-5 rounded-full bg-brand-red px-1.5 text-center text-xs font-bold leading-5 text-white; }
 
@@ -234,14 +239,16 @@
 @layer components {
   .skip-link { @apply absolute left-3 -top-16 z-[100] rounded-md bg-navy px-4 py-2.5 font-bold text-white no-underline shadow-lg focus:top-3; }
   .topbar { @apply sticky top-0 z-20 bg-navy text-white shadow-sm; }
-  .topbar-inner { @apply mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-5 gap-y-3 px-5 pt-3.5 pb-2.5 phone:gap-2 phone:px-4 phone:py-3; }
-  .brand { @apply mr-auto flex min-w-0 items-center gap-3; }
-  .brand-mark { @apply h-[34px] w-1 shrink-0 rounded-sm bg-brand-red phone:h-[30px]; }
-  .brand small { @apply block text-xs tracking-[.02em] text-white/70 phone:text-[11px]; }
-  .brand small.org { @apply mb-0.5 flex items-center gap-2 text-[13px] text-white/85; }
-  .ex-logo { @apply -ml-1 block h-7 w-auto shrink-0; }
-  .brand b { @apply block whitespace-nowrap text-[17px] font-bold tracking-[-0.02em] phone:text-[15.5px]; }
-  .top-right { @apply flex min-w-0 items-center gap-3 phone:w-full phone:justify-between phone:gap-2; }
+  .topbar-inner { @apply mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-5 gap-y-3 px-5 pt-3.5 pb-2.5 phone:flex-nowrap phone:gap-2 phone:px-3 phone:py-2; }
+  .brand { @apply mr-auto flex min-w-0 items-center gap-3 phone:gap-2; }
+  .brand-mark { @apply h-[38px] w-1 shrink-0 rounded-sm bg-brand-red phone:h-[26px]; }
+  .brand-txt { @apply min-w-0; }
+  /* 앱 이름 Safe-전산ON (휴대폰은 이름만, PC는 아래에 기관 · 시스템 안내) */
+  .app-name { @apply block whitespace-nowrap text-[22px] leading-tight font-extrabold tracking-[0.01em] text-white phone:text-[21px]; }
+  .brand small.org { @apply mt-0.5 flex items-center gap-2 text-xs text-white/70 phone:hidden; }
+  .ex-logo { @apply -ml-1 block h-[18px] w-auto shrink-0 opacity-90; }
+  .top-right { @apply flex min-w-0 items-center gap-3 phone:gap-2; }
+  .topbar .clock { @apply phone:hidden; }
   .clock { @apply shrink-0 whitespace-nowrap text-[13px] text-white/75 tabular-nums phone:text-xs; & b { @apply text-[15px] font-bold text-white phone:text-sm; } & .ck-short { @apply hidden slim:inline; } & .ck-long { @apply slim:hidden; } }
   .userchip {
     @apply flex min-w-0 items-center gap-2 rounded-full border border-white/15 bg-white/10 py-[3px] pr-1 pl-[3px] text-sm phone:gap-1 phone:text-[13px];
@@ -276,17 +283,25 @@
   }
 
   .site-foot { @apply border-t-[3px] border-brand-red bg-navy text-white/80; }
-  .sf-inner { @apply mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-7 gap-y-3.5 px-5 pt-[22px] pb-[26px] phone:gap-2.5 phone:px-4 phone:pt-[18px] phone:pb-[calc(104px+env(safe-area-inset-bottom))]; }
-  .sf-logo { @apply h-7 w-auto opacity-95 phone:h-6; }
-  .sf-txt p { @apply m-0 flex flex-wrap gap-x-3 gap-y-1 text-[13px]; }
-  .sf-txt b { @apply font-bold text-white; }
-  .sf-txt .sf-note { @apply mt-1 text-xs text-white/60; }
+  .sf-inner { @apply mx-auto flex max-w-[1160px] flex-col gap-3 px-5 pt-[22px] pb-[26px] phone:gap-5 phone:px-4 phone:pt-5 phone:pb-7; }
+  body:has(.nav) .sf-inner { @apply phone:pb-[calc(104px+env(safe-area-inset-bottom))]; }
+  /* 로고 · 기관명 · 시스템명 한 줄, 이용 안내는 아래 */
+  .sf-row { @apply m-0 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-center text-[15px] phone:text-[14.5px];
+    & span, & b { @apply whitespace-nowrap; }
+    & b { @apply font-bold tracking-[-0.02em] text-white; }
+    & > span:last-child { @apply tracking-[0.02em] text-white/65; } }
+  .sf-row .sf-mark { @apply w-8 shrink-0 opacity-95; }
+  .sf-note { @apply m-0 text-xs leading-relaxed text-white/60; }
 
   /* 화면 제목 */
   .page-head { @apply flex flex-wrap items-center gap-x-3.5 gap-y-3; }
   .ph-ic { @apply grid size-11 shrink-0 place-items-center rounded-xl border bg-card text-primary shadow-xs [&_svg]:size-[22px] phone:size-10 phone:[&_svg]:size-5; }
-  .ph-txt { @apply min-w-0 flex-[1_1_280px] phone:basis-[calc(100%-56px)]; & h1 { @apply m-0; } & p { @apply mt-0.5 mb-0 text-sm text-muted-foreground phone:text-[13px]; } }
-  .ph-board .ph-txt p { @apply phone:hidden; }
+  .ph-txt { @apply min-w-0 flex-[1_1_280px] phone:basis-[calc(100%-56px)]; & h1 { @apply m-0; } & p { @apply mt-0.5 mb-0 text-sm text-muted-foreground phone:hidden phone:text-[13px]; } }
+  .info-open .ph-txt p { @apply phone:mt-2 phone:block phone:rounded-lg phone:bg-card phone:px-3 phone:py-2 phone:ring-1 phone:ring-border; }
+  .ph-title { @apply flex items-center gap-2; }
+  .ph-clock { @apply hidden rounded-md bg-card px-2 py-0.5 text-xs text-muted-foreground tabular-nums ring-1 ring-border phone:inline-flex phone:gap-1; & b { @apply font-bold text-foreground; } & .ck-long { @apply hidden; } & .ck-short { @apply inline; } }
+  .ph-info { @apply hidden size-8 place-items-center rounded-full border-0 bg-transparent text-muted-foreground hover:bg-muted phone:grid [&_svg]:size-[18px]; }
+  .info-open .ph-info { @apply bg-accent text-primary; }
   .ph-right { @apply ml-auto flex items-center phone:ml-0 phone:w-full; & .summary { @apply phone:w-full; } }
   .ph-btns { @apply flex flex-wrap gap-2 phone:w-full; & .btn { @apply phone:flex-1; } }
   .h2-sub { @apply text-xs font-semibold text-muted-foreground phone:basis-full phone:pl-3; }
@@ -296,9 +311,17 @@
   .toast {
     @apply fixed bottom-7 left-1/2 z-[95] flex max-w-[calc(100%-32px)] -translate-x-1/2 items-center gap-2 rounded-lg border bg-popover px-4 py-3
       text-sm font-medium text-popover-foreground shadow-lg phone:bottom-[calc(96px+env(safe-area-inset-bottom))];
-    &::before { @apply content-[''] size-2 shrink-0 rounded-full bg-primary; }
+    &[data-type="error"] { @apply border-late/40; }
   }
+  .toast-ic { @apply grid size-5 shrink-0 place-items-center rounded-full bg-work text-white [&_svg]:size-3 [&_svg]:stroke-[3]; }
+  .toast[data-type="error"] .toast-ic { @apply bg-late; }
+  .toast[data-type="info"] .toast-ic { @apply bg-primary; }
   .proto-note { @apply mt-9 text-center text-xs text-muted-foreground; }
+  .fab {
+    @apply fixed right-4 bottom-[calc(92px+env(safe-area-inset-bottom))] z-[25] hidden h-12 items-center gap-1.5 rounded-full border-0 bg-primary pr-5 pl-4 text-[15px] font-bold text-white
+      shadow-[0_8px_20px_rgba(0,114,206,.35)] active:scale-95 phone:inline-flex [&_svg]:size-5 [&_svg]:stroke-[2.5];
+  }
+  body.modal-open .fab { @apply hidden; }
 }
 
 /* =========================================================================
@@ -306,9 +329,9 @@
    ========================================================================= */
 @layer components {
   .avatar {
-    @apply grid size-10 shrink-0 place-items-center rounded-full bg-accent text-base font-bold text-navy-2;
+    @apply grid size-10 shrink-0 place-items-center rounded-full bg-accent text-base font-bold text-ink-2;
     &.sup { @apply bg-navy text-white; }
-    &.sm { @apply size-7 bg-card text-[13px] text-navy; }
+    &.sm { @apply size-7 bg-card text-[13px] text-ink; }
     &.xs { @apply size-[22px] text-[11px]; }
     &.xs.sys { @apply bg-muted text-muted-foreground [&_svg]:size-3; }
     &.svgav, &.sup.svgav { @apply bg-[#eef1f6]; }
@@ -331,8 +354,8 @@
     & .exmark { @apply w-9; }
   }
   .exmark { @apply block aspect-[79/24] w-4/5 bg-no-repeat bg-size-[265.8%_auto] bg-position-[0_50%]; }
-  .card .avatar { @apply shadow-[0_0_0_2px_#fff,0_0_0_4px_var(--c,var(--border))] phone:shadow-[0_0_0_1.5px_#fff,0_0_0_3px_var(--c,var(--border))]; }
-  .card .avatar.svgav.ci { @apply shadow-[0_0_0_2px_#fff,0_0_0_4px_var(--c,var(--border)),inset_0_0_0_1px_#dfe4ec]; }
+  .card .avatar { @apply shadow-[0_0_0_2px_var(--card),0_0_0_4px_var(--c,var(--border))] phone:shadow-[0_0_0_1.5px_var(--card),0_0_0_3px_var(--c,var(--border))]; }
+  .card .avatar.svgav.ci { @apply shadow-[0_0_0_2px_var(--card),0_0_0_4px_var(--c,var(--border)),inset_0_0_0_1px_#dfe4ec]; }
 }
 
 /* =========================================================================
@@ -356,7 +379,7 @@
     & label { @apply mr-1 text-sm font-semibold; }
     & input { @apply h-9 w-[120px] rounded-md border border-input bg-card px-3 text-center tracking-[6px] shadow-xs focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/25; }
   }
-  .login-privacy { @apply mt-5 flex items-start gap-1.5 rounded-lg bg-muted px-3 py-2.5 text-[12.5px] leading-relaxed text-muted-foreground [&_svg]:size-[13px]; }
+  .login-privacy { @apply mt-5 flex items-start gap-1.5 rounded-lg bg-muted px-3 py-2.5 text-[12.5px] leading-relaxed text-muted-foreground [&_svg]:size-[13px]; & > .ic { @apply mt-[3px]; } & span .ic { @apply mx-0.5 size-[13px]; } }
 }
 
 /* =========================================================================
@@ -364,7 +387,8 @@
    ========================================================================= */
 @layer components {
   .board-head { @apply flex flex-wrap items-end justify-between gap-x-4 gap-y-3 phone:flex-col phone:items-start phone:gap-2.5; & h1 { @apply m-0; } & .sub { @apply mt-0.5 text-[13px] text-muted-foreground; } }
-  .summary { @apply flex flex-wrap gap-1.5; }
+  .summary { @apply flex flex-wrap gap-1.5 phone:-mx-4 phone:flex-nowrap phone:overflow-x-auto phone:px-4 phone:pb-0.5 phone:[scrollbar-width:none] phone:[&::-webkit-scrollbar]:hidden; }
+  .summary > span { @apply phone:shrink-0; }
   .summary > span { @apply inline-flex items-center gap-1 rounded-md border border-transparent bg-(--cb) px-2.5 py-1 text-[13px] font-semibold text-(--c) phone:px-2 phone:text-xs; }
   .summary b { @apply font-bold; }
 
@@ -411,7 +435,7 @@
   /* 내 상태 */
   .mystatus {
     @apply mt-4 flex flex-wrap items-center gap-x-3.5 gap-y-2.5 rounded-xl px-4 py-3 phone:gap-2.5 phone:p-3;
-    & .lbl { @apply whitespace-nowrap text-sm font-bold text-navy phone:flex-1; }
+    & .lbl { @apply whitespace-nowrap text-sm font-bold text-ink phone:flex-1; }
     & .memo { @apply w-auto min-w-[180px] flex-1 phone:w-full phone:min-w-0 phone:flex-none; }
     & > .seg:not(.ms-actions) { @apply phone:grid phone:w-full phone:grid-cols-4; & .btn { @apply phone:px-0 phone:text-sm; } }
     & > .muted { @apply phone:order-3 phone:basis-full; }
@@ -428,7 +452,7 @@
   .banner {
     @apply mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#f7dfb5] bg-[#fff8ec] px-4 py-3 text-sm font-semibold text-out;
     & > span { @apply inline-flex items-center gap-1.5; }
-    &.info { @apply border-[#bcd9f5] bg-accent text-navy-2; }
+    &.info { @apply border-[#bcd9f5] bg-accent text-ink-2; }
     &.warn { @apply border-[#f3d29b] bg-out-bg text-[#7a4300]; }
     &.danger { @apply border-[#f5c2bd] bg-late-bg text-[#8f1d14]; }
   }
@@ -443,7 +467,7 @@
   .nt-list { @apply m-0 list-none p-0 will-change-transform motion-reduce:transition-none!; & li { @apply flex h-[26px] items-center gap-2.5 whitespace-nowrap; } }
   .nt-title { @apply min-w-0 truncate text-[14.5px] font-semibold phone:text-[13.5px]; }
   .nt-meta { @apply shrink-0 text-[12.5px] text-muted-foreground phone:hidden; }
-  .nt-default .nt-title { @apply text-navy-2; }
+  .nt-default .nt-title { @apply text-ink-2; }
   .nt-default .ic { @apply mr-1.5 text-primary; }
   .nt-count { @apply shrink-0 rounded-md bg-accent px-2 py-0.5 text-xs font-semibold text-primary; }
   .nt-more { @apply grid shrink-0 place-items-center px-0.5 text-muted-foreground [&_svg]:size-[18px]; }
@@ -459,7 +483,7 @@
 
   /* 오늘 외근 타임라인 */
   .timeline { @apply mb-3.5 pt-4 pb-3.5 [--who:92px] phone:pt-3.5 phone:[--who:62px]; }
-  .tl-head { @apply flex items-center justify-between px-[18px] pb-2.5 phone:px-3.5; & b { @apply inline-flex items-center gap-1.5 text-[15px] text-navy; & .ic { @apply text-primary; } } & .muted { @apply text-[12.5px]; } }
+  .tl-head { @apply flex items-center justify-between px-[18px] pb-2.5 phone:px-3.5; & b { @apply inline-flex items-center gap-1.5 text-[15px] text-ink; & .ic { @apply text-primary; } } & .muted { @apply text-[12.5px]; } }
   .tl-body { @apply relative px-[18px] phone:px-3.5; }
   .tl-row { @apply grid min-h-10 grid-cols-[var(--who)_1fr] items-center gap-x-2.5 phone:gap-x-2; }
   .tl-who { @apply flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13.5px] font-semibold phone:gap-1 phone:text-[12.5px]; & .avatar { @apply phone:hidden; } }
@@ -479,7 +503,7 @@
     &.joinR { @apply rounded-r-none; }
     &.joinL { @apply rounded-l-none; }
     &.active { @apply bg-primary text-white shadow-xs; }
-    &.planned { @apply bg-accent text-navy-2 ring-[1.5px] ring-inset ring-primary/35; }
+    &.planned { @apply bg-accent text-ink-2 ring-[1.5px] ring-inset ring-primary/35; }
     &.late { @apply bg-[repeating-linear-gradient(135deg,#e5484d_0_6px,#f0716f_6px_12px)] text-white; }
     &.done { @apply bg-[#cfd6e2] text-[#33415a]; }
     &.approved { @apply bg-work-bg text-[#0d6b47] ring-[1.5px] ring-inset ring-[#7fcfa6]; }
@@ -524,6 +548,32 @@
     & > .btn.primary { @apply h-11 rounded-lg text-base; }
   }
   .field > .lbl { @apply mb-2 block text-sm font-semibold; & small { @apply font-normal text-muted-foreground; } }
+  .form-submit {
+    @apply flex flex-col gap-2
+      phone:sticky phone:bottom-[calc(80px+env(safe-area-inset-bottom))] phone:z-10 phone:-mx-4 phone:-mb-[18px] phone:rounded-b-xl phone:border-t phone:bg-card/95 phone:px-4 phone:pt-3 phone:pb-3 phone:shadow-[0_-6px_16px_rgba(16,24,40,.06)] phone:backdrop-blur;
+    & > .btn.primary { @apply h-11 rounded-lg text-base; }
+  }
+  .sc-form .form-submit { @apply phone:-mb-4; }
+  .fs-btns { @apply flex gap-2; & .btn { @apply h-11 flex-1 rounded-lg text-base; } }
+  .req-left { @apply m-0 flex flex-wrap items-center gap-x-1.5 text-[12.5px] text-muted-foreground; & b { @apply text-out; } &.ok { @apply font-semibold text-work; } & svg { @apply size-3.5; } }
+  /* 요청서 단계: 휴대폰에서만 한 단계씩 */
+  .rq-steps { @apply m-0 hidden list-none grid-cols-3 gap-1.5 p-0 phone:grid; }
+  .rq-steps button {
+    @apply flex w-full flex-col items-center gap-1 rounded-lg border-0 bg-transparent px-1 py-1.5 text-xs font-semibold text-muted-foreground;
+    & i { @apply grid size-7 place-items-center rounded-full bg-muted text-[12.5px] font-bold not-italic ring-1 ring-border [&_svg]:size-3.5; }
+    &.on { @apply text-primary; & i { @apply bg-primary text-white ring-primary; } }
+    &.done { @apply text-work; & i { @apply bg-work-bg text-work ring-work/30; } }
+    &.left.done i { @apply bg-out-bg text-out ring-out/30; }
+  }
+  .rq-step { @apply contents; }
+  .rq-prev, .rq-next { @apply hidden; }
+  @media (max-width: 640px) {
+    #req-form .rq-step { @apply hidden; }
+    #req-form[data-step="1"] .rq-step[data-step="1"], #req-form[data-step="2"] .rq-step[data-step="2"], #req-form[data-step="3"] .rq-step[data-step="3"] { @apply flex flex-col gap-[18px]; }
+    #req-form:not([data-step="1"]) .rq-prev { @apply inline-flex; }
+    #req-form:not([data-step="3"]) .rq-next { @apply inline-flex; }
+    #req-form:not([data-step="3"]) #req-submit { @apply hidden; }
+  }
   .sub-lbl { @apply mt-0.5 mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold text-muted-foreground; }
   .sub-lbl + .opts + .sub-lbl { @apply mt-3; }
   .row2 { @apply grid grid-cols-2 gap-3 phone:grid-cols-1; }
@@ -570,6 +620,7 @@
     & small { @apply text-[13px] text-muted-foreground; }
   }
   .safety-ok { @apply text-[13px] font-semibold text-work; }
+  .safety-rule { @apply mt-2 flex items-start gap-1.5 leading-normal; & .ic { @apply mt-0.5 text-work; } }
   .check-inline {
     @apply flex cursor-pointer items-center gap-2 rounded-lg border border-brand-red/20 bg-[#fff7f7] px-3 py-2.5 text-[13.5px];
     & input { @apply size-[18px] checked:border-brand-red checked:bg-brand-red; }
@@ -591,17 +642,26 @@
     & .df-list li { @apply flex-row border-0 p-0; }
   }
   .reason { @apply rounded-md bg-late-bg px-2.5 py-1.5 font-semibold text-late; &.cancel { @apply bg-leave-bg text-leave; } }
-  .empty { @apply m-0 p-5 text-center text-muted-foreground; }
+  .empty {
+    @apply m-0 flex flex-col items-center gap-1 px-5 pt-7 pb-8 text-center text-sm text-muted-foreground;
+    &::before {
+      @apply mb-2 grid size-11 rounded-full bg-muted content-[''];
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237d8899' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 16 12 14 15 10 15 8 12 2 12'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E");
+      background-size: 22px; background-position: center; background-repeat: no-repeat;
+    }
+    & b { @apply text-[14.5px] font-semibold text-foreground; }
+    & small { @apply max-w-[300px] text-[12.5px] leading-snug; }
+  }
   .top-r { @apply inline-flex shrink-0 items-center gap-1.5; }
   .rid {
-    @apply cursor-pointer whitespace-nowrap rounded-md border bg-card px-[7px] text-xs leading-5 font-semibold text-navy-2 tabular-nums shadow-xs hover:border-primary hover:bg-accent hover:text-primary;
+    @apply cursor-pointer whitespace-nowrap rounded-md border bg-card px-[7px] text-xs leading-5 font-semibold text-ink-2 tabular-nums shadow-xs hover:border-primary hover:bg-accent hover:text-primary;
     &.sm { @apply px-1.5 text-[11.5px] leading-[18px]; }
     @apply phone:inline-flex phone:min-h-8 phone:items-center phone:px-2;
   }
 
   /* 요청 수정 */
   .edit-banner {
-    @apply flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#bcd9f5] bg-accent px-3 py-2.5 text-sm text-navy-2;
+    @apply flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#bcd9f5] bg-accent px-3 py-2.5 text-sm text-ink-2;
     &.prefill { @apply border-work/30 bg-work-bg text-work; }
   }
   .editing-tag { @apply text-[12.5px] font-bold text-primary; }
@@ -609,7 +669,7 @@
   .editing-card { @apply border-primary ring-[3px] ring-ring/15; }
   .sup-edit {
     @apply flex flex-col gap-2.5;
-    & label { @apply flex min-w-0 flex-col gap-1 text-[13px] font-semibold text-navy; }
+    & label { @apply flex min-w-0 flex-col gap-1 text-[13px] font-semibold text-ink; }
     & .inp { @apply text-sm font-normal; }
     & .row2 { @apply gap-2.5; &.dates { @apply grid-cols-1; } }
     & .org-opt { @apply min-h-9 text-[13px]; }
@@ -618,9 +678,9 @@
 
   /* 승인 관리 */
   .actions { @apply flex flex-col gap-2 border-t pt-3; }
-  .instr-lbl, .ack-lbl { @apply text-[13px] font-semibold text-navy; & small { @apply font-normal text-muted-foreground; } }
+  .instr-lbl, .ack-lbl { @apply text-[13px] font-semibold text-ink; & small { @apply font-normal text-muted-foreground; } }
   .instr-inp { @apply min-h-0 resize-y text-sm; }
-  .instr { @apply flex flex-col gap-0.5 rounded-md border-l-[3px] border-primary bg-accent px-3 py-2 text-[13.5px]; & b { @apply text-[12.5px] text-navy-2; } }
+  .instr { @apply flex flex-col gap-0.5 rounded-md border-l-[3px] border-primary bg-accent px-3 py-2 text-[13.5px]; & b { @apply text-[12.5px] text-ink-2; } }
   .mystatus-instr { @apply w-full; }
 }
 
@@ -657,8 +717,8 @@
   .ack-inp { @apply min-h-[84px] resize-y text-sm leading-relaxed; }
   .ack-foot { @apply flex items-center justify-between gap-2; }
   .ack-count { @apply text-xs text-muted-foreground tabular-nums; }
-  .wo-linked { @apply flex flex-wrap gap-1.5; & > span { @apply inline-flex items-center gap-[5px] text-[12.5px] font-semibold text-navy-2; } }
-  .wo-req { @apply ml-auto inline-flex items-center gap-[5px] text-[12.5px] font-semibold text-navy-2; }
+  .wo-linked { @apply flex flex-wrap gap-1.5; & > span { @apply inline-flex items-center gap-[5px] text-[12.5px] font-semibold text-ink-2; } }
+  .wo-req { @apply ml-auto inline-flex items-center gap-[5px] text-[12.5px] font-semibold text-ink-2; }
   .wo-actions { @apply flex justify-end; }
   .wo-done { @apply m-0 flex items-center gap-1 text-[12.5px] font-semibold text-leave; }
   .wo-done-form { @apply flex flex-col gap-2 rounded-lg bg-muted p-2.5; }
@@ -680,7 +740,7 @@
     & .sb-actions .start-btn { @apply phone:w-auto; }
   }
   .sb-ic { @apply grid size-[38px] place-items-center rounded-lg bg-primary text-white [&_svg]:size-5; }
-  .sb-txt { @apply flex min-w-0 flex-col leading-snug; & b { @apply text-sm text-navy; } & span { @apply flex flex-wrap items-center gap-1 text-[13px] text-muted-foreground; } }
+  .sb-txt { @apply flex min-w-0 flex-col leading-snug; & b { @apply text-sm text-ink; } & span { @apply flex flex-wrap items-center gap-1 text-[13px] text-muted-foreground; } }
   .start-btn { @apply inline-flex items-center gap-1.5 whitespace-nowrap; }
   .sb-hint { @apply col-start-2 -col-end-1 m-0 text-xs text-muted-foreground phone:col-span-full phone:text-center; }
   .start-block { @apply text-[12.5px] font-semibold text-muted-foreground; }
@@ -699,26 +759,26 @@
   .cancel-form { @apply border-late/30; & .rf-head .ic { @apply text-late; } }
   .start-form .rf-head .ic { @apply text-work; }
   .sup-act { @apply mt-1 gap-2 p-3; &.danger { @apply border-late/30; } & .seg .btn { @apply flex-1; } }
-  .rf-head { @apply flex flex-wrap items-center gap-1.5 text-navy; & .muted { @apply ml-1 text-[13px]; } & .ic { @apply text-primary; } }
+  .rf-head { @apply flex flex-wrap items-center gap-1.5 text-ink; & .muted { @apply ml-1 text-[13px]; } & .ic { @apply text-primary; } }
   .return-form textarea { @apply min-h-0 resize-y text-sm; }
   .return-form .seg .btn, .start-form .seg .btn, .cancel-form .seg .btn { @apply flex-1; }
-  .sf-keep { @apply m-0 flex flex-wrap items-center gap-1.5 rounded-md bg-muted px-3 py-2 text-[13px] text-navy-2; }
+  .sf-keep { @apply m-0 flex flex-wrap items-center gap-1.5 rounded-md bg-muted px-3 py-2 text-[13px] text-ink-2; }
   .ss-ok { @apply inline-grid size-4 place-items-center align-[-3px] text-work; & .ic { @apply size-[15px]; } }
-  .sa-field { @apply flex flex-col gap-1 text-[12.5px] font-semibold text-navy; & .inp { @apply font-normal; } }
+  .sa-field { @apply flex flex-col gap-1 text-[12.5px] font-semibold text-ink; & .inp { @apply font-normal; } }
 
   .result {
     @apply flex flex-col gap-[3px] rounded-md border-l-[3px] border-(--c,var(--border)) bg-(--cb,var(--muted)) px-3 py-2 text-[13.5px];
     &.res-work { @apply [--c:var(--work)] [--cb:var(--work-bg)]; }
     &.res-out { @apply [--c:var(--out)] [--cb:var(--out-bg)]; }
     &.res-late { @apply [--c:var(--late)] [--cb:var(--late-bg)]; }
-    & b { @apply flex items-center gap-1 text-[12.5px] text-navy-2; }
-    & .chip { @apply bg-white; }
+    & b { @apply flex items-center gap-1 text-[12.5px] text-ink-2; }
+    & .chip { @apply bg-card; }
   }
   .res-note { @apply whitespace-normal text-[13px] text-foreground; }
   .sched-hint { @apply flex basis-full flex-wrap items-center gap-2 rounded-lg bg-trip-bg px-3 py-2 text-[13.5px] text-trip; & span { @apply text-foreground; } & .btn { @apply ml-auto; } }
   .late-lbl { @apply flex items-center gap-1.5 text-[13px] font-semibold text-late; }
   .req-notes { @apply flex flex-col gap-[3px] rounded-md bg-muted px-2.5 py-[7px]; }
-  .note-line { @apply flex items-center gap-[5px] text-[12.5px] leading-snug text-navy-2; &.late { @apply text-late; } &.sup { @apply text-trip; } }
+  .note-line { @apply flex items-center gap-[5px] text-[12.5px] leading-snug text-ink-2; &.late { @apply text-late; } &.sup { @apply text-trip; } }
 }
 
 /* =========================================================================
@@ -759,7 +819,7 @@
     & tbody tr { @apply transition-colors hover:bg-muted/50; }
     & tr:last-child td { @apply border-b-0; }
     & td.wrap { @apply min-w-[140px] whitespace-normal; }
-    & td.c-date { @apply font-semibold text-navy-2 tabular-nums; }
+    & td.c-date { @apply font-semibold text-ink-2 tabular-nums; }
     & td.c-result { @apply min-w-[150px] max-w-[260px] whitespace-normal phone:max-w-none; & .chip { @apply mr-1; } }
     & td.c-name .co-tag { @apply mt-[3px] text-[11.5px]; }
   }
@@ -786,7 +846,7 @@
     @apply gap-1 rounded-lg bg-muted p-[3px] phone:grid phone:w-full phone:grid-cols-4;
     & .btn { @apply h-8 border-transparent bg-transparent text-muted-foreground shadow-none hover:bg-transparent hover:text-foreground phone:px-0; &.on { @apply bg-card text-foreground shadow-sm; } }
   }
-  .hf-period { @apply text-sm font-semibold text-navy tabular-nums phone:flex-[1_1_100%]; }
+  .hf-period { @apply text-sm font-semibold text-ink tabular-nums phone:flex-[1_1_100%]; }
   .hf-dates { @apply inline-flex items-center gap-1.5 phone:w-full; & .inp { @apply w-auto phone:min-w-0 phone:flex-1; } }
   .hf-who { @apply ml-auto w-auto tablet:ml-0 phone:min-w-0 phone:flex-1; }
   .hf-export { @apply border-work/35 text-work hover:border-work hover:bg-work-bg hover:text-work; }
@@ -816,7 +876,7 @@
   .wk-nav { @apply flex items-center gap-1 rounded-lg border bg-card p-1 shadow-xs phone:w-full phone:justify-between; }
   .rep-nav { @apply phone:w-full phone:justify-between; & .wk-label { @apply min-w-[120px]; } }
   .wk-btn { @apply grid size-9 place-items-center rounded-md border-0 bg-transparent text-foreground transition-colors hover:bg-accent hover:text-primary [&_svg]:size-[18px]; }
-  .wk-label { @apply flex min-w-[150px] flex-col items-center px-1 leading-tight phone:min-w-0 phone:flex-1; & b { @apply text-[15px] font-semibold tracking-[-0.02em] text-navy tabular-nums; } & span { @apply text-[11.5px] font-semibold text-primary; } }
+  .wk-label { @apply flex min-w-[150px] flex-col items-center px-1 leading-tight phone:min-w-0 phone:flex-1; & b { @apply text-[15px] font-semibold tracking-[-0.02em] text-ink tabular-nums; } & span { @apply text-[11.5px] font-semibold text-primary; } }
   .wk-today { @apply h-9 rounded-md border-0 bg-primary px-4 text-[13px] font-semibold text-primary-foreground shadow-xs hover:bg-primary/90 disabled:cursor-default disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none; }
 
   .cal { @apply mt-[18px] overflow-hidden p-0 phone:overflow-visible phone:rounded-none phone:border-0 phone:bg-transparent phone:shadow-none; }
@@ -828,7 +888,7 @@
     &.corner { @apply items-start justify-end pl-4 text-xs font-semibold text-muted-foreground; }
     & .dn { @apply text-[11.5px] font-semibold tracking-[.04em] text-muted-foreground; }
     & .dd { @apply grid h-[34px] min-w-[34px] auto-cols-auto grid-flow-col place-items-center rounded-md px-1.5 text-[17px] font-bold tracking-[-0.02em] text-foreground tabular-nums; & small { @apply text-[11px] font-semibold text-muted-foreground; } }
-    &.weekend .dn, &.weekend .dd { @apply text-[#6b7385]; }
+    &.weekend .dn, &.weekend .dd { @apply text-muted-foreground; }
     &.today .dn { @apply text-primary; }
     &.today .dd { @apply bg-primary text-white shadow-sm; & small { @apply text-white/80; } }
     & em { @apply absolute -bottom-px left-1/2 h-[3px] w-6 -translate-x-1/2 rounded-t-[3px] bg-brand-red text-[0px]; }
@@ -847,7 +907,7 @@
     & .avatar.sm { @apply size-8 bg-muted; }
   }
   .cal-bg {
-    @apply row-span-full border-l border-[#edf0f5];
+    @apply row-span-full border-l border-border;
     &.weekend { @apply bg-[repeating-linear-gradient(135deg,#fafbfd_0_6px,#f5f7fb_6px_12px)]; }
     &.today { @apply border-l-primary/20 bg-primary/5; }
     &.today + .cal-bg { @apply border-l-primary/20; }
@@ -856,7 +916,7 @@
   .ev {
     @apply relative z-[2] m-[3px_4px] flex min-w-0 cursor-default items-center gap-1.5 self-center rounded-md bg-(--cb) py-1 pr-[9px] pl-1 text-[12.5px] leading-tight text-(--c)
       shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--c)_22%,transparent)] transition-[transform,box-shadow] hover:-translate-y-px;
-    &.pending { @apply bg-white/90 shadow-none outline-[1.5px] outline-dashed outline-offset-[-1.5px] outline-(color:--c); & .ev-ic { @apply bg-[color-mix(in_srgb,var(--c)_18%,#fff)] text-(--c); } }
+    &.pending { @apply bg-card/90 shadow-none outline-[1.5px] outline-dashed outline-offset-[-1.5px] outline-(color:--c); & .ev-ic { @apply bg-[color-mix(in_srgb,var(--c)_18%,#fff)] text-(--c); } }
     &.co { @apply [--c:var(--co)] [--cb:var(--co-bg)]; }
     &.cont-l { @apply ml-0 rounded-l-[3px]; }
     &.cont-r { @apply mr-0 rounded-r-[3px]; }
@@ -867,13 +927,13 @@
   .ev-ic { @apply grid size-[22px] shrink-0 place-items-center rounded-sm bg-(--c) text-white [&_svg]:size-[13px]; }
   .cal-foot { @apply flex flex-wrap gap-x-3.5 gap-y-1.5 border-t bg-muted/40 px-4 py-3 phone:gap-x-3 phone:border-0 phone:bg-transparent phone:px-0.5 phone:pt-2.5 phone:pb-0; }
   .lg { @apply inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground; & i { @apply grid size-[18px] place-items-center rounded-sm bg-(--c) not-italic text-white [&_svg]:size-[11px]; } &.st-co { @apply [--c:var(--co)]; } }
-  .lg-pending i { @apply bg-white outline-[1.5px] outline-dashed outline-offset-[-1.5px] outline-(color:--c); }
+  .lg-pending i { @apply bg-card outline-[1.5px] outline-dashed outline-offset-[-1.5px] outline-(color:--c); }
   .cal-agenda { @apply hidden phone:flex phone:flex-col phone:gap-2; }
   .ag-day {
     @apply grid grid-cols-[48px_minmax(0,1fr)] items-start gap-3 rounded-xl border bg-card p-2.5 shadow-sm;
-    &.empty { @apply items-center bg-card/60 px-2.5 py-1.5 shadow-none; & .ag-tile { @apply flex-row gap-1 bg-transparent py-0.5; & b { @apply text-[15px] text-[#6b7385]; } } }
+    &.empty { @apply items-center bg-card/60 px-2.5 py-1.5 shadow-none; & .ag-tile { @apply flex-row gap-1 bg-transparent py-0.5; & b { @apply text-[15px] text-muted-foreground; } } }
     &.today { @apply border-primary/35 ring-[3px] ring-ring/10; & .ag-tile { @apply bg-primary; & span, & b { @apply text-white; } } }
-    &.weekend .ag-tile span, &.weekend .ag-tile b { @apply text-[#6b7385]; }
+    &.weekend .ag-tile span, &.weekend .ag-tile b { @apply text-muted-foreground; }
     &.holiday .ag-tile span, &.holiday .ag-tile b { @apply text-late; }
     & ul { @apply m-0 flex min-w-0 list-none flex-col gap-1.5 py-0.5; }
     & li { @apply flex min-w-0 items-center gap-1.5; }
@@ -881,7 +941,7 @@
   }
   .ag-tile { @apply flex flex-col items-center rounded-lg bg-muted py-1.5 leading-tight; & span { @apply text-[11px] font-semibold text-muted-foreground; } & b { @apply text-[19px] font-bold tabular-nums; } & .hol { @apply text-[10px] font-semibold text-late; } }
   .ag-name { @apply min-w-[42px] whitespace-nowrap text-[13px]; }
-  .ag-none { @apply m-0 text-[12.5px] text-[#6b7385]; }
+  .ag-none { @apply m-0 text-[12.5px] text-muted-foreground; }
 
   .sc-bottom { @apply mt-4 grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start gap-4 narrow:grid-cols-1; }
   .sc-form { @apply flex flex-col gap-[18px] p-5 phone:gap-4 phone:p-4; & .field > .lbl { @apply flex items-center gap-2; } }
@@ -900,11 +960,11 @@
   .dur { @apply rounded-md bg-accent px-2 py-0.5 text-xs font-semibold text-primary; &.bad { @apply bg-late-bg text-late; } }
   .quick { @apply mb-2.5 flex flex-wrap gap-1.5; &.mt6 { @apply mt-2 mb-0; } }
   .qchip {
-    @apply h-7 rounded-md border bg-card px-3 text-[12.5px] font-medium text-navy-2 shadow-xs transition-colors hover:border-primary hover:bg-accent hover:text-primary phone:h-9 phone:px-3.5 phone:text-[13px];
+    @apply h-7 rounded-md border bg-card px-3 text-[12.5px] font-medium text-ink-2 shadow-xs transition-colors hover:border-primary hover:bg-accent hover:text-primary phone:h-9 phone:px-3.5 phone:text-[13px];
     &.soft { @apply border-transparent bg-muted font-medium text-muted-foreground shadow-none hover:bg-accent hover:text-primary; }
   }
   .date-range { @apply grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-2 phone:grid-cols-1; & label { @apply flex min-w-0 flex-col gap-1; } & small { @apply text-xs font-semibold text-muted-foreground; } }
-  .dr-arrow { @apply grid h-9 w-8 place-items-center text-[#6b7385] [&_svg]:size-[18px] phone:hidden; }
+  .dr-arrow { @apply grid h-9 w-8 place-items-center text-muted-foreground [&_svg]:size-[18px] phone:hidden; }
   .sc-submit { @apply h-11 text-[15px]; }
   .sc-up { @apply overflow-hidden p-0; }
   .up-head { @apply flex items-center gap-2 px-5 pt-[18px] pb-3; & b { @apply text-base font-semibold tracking-[-0.02em]; } }
@@ -917,10 +977,10 @@
   .up-body { @apply flex min-w-0 flex-col gap-[3px]; }
   .up-line { @apply flex flex-wrap items-center gap-1.5 text-sm; }
   .up-type { @apply inline-flex items-center text-[12.5px] font-bold text-(--c); & .st-ico { @apply mr-[3px] size-[1em]; } }
-  .dday { @apply rounded-sm bg-secondary px-1.5 py-px text-[11px] font-bold not-italic text-navy-2 tabular-nums; &.now { @apply bg-brand-red text-white; } }
+  .dday { @apply rounded-sm bg-secondary px-1.5 py-px text-[11px] font-bold not-italic text-ink-2 tabular-nums; &.now { @apply bg-brand-red text-white; } }
   .up-meta { @apply truncate text-[12.5px] text-muted-foreground tabular-nums; }
   .up-list .icon-btn:hover { @apply bg-late-bg text-late; }
-  .up-empty { @apply flex flex-col items-center gap-1.5 px-5 pt-[30px] pb-9 text-[#6b7385] [&_svg]:size-[34px]; & p { @apply m-0 text-[13.5px]; } }
+  .up-empty { @apply flex flex-col items-center gap-1.5 px-5 pt-[30px] pb-9 text-muted-foreground [&_svg]:size-[34px]; & p { @apply m-0 text-[13.5px]; } }
 }
 
 /* =========================================================================
@@ -933,7 +993,7 @@
     @apply overflow-hidden p-0;
     & h2::before, & h3::before { @apply hidden; }
     & > :not(.rep-cover) { @apply mx-7 phone:mx-3.5; }
-    & h3 { @apply mt-6 mb-2 text-[15px] text-navy; & small { @apply text-xs font-normal text-muted-foreground; } }
+    & h3 { @apply mt-6 mb-2 text-[15px] text-ink; & small { @apply text-xs font-normal text-muted-foreground; } }
   }
   /* 표지 */
   .rep-cover {
@@ -987,7 +1047,7 @@
   .dcard { @apply mt-3.5 min-w-0 rounded-xl border bg-card px-5 pt-4 pb-5 shadow-xs phone:px-3.5 phone:pt-3.5 phone:pb-4; }
   .dc-head {
     @apply mb-4 flex flex-wrap items-center gap-x-2 gap-y-0.5;
-    & h3 { @apply m-0 text-[15px] font-bold tracking-[-0.02em] text-navy; }
+    & h3 { @apply m-0 text-[15px] font-bold tracking-[-0.02em] text-ink; }
     & small { @apply basis-full pl-[34px] text-xs leading-snug text-muted-foreground; }
   }
   .dc-no { @apply grid h-[26px] min-w-[26px] place-items-center rounded-md bg-navy px-1 text-[11.5px] font-bold text-white tabular-nums; }
@@ -1003,13 +1063,13 @@
   .vb-rank { @apply grid size-5 place-items-center rounded-full bg-muted text-[11px] font-bold text-muted-foreground tabular-nums; }
   .vb li:first-child .vb-rank { @apply bg-navy text-white; }
   .vb-name { @apply truncate text-[13.5px] font-semibold text-foreground; }
-  .vb-val { @apply whitespace-nowrap text-[12.5px] font-semibold text-navy-2 tabular-nums; }
-  .vb-track { @apply col-start-2 -col-end-1 block h-2 overflow-hidden rounded-full bg-[#eef2f7]; }
+  .vb-val { @apply whitespace-nowrap text-[12.5px] font-semibold text-ink-2 tabular-nums; }
+  .vb-track { @apply col-start-2 -col-end-1 block h-2 overflow-hidden rounded-full bg-muted; }
   .vb-bar { @apply block h-full rounded-full bg-[linear-gradient(90deg,#15336f,#0072ce)]; }
   /* 일별 세로 막대 */
   .vc { @apply pt-4 pl-[22px]; }
-  .vc-plot { @apply relative h-[160px] border-b border-[#cfd6e0] phone:h-[120px]; }
-  .vc-grid { @apply absolute inset-x-0 h-0 border-t border-dashed border-[#e6eaf0]; & em { @apply absolute -top-2 -left-[22px] w-4 text-right text-[11px] not-italic text-[#6b7385] tabular-nums; } }
+  .vc-plot { @apply relative h-[160px] border-b border-border phone:h-[120px]; }
+  .vc-grid { @apply absolute inset-x-0 h-0 border-t border-dashed border-border; & em { @apply absolute -top-2 -left-[22px] w-4 text-right text-[11px] not-italic text-muted-foreground tabular-nums; } }
   .vc-cols { @apply absolute inset-0 flex items-end; }
   .vc-col {
     @apply flex h-full flex-1 cursor-default items-end justify-center rounded-sm hover:bg-primary/[.06] focus-visible:bg-primary/[.06];
@@ -1017,7 +1077,7 @@
     &.off i { @apply bg-[#a9cdf0]; }
     &.peak i { @apply bg-navy; }
   }
-  .vc-x { @apply mt-1.5 flex; & span { @apply flex-1 text-center text-[11px] text-[#6b7385] tabular-nums; } }
+  .vc-x { @apply mt-1.5 flex; & span { @apply flex-1 text-center text-[11px] text-muted-foreground tabular-nums; } }
   .viz-tip { @apply pointer-events-none fixed z-[60] flex flex-col gap-px rounded-md border bg-popover px-2.5 py-[7px] text-[12.5px] text-popover-foreground shadow-md; & b { @apply text-sm font-semibold; } & span { @apply text-muted-foreground; } }
 
   /* 표 */
@@ -1025,7 +1085,7 @@
   .rep-table {
     @apply w-full border-collapse text-[13.5px] phone:text-[12.5px];
     & th, & td { @apply border px-2.5 py-2 text-left align-middle phone:px-2 phone:py-1.5; }
-    & th { @apply whitespace-nowrap bg-muted font-semibold text-navy-2; }
+    & th { @apply whitespace-nowrap bg-muted font-semibold text-ink-2; }
     & td { @apply tabular-nums; }
     &.kv2 td:first-child { @apply w-[48%] bg-muted/40 font-medium; }
     &.kv2.privacy td:first-child { @apply w-[26%] whitespace-nowrap; }
@@ -1042,14 +1102,14 @@
   .rv-list { @apply m-0 hidden list-none flex-col gap-2.5 p-0 phone:flex; & > li { @apply flex flex-col gap-1.5 rounded-lg border bg-muted/40 p-3; } }
   .rv-table { @apply phone:hidden; }
   .rv-top { @apply flex flex-wrap items-center gap-1.5; & .chip { @apply ml-auto; } }
-  .rv-date { @apply text-[13px] font-bold text-navy tabular-nums; }
+  .rv-date { @apply text-[13px] font-bold text-ink tabular-nums; }
   .rv-who { @apply text-[13.5px] font-semibold leading-snug break-keep; }
   .rv-note, .rv-follow { @apply m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] leading-snug; & > span:first-child { @apply shrink-0 rounded-sm bg-card px-1.5 py-px text-[11px] font-semibold text-muted-foreground ring-1 ring-border; } }
   /* 표로 보기: 휴대폰에서 옆으로 넘겨도 첫 칸(이름)은 고정 */
   .rep-tables .rep-table { & th:first-child, & td:first-child { @apply phone:sticky phone:left-0 phone:z-[1] phone:bg-card phone:shadow-[1px_0_0_var(--border)]; } & th:first-child { @apply phone:bg-muted; } }
   .rep-sign { @apply mt-6 mb-7 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-t pt-4 phone:mb-4; }
   .rep-foot { @apply m-0 max-w-[620px] text-xs leading-relaxed text-muted-foreground; }
-  .rs-org { @apply m-0 flex flex-col items-end text-right phone:items-start phone:text-left; & b { @apply text-[13px] font-bold text-navy; } & span { @apply text-[11.5px] text-muted-foreground; } }
+  .rs-org { @apply m-0 flex flex-col items-end text-right phone:items-start phone:text-left; & b { @apply text-[13px] font-bold text-ink; } & span { @apply text-[11.5px] text-muted-foreground; } }
 }
 
 /* =========================================================================
@@ -1070,18 +1130,18 @@
     &.on { @apply border-navy bg-navy text-white hover:bg-navy; & b { @apply text-white/75; } & i { @apply bg-white/15 text-white; } }
     &.zero { @apply opacity-50; }
   }
-  .af-qnote { @apply mt-0 mb-2.5 flex items-center gap-2 text-[13.5px] font-semibold text-navy; }
+  .af-qnote { @apply mt-0 mb-2.5 flex items-center gap-2 text-[13.5px] font-semibold text-ink; }
   .af-panel { @apply px-[18px] pt-1.5 pb-3.5 phone:px-3 phone:pt-1 phone:pb-3; }
   .af-feed { @apply relative m-0 list-none p-0; }
   .af-day {
     @apply flex items-center gap-2 pt-4 pb-2 first:pt-2.5 after:order-2 after:h-px after:flex-1 after:bg-border after:content-[''];
     & em { @apply rounded-sm bg-primary px-1.5 py-px text-[11px] font-bold not-italic text-white; }
   }
-  .af-day-tile { @apply text-[13.5px] font-bold text-navy; }
+  .af-day-tile { @apply text-[13.5px] font-bold text-ink; }
   .af-day-n { @apply order-3 ml-0 text-xs text-muted-foreground; }
   .af-item {
     @apply relative grid grid-cols-[44px_30px_minmax(0,1fr)] gap-x-2.5 py-2 phone:grid-cols-[26px_minmax(0,1fr)] phone:gap-x-2
-      before:absolute before:inset-y-0 before:left-[68px] before:w-0.5 before:bg-[#edf0f5] before:content-[''] phone:before:left-3;
+      before:absolute before:inset-y-0 before:left-[68px] before:w-0.5 before:bg-border before:content-[''] phone:before:left-3;
     &:has(+ .af-day)::before, &:last-child::before { @apply bottom-[calc(100%-22px)]; }
     &:hover .af-body { @apply bg-muted; }
   }
@@ -1092,7 +1152,7 @@
   .af-line { @apply flex min-h-[22px] flex-wrap items-center gap-x-2 gap-y-1; }
   .af-who { @apply inline-flex items-center gap-1.5; & b { @apply text-sm font-semibold; } }
   .af-act { @apply text-sm font-semibold text-(--c); }
-  .af-target { @apply max-w-full truncate rounded-md border bg-card px-2 py-px phone:h-8 text-[12.5px] font-semibold text-navy-2 shadow-xs hover:border-primary hover:bg-accent hover:text-primary; }
+  .af-target { @apply max-w-full truncate rounded-md border bg-card px-2 py-px phone:h-8 text-[12.5px] font-semibold text-ink-2 shadow-xs hover:border-primary hover:bg-accent hover:text-primary; }
   .af-meta { @apply ml-auto inline-flex items-center gap-2 text-[11.5px] text-muted-foreground phone:ml-0 phone:basis-full; & .af-cat { @apply phone:hidden; } }
   .af-cat { @apply font-semibold; }
   .af-id { @apply opacity-80 tabular-nums; }
@@ -1110,12 +1170,12 @@
   details > summary { @apply list-none [&::-webkit-details-marker]:hidden; }
   .alog {
     @apply text-[12.5px];
-    & summary { @apply inline-flex h-7 items-center gap-[5px] rounded-md border bg-card px-2.5 phone:h-8 font-medium text-muted-foreground shadow-xs transition-colors hover:bg-accent hover:text-primary; & b { @apply font-bold text-navy-2; } }
-    &[open] summary { @apply border-primary/30 bg-accent text-navy; }
+    & summary { @apply inline-flex h-7 items-center gap-[5px] rounded-md border bg-card px-2.5 phone:h-8 font-medium text-muted-foreground shadow-xs transition-colors hover:bg-accent hover:text-primary; & b { @apply font-bold text-ink-2; } }
+    &[open] summary { @apply border-primary/30 bg-accent text-ink; }
   }
   .rep-tables {
     @apply mt-4 border-t pt-3;
-    & summary { @apply flex items-center gap-1 py-1.5 text-sm font-semibold text-navy; & small { @apply ml-1 font-normal text-muted-foreground; } }
+    & summary { @apply flex items-center gap-1 py-1.5 text-sm font-semibold text-ink; & small { @apply ml-1 font-normal text-muted-foreground; } }
   }
   .alog summary::after, .rep-tables summary::after {
     @apply size-3.5 bg-current opacity-60 transition-transform content-[''];
@@ -1124,7 +1184,7 @@
   .alog[open] summary::after, .rep-tables[open] summary::after { @apply rotate-180; }
   .mini-tl {
     @apply mt-2 mb-0 ml-1 flex list-none flex-col p-0;
-    & > li { @apply relative flex flex-row gap-2.5 border-0 bg-transparent px-0 pt-0 pb-2.5 text-[12.5px] before:absolute before:top-3 before:-bottom-0.5 before:left-1 before:w-0.5 before:bg-[#edf0f5] before:content-[''] last:before:hidden; }
+    & > li { @apply relative flex flex-row gap-2.5 border-0 bg-transparent px-0 pt-0 pb-2.5 text-[12.5px] before:absolute before:top-3 before:-bottom-0.5 before:left-1 before:w-0.5 before:bg-border before:content-[''] last:before:hidden; }
   }
   .reqlist .mini-tl > li { @apply flex-row border-0 bg-transparent px-0 pt-0 pb-2.5; }
   .mt-dot { @apply relative z-[1] mt-[5px] size-2.5 shrink-0 rounded-full bg-(--c) shadow-[0_0_0_3px_var(--card)]; }
@@ -1180,7 +1240,7 @@
     .ad-users thead { @apply hidden; }
     .ad-users tr { @apply mb-2 grid grid-cols-2 gap-x-2 gap-y-2 rounded-lg border p-3 last:mb-0; }
     .ad-users td { @apply block w-auto! border-0 p-0; }
-    .ad-users td.au-role { @apply col-start-1 row-start-1 self-center text-[13px] font-semibold text-navy; }
+    .ad-users td.au-role { @apply col-start-1 row-start-1 self-center text-[13px] font-semibold text-ink; }
     .ad-users td.au-use { @apply col-start-2 row-start-1 justify-self-end; }
     .ad-users td[data-label]::before { @apply mb-1 block text-xs font-semibold text-muted-foreground content-[attr(data-label)]; }
     .ad-users .inp { @apply h-10 text-base; }
@@ -1193,9 +1253,14 @@
     & tr.off td { @apply bg-muted text-muted-foreground; }
   }
   .ad-safety {
-    @apply grid grid-cols-[20px_minmax(0,1fr)_minmax(0,1.6fr)_auto_auto] items-center gap-1.5 phone:grid-cols-[20px_minmax(0,1fr)_auto_auto];
+    @apply grid grid-cols-[20px_minmax(0,1fr)_minmax(0,1.5fr)_auto_auto_auto] items-center gap-1.5 phone:grid-cols-[20px_minmax(0,1fr)_auto] phone:rounded-lg phone:border phone:p-2.5;
     & .inp { @apply h-8 text-[13.5px]; }
+    & select.inp { @apply w-auto pr-8; }
+    & .inp[name^="t-"] { @apply phone:col-start-2 phone:-col-end-1; }
     & .inp[name^="d-"] { @apply phone:col-start-2 phone:-col-end-1 phone:row-start-2; }
+    & select.inp[name^="s-"] { @apply phone:col-start-2 phone:row-start-3 phone:w-full; }
+    & .check-row { @apply phone:col-start-3 phone:row-start-3; }
+    & .ad-btns { @apply phone:col-start-2 phone:-col-end-1 phone:row-start-4 phone:justify-end; }
   }
   .ad-safety-card { @apply col-span-full; }
 }
@@ -1226,7 +1291,7 @@
         before:absolute before:top-3.5 before:right-1/2 before:-left-1/2 before:z-0 before:h-0.5 before:bg-border before:content-[''] first:before:hidden;
       &.done::before, &.cur::before, &.stop::before { @apply bg-primary; }
       &.done i { @apply bg-primary text-white; }
-      &.cur i { @apply bg-white text-primary shadow-[0_0_0_3px_var(--card),inset_0_0_0_2px_var(--primary)]; }
+      &.cur i { @apply bg-card text-primary shadow-[0_0_0_3px_var(--card),inset_0_0_0_2px_var(--primary)]; }
       &.stop i { @apply bg-late text-white; }
       &.stop b { @apply text-late; }
     }
@@ -1247,7 +1312,7 @@
     @apply relative flex gap-2.5 rounded-lg p-2.5;
     &[role="button"] { @apply cursor-pointer hover:bg-muted; }
     &.unread { @apply bg-accent/70 after:absolute after:top-3.5 after:right-3 after:size-2 after:rounded-full after:bg-primary after:content-['']; }
-    &.urgent { @apply bg-late-bg; & .np-ic { @apply bg-white text-late; } }
+    &.urgent { @apply bg-late-bg; & .np-ic { @apply bg-card text-late; } }
     & b { @apply block pr-3.5 text-[13.5px] font-semibold; }
     & p { @apply mt-0.5 mb-0 text-[12.5px] text-foreground [overflow-wrap:anywhere]; }
     & time { @apply text-[11.5px] text-muted-foreground; }
@@ -1275,10 +1340,93 @@
 @keyframes slide-up { from { transform: translateY(24px); opacity: 0; } }
 
 /* =========================================================================
+   다크 모드 — 휴대폰 · PC가 어두운 화면 설정이면 자동 적용 (shadcn 다크 테마 + CI 색)
+   ========================================================================= */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --background: #0b1120;
+    --foreground: #e5ebf4;
+    --card: #121a2b;
+    --card-foreground: #e5ebf4;
+    --popover: #151f33;
+    --popover-foreground: #e5ebf4;
+    --primary: #2f8fe8;
+    --primary-foreground: #ffffff;
+    --secondary: #1b2539;
+    --secondary-foreground: #d5e2f3;
+    --muted: #19233a;
+    --muted-foreground: #9ba7ba;
+    --accent: #16304f;
+    --accent-foreground: #d3e6fb;
+    --destructive: #f2584a;
+    --border: #263149;
+    --input: #36435e;
+    --ring: #3b9cf0;
+    --navy: #0f2653;
+    --navy-2: #1d3d79;
+    --ink: #dce7f6;
+    --ink-2: #b7cbe6;
+    --work: #2bab74;  --work-bg: rgba(43, 171, 116, .15);
+    --leave: #9aa6b8; --leave-bg: #1d2638;
+    --out: #e3962f;   --out-bg: rgba(227, 150, 47, .15);
+    --trip: #9d8ff2;  --trip-bg: rgba(157, 143, 242, .15);
+    --field: #3d9cf0; --field-bg: rgba(61, 156, 240, .15);
+    --late: #f2584a;  --late-bg: rgba(242, 88, 74, .15);
+    --co: #d77fd0;    --co-bg: rgba(215, 127, 208, .15);
+    --res: #2fb0c9;   --res-bg: rgba(47, 176, 201, .15);
+  }
+}
+@layer components {
+  @media (prefers-color-scheme: dark) {
+    .avatar.svgav, .avatar.sup.svgav { @apply bg-[#1e2a3d]; }
+    .avatar.svgav.full { @apply bg-[#1b2c45]; }
+    .avatar.sm { @apply bg-[#1e2a3d] text-ink; }
+    .card.st-late { @apply border-late/40 bg-[linear-gradient(180deg,rgba(242,88,74,.12)_0%,var(--card)_70%)]; & .kv, & .kv-mini { @apply bg-late-bg; } }
+    .banner { @apply border-out/30 bg-out-bg text-out; &.info { @apply border-primary/30 bg-accent text-accent-foreground; } &.warn { @apply border-out/35 bg-out-bg text-[#f3c071]; } &.danger { @apply border-late/40 bg-late-bg text-[#ff9a8f]; } }
+    .edit-banner { @apply border-primary/30; }
+    .wo-card.urgent { @apply border-late/40; }
+    .ack.yes span { @apply text-[#8fd3b4]; }
+    .check:has(input:checked) { @apply border-work/40; }
+    .check-inline, .notice-list > li.pinned { @apply border-brand-red/30 bg-[rgba(228,0,43,.1)]; }
+    .set-perm.perm-denied, .set-perm.perm-unsupported { @apply text-[#f3c071]; }
+    .kpi.warn { @apply bg-[linear-gradient(180deg,rgba(242,88,74,.12),var(--card)_60%)]; }
+    .tile input:checked + .tile-in { @apply bg-(--cb); }
+    .ev.pending .ev-ic { @apply bg-(--cb); }
+    .df-old { @apply bg-late-bg text-[#ff9a8f] decoration-[#ff9a8f]/60; }
+    .df-new { @apply bg-work-bg text-[#8fd3b4]; }
+    .vc-col.off i { @apply bg-[#2b4f7a]; }
+    .vb-bar, .vb li:first-child .vb-bar { @apply bg-[linear-gradient(90deg,#1d4f8f,#3d9cf0)]; }
+    .vc-col.peak i, .vc-col i b { @apply bg-[#5aaef5]; }
+    .vc-col i b { @apply text-[#0b1120]; }
+    .tl-track { background-image: linear-gradient(to right, rgba(255, 255, 255, .06) 1px, transparent 1px); }
+    .tl-bar {
+      &.done { @apply bg-[#34405a] text-[#c9d3e1]; }
+      &.approved { @apply bg-work-bg text-work ring-work/50; }
+      &.pending { @apply bg-out-bg text-[#f3c071] ring-out/50; }
+      &.waiting { @apply bg-[repeating-linear-gradient(135deg,rgba(227,150,47,.18)_0_6px,rgba(227,150,47,.3)_6px_12px)] text-[#f3c071] ring-out/50; }
+      &.resident { @apply bg-res-bg text-res ring-res/50; }
+      &.co.planned, &.co.approved, &.co.pending { @apply bg-co-bg text-[#ecb3e7]; }
+      &.co.done { @apply bg-[#3d2c45] text-[#e3c4e0]; }
+    }
+    .tl-key { &.done { @apply bg-[#34405a]; } &.approved { @apply bg-work-bg ring-work/50; } &.pending { @apply bg-out-bg ring-out/50; } &.waiting { @apply bg-out-bg ring-out/50; } &.resident { @apply bg-res-bg ring-res/50; } }
+    .cal-bg.weekend { @apply bg-[repeating-linear-gradient(135deg,#121a2b_0_6px,#162036_6px_12px)]; }
+    .cal-bg.holiday { @apply bg-[repeating-linear-gradient(135deg,#1c1622_0_6px,#24192a_6px_12px)]; }
+    .cat-field { @apply [--cb:#1c2a44]; }
+    .cat-access { @apply [--c:var(--muted-foreground)]; }
+    .hist tbody tr:hover, .cal-row:hover { @apply bg-white/[.03]; }
+    .fab { @apply shadow-[0_8px_20px_rgba(0,0,0,.45)]; }
+    .nav { @apply phone:shadow-[0_12px_32px_rgba(0,0,0,.5)]; }
+    .modal-bg, .np-bg, .cf-bg { @apply bg-black/65; }
+  }
+}
+
+/* =========================================================================
    인쇄 (월간 실적 보고서)
    ========================================================================= */
 @media print {
   @page { size: A4; margin: 14mm; }
+  :root { color-scheme: light; }
   body { background: #fff !important; font-size: 12px; }
   #top, .site-foot, .skip-link, .no-print, .page-head, .toast, .proto-note, .nav, .nav-bar { display: none !important; }
   main { padding: 0 !important; max-width: none !important; }
