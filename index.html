@@ -851,6 +851,10 @@ function reqLabel(r) {
   if (r.status === '외근 중' && new Date(r.expectedReturnAt) < now()) return { label: '복귀 지연', cls: 'late' };
   if (r.status === '승인' && r.departAt.slice(0, 10) < dkey(now())) return { label: '기한 지남', cls: 'late' };
   if (r.status === '승인') return isStartLate(r) ? { label: '출발 지연', cls: 'out' } : { label: '승인 · 출발 전', cls: 'work' };
+  if (r.status === '상주 기록') { // 저장 값은 그대로, 화면에는 시간에 따라 표시
+    const n = now();
+    return { label: new Date(r.expectedReturnAt) <= n ? '상주지원 완료' : new Date(r.departAt) <= n ? '상주지원 중' : '상주지원 예정', cls: 'res' };
+  }
   return { label: r.status, cls: REQ_CLS[r.status] };
 }
 const reqChip = r => { const l = reqLabel(r); return `<span class="chip st-${l.cls}">${l.label}</span>`; };
@@ -1011,13 +1015,13 @@ function histSummaryHTML(list) {
   const done = list.filter(r => r.status === '복귀 완료');
   const items = [
     ['전체', list.length, ''],
-    ['복귀 완료', done.length, 'leave'],
+    ['방문지원 완료', done.length, 'leave'],
     ['늦은 복귀', done.filter(r => lateMinOf(r) > 0).length, 'late'],
     ['일부 완료 · 미완료', done.filter(r => r.result && r.result.outcome !== '완료').length, 'out'],
-    ['진행 · 대기', list.filter(r => ['승인 대기', '승인', '외근 중'].includes(r.status)).length, 'field'],
+    ['진행 중', list.filter(r => ['승인 대기', '승인', '외근 중'].includes(r.status)).length, 'field'],
     ['반려', list.filter(r => r.status === '반려').length, 'late'],
     ['취소', list.filter(r => r.status === '취소').length, 'leave'],
-    ['상주 기록', list.filter(isRecord).length, 'res'],
+    ['상주지원', list.filter(isRecord).length, 'res'],
   ];
   return `<div class="hist-sum">${items.map(([l, n, c]) => `<span class="${c ? 'st-' + c : ''}${n ? '' : ' zero'}">${l} <b>${n}</b></span>`).join('')}</div>`;
 }
@@ -1067,7 +1071,7 @@ function historyCSV(list) {
     const u = userById(r.requesterId), a = userById(r.approverId), late = lateMinOf(r);
     return [r.id, u ? u.name : r.requesterId, u ? u.part || '' : '', orgText(r), r.locationDetail || '', csvTime(r.departAt), csvTime(r.expectedReturnAt),
       r.workType, r.description, r.supportType || '', namesOf(r.coWorkerIds || []),
-      reqLabel(r).label, csvTime(r.requestedAt), isRecord(r) ? '승인 없음(상주 기록)' : r.decidedAt ? (r.status === '반려' ? '반려' : '승인') : '', a ? a.name : '', csvTime(r.decidedAt),
+      reqLabel(r).label, csvTime(r.requestedAt), isRecord(r) ? '승인 없음(상주지원)' : r.decidedAt ? (r.status === '반려' ? '반려' : '승인') : '', a ? a.name : '', csvTime(r.decidedAt),
       csvTime(r.startedAt), csvTime(r.returnedAt), late > 0 ? late : '', r.result ? r.result.outcome : '', r.result ? r.result.note : '', r.instruction || '',
       r.rejectReason || r.cancelReason || '', r.canceledBy ? userById(r.canceledBy).name : '', (r.safetyChecked || []).join(' · '), (r.startSafety || []).join(' · '),
       r.plannedReturnAt ? csvTime(r.plannedReturnAt) : '', (r.extensions || []).map(x => `${csvTime(x.from)}→${csvTime(x.to)} ${x.reason}`).join(' / '), r.lateReason || '',
@@ -1463,7 +1467,7 @@ function myRequestsHTML() {
 function cancelLineHTML(r) {
   if (r.status !== '취소') return '';
   const by = userById(r.canceledBy);
-  return `<span class="reason cancel">${r.prevStatus === '승인' ? '승인 후 ' : r.prevStatus === '상주 기록' ? '상주 기록 ' : ''}취소 ${fmtDT(r.canceledAt)}${by ? ` · ${esc(by.name)}${isSup(by) ? ' 감독원' : ''}` : ''} — ${esc(r.cancelReason || '')}</span>`;
+  return `<span class="reason cancel">${r.prevStatus === '승인' ? '승인 후 ' : r.prevStatus === '상주 기록' ? '상주지원 ' : ''}취소 ${fmtDT(r.canceledAt)}${by ? ` · ${esc(by.name)}${isSup(by) ? ' 감독원' : ''}` : ''} — ${esc(r.cancelReason || '')}</span>`;
 }
 function myRequestActions(r) {
   const u = me();
@@ -2399,7 +2403,7 @@ function reportHTML() {
   const kpis = [
     { label: '작업 건수', icon: IC.clipboard, hero: true, value: `${work.length}<small>건</small>`,
       sub: `방문지원 ${visit.length} · 상주지원 ${res.length} (반려 · 취소 제외)`, delta: delta(work.length, P.work.length, '건') },
-    { label: '완료 작업', icon: IC.check, value: `${done.length}<small>건</small>`, sub: `완료율 ${doneRate}% · 진행 · 예정 ${work.length - done.length}건`,
+    { label: '완료 작업', icon: IC.check, value: `${done.length}<small>건</small>`, sub: `완료율 ${doneRate}% · 진행 중 ${work.length - done.length}건`,
       meter: `<span class="kpi-meter" style="background:${VIZ.blueTrack}" role="img" aria-label="완료율 ${doneRate}%"><i style="width:${doneRate}%;background:${VIZ.blue}"></i></span>`,
       delta: delta(done.length, P.done.length, '건') },
     { label: '재방문 필요', icon: IC.refresh, value: `${M.revisits.length}<small>건</small>`, sub: `재방문 요청 ${revReq} · 미요청 ${M.revisits.length - revReq}`, warn: M.revisits.length - revReq > 0 },
@@ -2412,9 +2416,9 @@ function reportHTML() {
       sub: `완료 ${oCnt('완료')} · 진행 ${oCnt('진행 중')} · 확인 ${oCnt('확인')} · 새 요청 ${oCnt('새 요청')}${orders.some(o => o.priority === '긴급') ? ` · 긴급 ${orders.filter(o => o.priority === '긴급').length}` : ''}` },
   ];
   const statusParts = [
-    { name: '복귀 완료', value: cnt('복귀 완료'), color: VIZ.cat[0] },
-    { name: '상주 기록', value: res.length, color: VIZ.res },
-    { name: '진행 · 대기', value: cnt('승인 대기') + cnt('승인') + cnt('외근 중'), color: VIZ.cat[1], ink: '#0b1f4b' },
+    { name: '방문지원 완료', value: cnt('복귀 완료'), color: VIZ.cat[0] },
+    { name: '상주지원 완료', value: res.filter(M.isDone).length, color: VIZ.res },
+    { name: '진행 중', value: cnt('승인 대기') + cnt('승인') + cnt('외근 중') + res.filter(r => !M.isDone(r)).length, color: VIZ.cat[1], ink: '#0b1f4b' },
     { name: '반려', value: cnt('반려'), color: VIZ.cat[2] },
     { name: '취소', value: cnt('취소'), color: VIZ.cat[3], ink: '#1f2937' },
   ];
@@ -2455,7 +2459,7 @@ function reportHTML() {
   const summary = [
     ['작업 건수 (반려 · 취소 제외)', `${work.length}건`], ['지원 구분 (방문지원 · 상주지원)', `${visit.length}건 · ${res.length}건`],
     ...parts.map(k => [`작업 부문 · ${k}`, `${byPart(k).length}건`]),
-    ['완료 작업 (복귀 완료 · 지난 상주지원)', `${done.length}건 (${doneRate}%)`], ['진행 · 예정', `${work.length - done.length}건`],
+    ['완료 작업 (방문지원 완료 · 상주지원 완료)', `${done.length}건 (${doneRate}%)`], ['진행 중 (승인 대기 · 출발 전 · 외근 중 · 상주지원 예정)', `${work.length - done.length}건`],
     ['반려 / 취소', `${cnt('반려')}건 / ${cnt('취소')}건`],
     ['작업 결과 (완료 · 일부 완료 · 미완료 · 미보고)', `${oc('완료')} · ${oc('일부 완료')} · ${oc('미완료')} · ${oc('미보고')}`],
     ['재방문 필요 (요청 · 미요청)', `${revReq} · ${M.revisits.length - revReq}`],
@@ -2512,7 +2516,7 @@ function reportHTML() {
       </div>`).join('')}</section>
 
     <div class="dash-2">
-      ${repCard('01', '처리 현황', `요청 · 기록 ${list.length}건`, vizSeg(statusParts, '처리 현황 구성'))}
+      ${repCard('01', '처리 현황', `전체 ${list.length}건 (반려 · 취소 포함)`, vizSeg(statusParts, '처리 현황 구성'))}
       ${repCard('02', '지원 구분별', `작업 ${work.length}건 · 방문지원과 상주지원 비교`, vizSeg(supportParts, '지원 구분별 작업'))}
     </div>
     <div class="dash-2">
@@ -2555,7 +2559,7 @@ function reportHTML() {
       <h3>감독원 작업 요청</h3>${table(['요청일', '제목', '받는 직원', '상태'], orderRows)}
     </details>
     <footer class="rep-sign">
-      <p class="rep-foot">※ 작업 건수는 출발(상주지원은 지원 시작)일 기준이며 반려 · 취소는 제외합니다. 완료 작업은 복귀 완료한 방문지원과 지원 시간이 끝난 상주지원입니다. 여러 기관을 간 작업은 기관별로 각각 집계합니다.</p>
+      <p class="rep-foot">※ 작업 건수는 출발(상주지원은 지원 시작)일 기준이며 반려 · 취소는 제외합니다. 완료 작업은 방문지원 완료(복귀 처리)와 상주지원 완료(지원 시간 종료)입니다. 여러 기관을 간 작업은 기관별로 각각 집계합니다.</p>
       <p class="rs-org"><b>한국도로공사 광주전남본부</b><span>전산 작업관리 소통포털</span></p>
     </footer>
   </article>`;
@@ -2659,7 +2663,7 @@ function notifyPrefs(u) {
 }
 function alertTypeOf(a, u) {
   const m = { '승인 요청': 'req', '승인': 'decision', '반려': 'decision', '승인 취소': 'decision', '대신 외근 시작': 'decision', '대신 복귀 처리': 'decision',
-    '요청 수정 (감독원)': 'decision', '외근 취소': 'change', '요청 취소': 'change', '상주지원 기록': 'field', '상주 기록 수정': 'field', '상주 기록 취소': 'field', '복귀 연장': 'change', '외근 시작': 'field', '복귀': 'field',
+    '요청 수정 (감독원)': 'decision', '외근 취소': 'change', '요청 취소': 'change', '상주지원 기록': 'field', '상주 기록 수정': 'field', '상주 기록 취소': 'field', '상주지원 수정': 'field', '상주지원 취소': 'field', '복귀 연장': 'change', '외근 시작': 'field', '복귀': 'field',
     '작업 요청': 'order', '작업 요청 확인': 'order', '작업 요청 삭제': 'order', '작업 요청 완료': 'order', '작업 요청 다시 열기': 'order', '공지 게시': 'notice' };
   if (a.action === '요청 수정') return isSup(u) ? 'req' : 'change';
   return m[a.action] || '';
@@ -3665,7 +3669,7 @@ const forms = {
     if (!reason) { err.textContent = '취소 사유를 적어 주세요.'; err.hidden = false; f.elements.reason.focus(); return; }
     const was = r.status;
     cancelRequest(r, u, reason);
-    audit('req', was === '상주 기록' ? '상주 기록 취소' : was === '승인' ? '외근 취소' : '요청 취소', r.id, `사유: ${reason}`, { to: [...supIds(), ...members(r)] });
+    audit('req', was === '상주 기록' ? '상주지원 취소' : was === '승인' ? '외근 취소' : '요청 취소', r.id, `사유: ${reason}`, { to: [...supIds(), ...members(r)] });
     cancelOpenId = null; delete cancelDrafts[r.id];
     commit();
     toast(was === '상주 기록' ? `${r.id} 상주지원 기록을 취소했습니다.` : `${r.id} ${was === '승인' ? '외근' : '요청'}을 취소했습니다. 감독원 화면에 사유가 표시됩니다.`);
@@ -3798,7 +3802,7 @@ const forms = {
       const id = r.id;
       const chg = diffOf(before, r, REQ_FIELDS);
       if (before.status !== r.status) chg.push({ f: '상태', from: before.status, to: r.status });
-      audit('req', isRecord(r) ? '상주 기록 수정' : '요청 수정', r.id, locText(r), { changes: chg, to: [...(isRecord(r) && before.status === r.status ? [] : supIds()), ...members(r), ...(before.coWorkerIds || [])] });
+      audit('req', isRecord(r) ? '상주지원 수정' : '요청 수정', r.id, locText(r), { changes: chg, to: [...(isRecord(r) && before.status === r.status ? [] : supIds()), ...members(r), ...(before.coWorkerIds || [])] });
       editingId = null; reqDraft = null; reqTab = 'mine'; // 저장하면 내 요청 탭에서 확인
       commit();
       toast(isRecord(r) ? `${id} 상주지원 기록을 수정했습니다.` : `${id} 요청을 수정했습니다. 감독원 승인 화면${coIds.length ? '과 공동작업자 화면' : ''}에도 바로 반영됩니다.`);
