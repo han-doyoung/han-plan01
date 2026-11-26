@@ -1065,11 +1065,15 @@
   /* 쌓은 막대 (대상 기관별 × 작업 부문) */
   .vk-legend { @apply mb-3 flex flex-wrap gap-x-3.5 gap-y-1 text-xs text-muted-foreground; & span { @apply inline-flex items-center gap-1.5; } & i { @apply size-2.5 rounded-full; } }
   .vk li { @apply gap-y-1; }
-  .vk { @apply pc:grid pc:grid-cols-2 pc:gap-x-6 pc:gap-y-1; }
+  .vk-wide { @apply pc:grid pc:grid-cols-2 pc:gap-x-6 pc:gap-y-1; }
   .vb-track.vk-track { @apply h-[18px] bg-muted; }
   .vk-fill { @apply flex h-full gap-px overflow-hidden rounded-full; }
   .vk-seg { @apply flex min-w-3.5 cursor-default items-center justify-center text-[10.5px] font-bold text-white tabular-nums outline-offset-1 hover:brightness-110 focus-visible:brightness-110; }
   .vk-sub { @apply col-start-2 -col-end-1 text-[11.5px] text-muted-foreground; }
+  .rep-urgent { @apply mt-4 rounded-lg border border-late/30 bg-late-bg px-3 py-2.5 text-[13px];
+    & > b { @apply flex items-center gap-1.5 font-semibold text-late; }
+    & ul { @apply m-0 mt-1.5 flex list-none flex-col gap-1.5 p-0; }
+    & li { @apply flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-foreground; & small { @apply basis-full text-xs text-muted-foreground; } } }
   /* 일별 세로 막대 */
   .vc { @apply pt-4 pl-[22px]; }
   .vc-plot { @apply relative h-[160px] border-b border-border phone:h-[120px]; }
