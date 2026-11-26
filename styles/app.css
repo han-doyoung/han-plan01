@@ -252,12 +252,14 @@
   .userchip {
     @apply flex min-w-0 items-center gap-2 rounded-full border border-white/15 bg-white/10 py-[3px] pr-1 pl-[3px] text-sm phone:gap-1 phone:text-[13px];
     & .avatar { @apply phone:size-7 slim:hidden; }
-    & .uname { @apply max-w-[6em] truncate whitespace-nowrap font-semibold phone:mx-1 slim:ml-2.5; }
+    & .uname { @apply max-w-[6em] truncate whitespace-nowrap font-semibold phone:mx-1 slim:ml-1.5; }
     & .logout-btn { @apply phone:px-2.5; & svg { @apply hidden slim:block; } & .lo-txt { @apply slim:hidden; } }
     & .btn { @apply rounded-full border-transparent bg-white/15 text-white shadow-none hover:bg-white/25 hover:text-white; }
-    & .icon-only { @apply size-8 px-0 [&_svg]:size-4; }
+    & .icon-only { @apply size-8 px-0 slim:size-7 [&_svg]:size-4; }
     & .bell.on { @apply bg-white/30; }
   }
+  .theme-solo { @apply size-8 shrink-0 rounded-full border-white/25 bg-white/10 px-0 text-white shadow-none hover:border-white/40 hover:bg-white/20 hover:text-white [&_svg]:size-4; }
+  .opts.theme-opts { @apply grid grid-cols-3 gap-2 phone:grid-cols-3 phone:gap-1.5; & .opt span { @apply flex-col gap-1 py-3 text-center phone:px-1 [&_svg]:size-5; } & small { @apply text-[11.5px] font-normal text-muted-foreground; } }
   .install-btn { @apply rounded-full border-white/25 bg-white/10 text-white shadow-none hover:border-white/40 hover:bg-white/20 hover:text-white; }
   .bell { @apply relative; }
   .bell-n { @apply absolute -top-[5px] -right-1.5 h-[17px] min-w-[17px] rounded-full bg-brand-red px-1 text-center text-[10.5px] font-bold leading-[17px] text-white shadow-[0_0_0_2px_var(--navy)]; }
@@ -348,7 +350,10 @@
     &.svgav.center svg { @apply mt-0 size-[64%]; }
     &.svgav.full { @apply overflow-hidden bg-[#e8f0fa]; & svg { @apply mt-[10%] size-[96%]; } }
     &.svgav.ci, &.sup.svgav.ci { @apply bg-white shadow-[inset_0_0_0_1px_#dfe4ec]; }
+    /* 차로차로 프렌즈: 그림(바탕색 포함)이 원을 꽉 채움 */
+    &.svgav.cc, &.sup.svgav.cc { @apply overflow-hidden bg-transparent; & .ccimg { @apply size-full; } }
   }
+  .ccimg { @apply block rounded-full bg-cover bg-center bg-no-repeat; }
   .avatar-btn {
     @apply relative shrink-0 rounded-full border-0 bg-transparent p-0 hover:[&_.avatar]:ring-[3px] hover:[&_.avatar]:ring-ring/20;
     & .edit { @apply absolute -right-[3px] -bottom-[3px] grid size-[18px] place-items-center rounded-full border-2 border-white bg-primary text-white [&_svg]:size-2.5; }
@@ -361,6 +366,7 @@
     & .avatar { @apply size-[30px] text-[13px]; }
     &.svgav svg { @apply size-[34px]; }
     & .exmark { @apply w-9; }
+    & .ccimg { @apply size-[38px]; }
   }
   .exmark { @apply block aspect-[79/24] w-4/5 bg-no-repeat bg-size-[265.8%_auto] bg-position-[0_50%]; }
   .card .avatar { @apply shadow-[0_0_0_2px_var(--card),0_0_0_4px_var(--c,var(--border))] phone:shadow-[0_0_0_1.5px_var(--card),0_0_0_3px_var(--c,var(--border))]; }
@@ -1385,10 +1391,11 @@
 @keyframes slide-up { from { transform: translateY(24px); opacity: 0; } }
 
 /* =========================================================================
-   다크 모드 — 휴대폰 · PC가 어두운 화면 설정이면 자동 적용 (shadcn 다크 테마 + CI 색)
+   다크 모드 — 화면 테마(자동 · 밝게 · 어둡게)에 따라 <html data-theme="dark">일 때 적용 (shadcn 다크 테마 + CI 색)
+   자동이면 휴대폰 · PC의 어두운 화면 설정을 따름. 화면에서만 적용하고 인쇄는 항상 밝게
    ========================================================================= */
-@media (prefers-color-scheme: dark) {
-  :root {
+@media screen {
+  html[data-theme="dark"] {
     color-scheme: dark;
     --background: #0b1120;
     --foreground: #e5ebf4;
@@ -1423,7 +1430,7 @@
   }
 }
 @layer components {
-  @media (prefers-color-scheme: dark) {
+  @media screen { :where(html[data-theme="dark"]) {
     .avatar.svgav, .avatar.sup.svgav { @apply bg-[#1e2a3d]; }
     .avatar.svgav.full { @apply bg-[#1b2c45]; }
     .avatar.sm { @apply bg-[#1e2a3d] text-ink; }
@@ -1462,7 +1469,7 @@
     .hist tbody tr:hover, .cal-row:hover { @apply bg-white/[.03]; }
     .nav { @apply phone:shadow-[0_12px_32px_rgba(0,0,0,.5)]; }
     .modal-bg, .np-bg, .cf-bg { @apply bg-black/65; }
-  }
+  } }
 }
 
 /* =========================================================================
