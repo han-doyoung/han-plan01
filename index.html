@@ -150,12 +150,12 @@
   ],
 
   "workOrders": [
-    {"id": "W-001", "fromId": "S1", "toIds": ["W1"], "priority": "보통", "title": "광주지사 신규 직원 PC 2대 설치", "workPart": "사무자동화기기", "workType": "설치·교체", "location": "광주지사", "locations": ["광주지사", "보성지사"], "dueAt": "2026-10-08T17:00:00", "detail": "10/8 입사 직원 2명 PC 설치와 메일 · 업무 계정 설정 바랍니다.", "createdAt": "2026-10-07T09:10:00", "acks": {"W1": {"at": "2026-10-07T09:25:00", "note": "내일 오전에 설치하겠습니다."}}},
-    {"id": "W-002", "fromId": "S2", "toIds": ["W3", "W4"], "priority": "긴급", "title": "순천지사 요금소 네트워크 장애 긴급 점검", "workPart": "네트워크", "workType": "장애 대응", "location": "순천지사", "dueAt": "2026-10-20T15:00:00", "detail": "요금소 단말 일부 통신 불가 — 즉시 현장 확인 바랍니다.", "createdAt": "2026-10-20T09:05:00", "acks": {"W3": {"at": "2026-10-20T09:08:00", "note": "강동현 직원과 바로 출발하겠습니다."}, "W4": {"at": "2026-10-20T09:10:00", "note": ""}}},
-    {"id": "W-003", "fromId": "S1", "toIds": ["W2"], "priority": "보통", "title": "영암지사 복합기 정기 점검", "workPart": "사무자동화기기", "workType": "정기 점검", "location": "영암지사", "dueAt": "2026-11-06T17:00:00", "detail": "분기 정기 점검입니다. 점검표 작성해 주세요.", "createdAt": "2026-11-03T10:00:00", "acks": {"W2": {"at": "2026-11-03T10:30:00", "note": "11/4 오후에 방문하겠습니다."}}},
-    {"id": "W-004", "fromId": "S2", "toIds": ["W1", "W2"], "priority": "보통", "title": "본부 회의실 영상회의 PC 점검", "workPart": "사무자동화기기", "workType": "정기 점검", "location": "본부", "dueAt": "2026-11-13T12:00:00", "detail": "11/13 오후 영상회의 전까지 카메라 · 마이크 점검 바랍니다.", "createdAt": "2026-11-12T14:00:00", "acks": {"W1": {"at": "2026-11-12T14:20:00", "note": "내일 오전 9시에 점검하겠습니다."}, "W2": {"at": "2026-11-12T15:05:00", "note": "오전 외출 후 확인하겠습니다."}}, "doneAt": "2026-11-13T10:40:00", "doneBy": "S2", "doneNote": "박성민 직원이 출근 후 바로 점검 완료"},
-    {"id": "W-005", "fromId": "S1", "toIds": ["W1"], "priority": "보통", "title": "순천지사 PC 교체 후 프린터 연결 확인", "workPart": "사무자동화기기", "workType": "설치·교체", "location": "순천지사", "dueAt": "2026-11-20T17:00:00", "detail": "교체한 PC 5대 모두 공용 프린터 인쇄 테스트까지 확인 바랍니다.", "createdAt": "2026-11-20T13:05:00", "acks": {"W1": {"at": "2026-11-20T13:12:00", "note": "PC 설치 후 바로 확인하겠습니다."}}},
-    {"id": "W-006", "fromId": "S2", "toIds": ["W3", "W4"], "priority": "긴급", "title": "본부 상황실 네트워크 스위치 이중화 점검", "workPart": "네트워크", "workType": "정기 점검", "location": "본부", "dueAt": "2026-11-21T10:00:00", "detail": "내일 오전 10시 전까지 상황실 백본 스위치 이중화 상태를 점검하고 결과를 공유해 주세요.", "createdAt": "2026-11-20T14:10:00", "acks": {}}
+    {"id": "W-001", "fromId": "S1", "toIds": ["W1"], "priority": "보통", "title": "광주지사 신규 직원 PC 2대 설치", "workPart": "사무자동화기기", "workParts": ["사무자동화기기"], "workType": "설치·교체", "location": "광주지사", "locations": ["광주지사", "보성지사"], "dueAt": "2026-10-08T17:00:00", "detail": "10/8 입사 직원 2명 PC 설치와 메일 · 업무 계정 설정 바랍니다.", "createdAt": "2026-10-07T09:10:00", "acks": {"W1": {"at": "2026-10-07T09:25:00", "note": "내일 오전에 설치하겠습니다."}}},
+    {"id": "W-002", "fromId": "S2", "toIds": ["W3", "W4"], "priority": "긴급", "title": "순천지사 요금소 네트워크 장애 긴급 점검", "workPart": "네트워크", "workParts": ["네트워크"], "workType": "장애 대응", "location": "순천지사", "dueAt": "2026-10-20T15:00:00", "detail": "요금소 단말 일부 통신 불가 — 즉시 현장 확인 바랍니다.", "createdAt": "2026-10-20T09:05:00", "acks": {"W3": {"at": "2026-10-20T09:08:00", "note": "강동현 직원과 바로 출발하겠습니다."}, "W4": {"at": "2026-10-20T09:10:00", "note": ""}}},
+    {"id": "W-003", "fromId": "S1", "toIds": ["W2"], "priority": "보통", "title": "영암지사 복합기 정기 점검", "workPart": "사무자동화기기", "workParts": ["사무자동화기기"], "workType": "정기 점검", "location": "영암지사", "dueAt": "2026-11-06T17:00:00", "detail": "분기 정기 점검입니다. 점검표 작성해 주세요.", "createdAt": "2026-11-03T10:00:00", "acks": {"W2": {"at": "2026-11-03T10:30:00", "note": "11/4 오후에 방문하겠습니다."}}},
+    {"id": "W-004", "fromId": "S2", "toIds": ["W1", "W2"], "priority": "보통", "title": "본부 회의실 영상회의 PC 점검", "workPart": "사무자동화기기", "workParts": ["사무자동화기기"], "workType": "정기 점검", "location": "본부", "dueAt": "2026-11-13T12:00:00", "detail": "11/13 오후 영상회의 전까지 카메라 · 마이크 점검 바랍니다.", "createdAt": "2026-11-12T14:00:00", "acks": {"W1": {"at": "2026-11-12T14:20:00", "note": "내일 오전 9시에 점검하겠습니다."}, "W2": {"at": "2026-11-12T15:05:00", "note": "오전 외출 후 확인하겠습니다."}}, "doneAt": "2026-11-13T10:40:00", "doneBy": "S2", "doneNote": "박성민 직원이 출근 후 바로 점검 완료"},
+    {"id": "W-005", "fromId": "S1", "toIds": ["W1"], "priority": "보통", "title": "순천지사 PC 교체 후 프린터 연결 확인", "workPart": "사무자동화기기", "workParts": ["사무자동화기기"], "workType": "설치·교체", "location": "순천지사", "dueAt": "2026-11-20T17:00:00", "detail": "교체한 PC 5대 모두 공용 프린터 인쇄 테스트까지 확인 바랍니다.", "createdAt": "2026-11-20T13:05:00", "acks": {"W1": {"at": "2026-11-20T13:12:00", "note": "PC 설치 후 바로 확인하겠습니다."}}},
+    {"id": "W-006", "fromId": "S2", "toIds": ["W3", "W4", "W1"], "priority": "긴급", "title": "본부 상황실 네트워크 스위치 이중화 점검", "workPart": "네트워크", "workParts": ["네트워크", "사무자동화기기"], "workType": "정기 점검", "location": "본부", "dueAt": "2026-11-21T10:00:00", "detail": "내일 오전 10시 전까지 상황실 백본 스위치 이중화 상태를 점검하고 결과를 공유해 주세요.", "createdAt": "2026-11-20T14:10:00", "acks": {}}
   ],
 
   "notices": [
@@ -185,7 +185,7 @@
    저장소 — 1단계는 브라우저 localStorage.
    2단계에서는 load()/save()만 서버 API 호출로 바꾸면 된다.
    ========================================================= */
-const STORE_KEY = 'gj-maint-proto-v27';
+const STORE_KEY = 'gj-maint-proto-v28';
 // 시제품 표시: 실제 운영할 때 false로 바꾸면 "더미 데이터로 초기화" 버튼과 시제품 안내 문구가 모두 숨겨진다
 const PROTOTYPE = true;
 const SESSION_KEY = 'gj-maint-proto-user';
@@ -329,6 +329,7 @@ const workLabel = r => `${r.supportType ? r.supportType + ' · ' : ''}${r.workTy
 // 기준정보 목록 (요청서 선택 항목)
 const LIST_NAMES = { locations: '대상 기관', workParts: '작업 부문', workTypes: '작업 유형' };
 // 작업 부문 기본값: 작성하는 직원의 담당 분야
+const partsOf = o => (o && o.workParts && o.workParts.length ? o.workParts : o && o.workPart ? [o.workPart] : []); // 작업 요청 작업 부문(여러 개)
 const defaultPart = () => { const u = me(); return u && (state.workParts || []).includes(u.part) ? u.part : ''; };
 // 요청 번호 버튼: 어디서든 누르면 요청 상세가 열림
 const ridBtn = (r, cls = '') => r && r.id ? `<button type="button" class="rid ${cls}" data-action="open-detail" data-id="${r.id}" title="${r.id} 상세 보기">${r.id}</button>` : '';
@@ -1287,7 +1288,7 @@ document.addEventListener('input', e => {
   if (e.target.name === 'workPart') { f.dataset.partManual = '1'; return; }
   if (e.target.name !== 'to' || f.dataset.partManual) return;
   const parts = [...new Set([...f.querySelectorAll('input[name="to"]:checked')].map(c => (userById(c.value) || {}).part).filter(Boolean))];
-  f.querySelectorAll('input[name="workPart"]').forEach(r => { r.checked = parts.length === 1 && r.value === parts[0]; });
+  f.querySelectorAll('input[name="workPart"]').forEach(r => { r.checked = parts.includes(r.value); }); // 받는 직원들의 담당 분야 모두 선택
 });
 // 대상 기관 고르기: 가는 순서대로 누르면 번호가 붙고, 아래 "방문 순서"에서 순서를 바꿀 수 있음
 function orgRouteHTML(sel) {
@@ -2060,7 +2061,7 @@ function orderBannerHTML() {
 function orderMetaHTML(o) {
   const parts = [];
   if (orgsOf(o).length) parts.push(`${ic('pin')} ${esc(orgText(o))}${o.locationDetail ? ` · ${esc(o.locationDetail)}` : ''}`);
-  if (o.workPart || o.workType) parts.push(`${ic('clipboard')} ${esc([o.workPart, o.workType].filter(Boolean).join(' · '))}`);
+  if (partsOf(o).length || o.workType) parts.push(`${ic('clipboard')} ${esc([...partsOf(o), o.workType].filter(Boolean).join(' · '))}`);
   if (o.dueAt) parts.push(`${ic('alarm')} 기한 ${fmtDT(o.dueAt)}`);
   const from = userById(o.fromId);
   parts.push(`${ic('send')} ${esc(from ? from.name : '')} 감독원 · ${fmtDT(o.createdAt)}`);
@@ -2084,8 +2085,8 @@ function ordersHTML() {
         ${orgPickerHTML('locations', [])}</div>
       <div class="field"><label class="lbl" for="wo-loc-detail">작업 장소 <small>(선택 · 대상 기관에 "기타"가 있으면 필수)</small></label>
         <input class="inp" id="wo-loc-detail" name="locationDetail" maxlength="40" placeholder="예: 2층 통신실, 요금소 서버실"></div>
-      <div class="field"><span class="lbl">작업 부문 <em class="tag req">필수</em> <small>(받는 직원의 담당 분야가 자동 선택됩니다)</small></span>
-        <div class="opts opts-2 part-opts">${(state.workParts || []).map(v => `<label class="opt"><input type="radio" name="workPart" value="${esc(v)}"><span>${esc(v)}</span></label>`).join('')}</div></div>
+      <div class="field"><span class="lbl">작업 부문 <em class="tag req">필수</em> <small>(여러 개 선택 가능 · 받는 직원들의 담당 분야가 자동 선택됩니다)</small></span>
+        <div class="opts opts-2 part-opts">${(state.workParts || []).map(v => `<label class="opt"><input type="checkbox" name="workPart" value="${esc(v)}"><span>${esc(v)}</span></label>`).join('')}</div></div>
       <div class="field"><span class="lbl">작업 유형</span>
         <div class="opts">${state.workTypes.map((v, i) => `<label class="opt"><input type="radio" name="workType" value="${esc(v)}" ${i ? '' : 'checked'}><span>${esc(v)}</span></label>`).join('')}</div></div>
       <div class="field"><label class="lbl" for="wo-title">요청 제목</label>
@@ -2503,7 +2504,7 @@ function reportHTML() {
     ...(parts.filter(k => k !== '미지정').length <= 2 ? parts.filter(k => k !== '미지정').map(k => {
       const rs = byPart(k);
       return { label: k, icon: k.includes('네트워크') ? IC.sliders : IC.office, value: `${rs.length}<small>건</small>`,
-        sub: `완료 ${rs.filter(M.isDone).length} · 방문 ${rs.filter(r => !isRecord(r)).length} · 상주 ${rs.filter(isRecord).length} · 작업 요청 ${orders.filter(o => o.workPart === k).length}` };
+        sub: `완료 ${rs.filter(M.isDone).length} · 방문 ${rs.filter(r => !isRecord(r)).length} · 상주 ${rs.filter(isRecord).length} · 작업 요청 ${orders.filter(o => partsOf(o).includes(k)).length}` };
     }) : []),
     { label: '감독원 작업 요청', icon: IC.send, value: `${orders.length}<small>건</small>`,
       sub: `완료 ${oCnt('완료')} · 진행 ${oCnt('진행 중')} · 확인 ${oCnt('확인')} · 새 요청 ${oCnt('새 요청')}${orders.some(o => o.priority === '긴급') ? ` · 긴급 ${orders.filter(o => o.priority === '긴급').length}` : ''}` },
@@ -2527,8 +2528,9 @@ function reportHTML() {
   ];
   const O_STATES = ['완료', '진행 중', '확인', '새 요청'];
   const O_COLORS = { '완료': VIZ.good, '진행 중': VIZ.blue, '확인': VIZ.light, '새 요청': VIZ.warning };
-  const oParts = [...new Set([...(state.workParts || []), ...orders.map(o => o.workPart || '미지정')])].filter(k => orders.some(o => (o.workPart || '미지정') === k));
-  const orderStack = oParts.map(k => { const os = orders.filter(o => (o.workPart || '미지정') === k);
+  const oPartsOf = o => (partsOf(o).length ? partsOf(o) : ['미지정']); // 여러 부문을 고른 작업 요청은 각 부문에 집계
+  const oParts = [...new Set([...(state.workParts || []), ...orders.flatMap(oPartsOf)])].filter(k => orders.some(o => oPartsOf(o).includes(k)));
+  const orderStack = oParts.map(k => { const os = orders.filter(o => oPartsOf(o).includes(k));
     return { label: k, total: os.length, parts: O_STATES.map(st => ({ name: st, value: os.filter(o => orderState(o) === st).length })) }; });
   const linked = orders.filter(o => orderLinks(o).length);
   const doneNoLink = orders.filter(o => !orderLinks(o).length && orderState(o) === '완료');
@@ -2572,7 +2574,7 @@ function reportHTML() {
     ['재방문 필요 (요청 · 미요청)', `${revReq} · ${M.revisits.length - revReq}`],
     ['공동작업', `${work.filter(isCoWork).length}건`],
     ['감독원 작업 요청 (완료 · 진행 중 · 확인 · 새 요청)', `${orders.length}건 (${oCnt('완료')} · ${oCnt('진행 중')} · ${oCnt('확인')} · ${oCnt('새 요청')})`],
-    ...oParts.map(k => [`작업 요청 · ${k}`, `${orders.filter(o => (o.workPart || '미지정') === k).length}건`]),
+    ...oParts.map(k => [`작업 요청 · ${k}`, `${orders.filter(o => oPartsOf(o).includes(k)).length}건`]),
     ['작업 요청 연결 (승인 요청으로 작업 · 감독원 완료 처리 · 아직 작업 전)', `${linked.length} · ${doneNoLink.length} · ${notYet.length}`],
     ['감독원 대리 처리 (외근 시작 · 복귀)', `${list.filter(r => r.proxyStart).length}건 · ${list.filter(r => r.proxyReturn).length}건`],
   ];
@@ -2582,7 +2584,7 @@ function reportHTML() {
     `${rs.filter(r => r.result && ['일부 완료', '미완료'].includes(r.result.outcome)).length}건`]; });
   const grpTable = key => groupRows(key).map(([k, rs]) => [esc(k), `${rs.length}건`, `${rs.filter(M.isDone).length}건`]);
   const orderRows = orders.slice().sort((x, y) => x.createdAt.localeCompare(y.createdAt)).map(o => [fmtDay(o.createdAt.slice(0, 10)),
-    `${o.priority === '긴급' ? '<span class="chip st-late">긴급</span> ' : ''}${esc(o.title)}`, esc(o.workPart || '미지정'), esc(o.workType || '-'), esc(namesOf(o.toIds)), orderChip(o),
+    `${o.priority === '긴급' ? '<span class="chip st-late">긴급</span> ' : ''}${esc(o.title)}`, esc(oPartsOf(o).join(' · ')), esc(o.workType || '-'), esc(namesOf(o.toIds)), orderChip(o),
     orderLinks(o).map(r => ridBtn(r, 'sm')).join(' ') || '<span class="muted">-</span>']);
   const table = (head, rows, cls = '') => rows.length
     ? `<div class="rep-scroll"><table class="rep-table ${cls}"><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
@@ -2640,7 +2642,7 @@ function reportHTML() {
     </div>
     ${repCard('08', '대상 기관별', '작업 부문별 건수 · 여러 곳을 간 작업은 각 기관에 집계', vizStack(locStack, parts, '대상 기관별 작업 부문 건수', partColor, true))}
     <div class="dash-2">
-      ${repCard('09', '감독원 작업 요청 · 부문별', `그달 보낸 작업 요청 ${orders.length}건의 처리 상태`, orders.length ? vizStack(orderStack, O_STATES, '부문별 작업 요청 처리 상태', k => O_COLORS[k]) : '<p class="viz-empty">그달 보낸 작업 요청이 없습니다.</p>')}
+      ${repCard('09', '감독원 작업 요청 · 부문별', `그달 보낸 작업 요청 ${orders.length}건의 처리 상태 · 여러 부문 요청은 각 부문에 집계`, orders.length ? vizStack(orderStack, O_STATES, '부문별 작업 요청 처리 상태', k => O_COLORS[k]) : '<p class="viz-empty">그달 보낸 작업 요청이 없습니다.</p>')}
       ${repCard('10', '작업 요청 → 승인 요청 연결', '직원이 승인 요청으로 이어 작업했는지', `${vizSeg(linkParts, '작업 요청 연결 현황')}
         ${urgentOpen.length ? `<div class="rep-urgent"><b>${ic('alarm')} 긴급 · 미완료 ${urgentOpen.length}건</b><ul>${urgentOpen.map(o => `<li><span class="chip st-late">긴급</span>${esc(o.title)}<small>${esc(namesOf(o.toIds))}${o.dueAt ? ` · 기한 ${fmtDT(o.dueAt)}` : ''} · ${orderState(o)}</small></li>`).join('')}</ul></div>` : ''}`)}
     </div>
@@ -3345,7 +3347,7 @@ const actions = {
     if (!o) return;
     reqPrefill = {
       workOrderId: o.id, locations: orgsOf(o).filter(l => state.locations.includes(l)), locationDetail: o.locationDetail || '',
-      workPart: (state.workParts || []).includes(o.workPart) ? o.workPart : '', workType: state.workTypes.includes(o.workType) ? o.workType : '',
+      workPart: (() => { const ps = partsOf(o).filter(x => (state.workParts || []).includes(x)), mine = (me() || {}).part; return ps.includes(mine) ? mine : ps[0] || ''; })(), workType: state.workTypes.includes(o.workType) ? o.workType : '',
       description: (o.title + (o.detail ? ' — ' + o.detail : '')).slice(0, 200), coWorkerIds: [],
       label: `작업 요청 "${o.title}"으로 승인 요청을 작성하고 있습니다.`,
     };
@@ -3418,7 +3420,7 @@ const actions = {
     const key = el.dataset.key, i = +el.dataset.i, list = state[key], name = LIST_NAMES[key];
     if (list.length <= 1) { toast(`${name}은(는) 최소 1개가 있어야 합니다.`); return; }
     const used = state.requests.filter(r => key === 'locations' ? orgsOf(r).includes(list[i]) : key === 'workParts' ? r.workPart === list[i] : r.workType === list[i]).length
-      + workOrders().filter(o => key === 'locations' ? orgsOf(o).includes(list[i]) : key === 'workParts' ? o.workPart === list[i] : o.workType === list[i]).length;
+      + workOrders().filter(o => key === 'locations' ? orgsOf(o).includes(list[i]) : key === 'workParts' ? partsOf(o).includes(list[i]) : o.workType === list[i]).length;
     if (!await uiConfirm(`"${list[i]}"을(를) ${name} 목록에서 삭제합니다.${used ? `\n지난 기록 ${used}건에는 그대로 남습니다.` : ''}`, { title: '목록에서 삭제할까요?', ok: '삭제', danger: true })) return;
     const v = list.splice(i, 1)[0];
     audit('setting', `${name} 삭제`, v, used ? `지난 기록 ${used}건은 그대로 유지` : '');
@@ -4024,19 +4026,19 @@ const forms = {
     const locations = (f.elements.locations.value || '').split('|').filter(Boolean);
     const locationDetail = f.elements.locationDetail.value.trim();
     const pick = n => (f.querySelector(`input[name="${n}"]:checked`) || {}).value || '';
-    const workPart = pick('workPart'), workType = pick('workType');
+    const workParts = [...f.querySelectorAll('input[name="workPart"]:checked')].map(c => c.value), workPart = workParts[0] || '', workType = pick('workType');
     if (!toIds.length) return fail('작업 요청을 받을 직원을 한 명 이상 선택하세요.');
     if (locations.includes('기타') && !locationDetail) return fail('대상 기관에 "기타"가 있으면 작업 장소를 적어야 합니다.');
-    if (!workPart) return fail('작업 부문(사무자동화기기 · 네트워크 등)을 선택하세요.');
+    if (!workParts.length) return fail('작업 부문(사무자동화기기 · 네트워크 등)을 하나 이상 선택하세요.');
     if (!title) return fail('요청 제목을 입력하세요.');
     if (!state.workOrders) state.workOrders = [];
     state.workOrders.push({
       id: nextOrderId(), fromId: currentUserId, toIds,
       priority: f.elements.priority.value || '보통', title,
-      locations, location: locations[0] || '', locationDetail, workPart, workType, dueAt: dueAt ? dueAt + ':00' : '',
+      locations, location: locations[0] || '', locationDetail, workParts, workPart, workType, dueAt: dueAt ? dueAt + ':00' : '',
       detail: f.elements.detail.value.trim(), createdAt: toLocalISO(now()), acks: {},
     });
-    { const o = state.workOrders[state.workOrders.length - 1]; audit('order', '작업 요청', o.id, `${o.priority === '긴급' ? '[긴급] ' : ''}${title} · ${workPart}${workType ? ' · ' + workType : ''}${locations.length ? ` (${locations.join(' → ')})` : ''} → ${namesOf(toIds)}`, { to: toIds }); }
+    { const o = state.workOrders[state.workOrders.length - 1]; audit('order', '작업 요청', o.id, `${o.priority === '긴급' ? '[긴급] ' : ''}${title} · ${workParts.join(' · ')}${workType ? ' · ' + workType : ''}${locations.length ? ` (${locations.join(' → ')})` : ''} → ${namesOf(toIds)}`, { to: toIds }); }
     commit();
     toast(`${toIds.map(id => userById(id).name).join(', ')}에게 작업 요청을 보냈습니다.`);
   },
