@@ -132,7 +132,7 @@
     &.danger { @apply border-destructive bg-destructive text-white hover:bg-destructive/90 hover:text-white; }
     &.ghost { @apply border-transparent bg-transparent text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground; }
     &.small { @apply h-8 rounded-md px-3 text-[13px] gap-1 phone:min-h-9; }
-    &.cur { @apply border-(--c) bg-(--c) text-white opacity-100 hover:bg-(--c) hover:text-white; }
+    &.cur { @apply border-(--c) bg-[color-mix(in_srgb,var(--c)_11%,var(--card))] font-semibold text-(--c) opacity-100 shadow-[0_0_0_3px_color-mix(in_srgb,var(--c)_13%,transparent)] hover:bg-[color-mix(in_srgb,var(--c)_15%,var(--card))] hover:text-(--c); }
     &:disabled .st-ico { @apply opacity-60; }
     &.cancel-btn { @apply font-semibold text-late hover:border-transparent hover:bg-late-bg hover:text-late; }
   }
@@ -607,19 +607,29 @@
       @apply flex min-h-[42px] items-center justify-center rounded-md border border-input bg-card px-1 py-1.5 text-center text-sm font-medium shadow-xs
         transition-[color,background-color,border-color,box-shadow] hover:bg-accent phone:min-h-[46px] phone:text-[15px];
     }
-    & input:checked + span { @apply border-primary bg-primary text-primary-foreground hover:bg-primary; }
+    /* 선택: 그 값의 색(--sel)으로 연한 바탕 + 색 테두리 · 글자 + 왼쪽 위 체크 */
+    & input:checked + span {
+      @apply relative border-(--sel,var(--primary)) bg-[color-mix(in_srgb,var(--sel,var(--primary))_9%,var(--card))] font-semibold text-(--sel,var(--primary))
+        shadow-[0_0_0_3px_color-mix(in_srgb,var(--sel,var(--primary))_13%,transparent)] hover:bg-[color-mix(in_srgb,var(--sel,var(--primary))_13%,var(--card))];
+    }
+    & input:checked + span::before { @apply absolute top-1.5 left-1.5 size-4 rounded-full bg-(--sel,var(--primary)) content-['']; }
+    /* 체크 표시는 바탕(카드) 색으로 — 밝은 · 어두운 화면 모두 잘 보이게 */
+    & input:checked + span::after {
+      @apply absolute top-1.5 left-1.5 size-4 bg-card content-[''];
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 10px no-repeat;
+    }
     & input:focus-visible + span { @apply ring-[3px] ring-ring/40; }
   }
   .support-opts .opt > span { @apply min-h-[46px] text-[15px]; }
   .wo-to .opt > span { @apply flex-col px-1 py-2 leading-tight; & small { @apply text-[11.5px] font-normal text-inherit opacity-75; } }
-  .wo-pri .pri-normal input:checked + span { @apply border-work bg-work hover:bg-work; }
-  .wo-pri .pri-urgent input:checked + span { @apply border-late bg-late hover:bg-late; }
+  .wo-pri .pri-normal { @apply [--sel:var(--work)]; }
+  .wo-pri .pri-urgent { @apply [--sel:var(--late)]; }
   .rf-outcome .opt > span { @apply flex-col gap-px px-1 py-2 leading-tight phone:min-h-[46px] phone:text-sm; }
   .rf-outcome .opt small { @apply text-[11.5px] font-normal opacity-75 phone:hidden; }
-  .rf-outcome .oc-out input:checked + span { @apply border-out bg-out hover:bg-out; }
-  .rf-outcome .oc-late input:checked + span { @apply border-late bg-late hover:bg-late; }
-  .rf-outcome .oc-work input:checked + span { @apply border-work bg-work hover:bg-work; }
-  .co-pick input:checked + span { @apply border-co bg-co hover:bg-co; }
+  .rf-outcome .oc-out { @apply [--sel:var(--out)]; }
+  .rf-outcome .oc-late { @apply [--sel:var(--late)]; }
+  .rf-outcome .oc-work { @apply [--sel:var(--work)]; }
+  .co-pick .opt { @apply [--sel:var(--co)]!; }
   .co-pick input:disabled + span { @apply cursor-not-allowed; }
   .co-pick input:disabled:checked + span { @apply opacity-85; }
 
@@ -814,10 +824,10 @@
   .org-opt {
     @apply relative flex min-h-[42px] items-center justify-center gap-1.5 rounded-md border border-input bg-card px-1 py-1.5 text-sm font-medium text-foreground shadow-xs
       transition-[color,background-color,border-color] hover:bg-accent phone:min-h-[46px] phone:text-[15px];
-    &.on { @apply border-primary bg-primary text-primary-foreground hover:bg-primary; }
+    &.on { @apply border-primary bg-[color-mix(in_srgb,var(--primary)_9%,var(--card))] font-semibold text-primary shadow-[0_0_0_3px_color-mix(in_srgb,var(--primary)_13%,transparent)] hover:bg-[color-mix(in_srgb,var(--primary)_13%,var(--card))]; }
   }
   .org-opts { @apply phone:grid-cols-2; }
-  .org-no { @apply inline-grid h-5 min-w-5 place-items-center rounded-full bg-white px-[5px] text-[11.5px] font-bold not-italic text-primary; }
+  .org-no { @apply inline-grid h-5 min-w-5 place-items-center rounded-full bg-primary px-[5px] text-[11.5px] font-bold not-italic text-white; }
   .org-route { @apply mt-2.5 flex min-h-10 flex-wrap items-center gap-1.5 rounded-lg border border-dashed bg-muted/60 px-2.5 py-2 text-[13px]; & .muted { @apply inline-flex items-center gap-1; } }
   .or-lbl { @apply mr-0.5 text-xs font-semibold text-muted-foreground; }
   .or-step { @apply inline-flex items-center gap-[5px] rounded-full border bg-card p-[3px] shadow-xs; & i { @apply inline-grid size-5 place-items-center rounded-full bg-primary text-[11px] font-bold not-italic text-white; } & b { @apply pr-1 text-[13px] font-semibold; } }
