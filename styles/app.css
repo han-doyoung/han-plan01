@@ -103,7 +103,8 @@
    ========================================================================= */
 @layer base {
   *, ::before, ::after { @apply border-border outline-ring/50; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; @apply scroll-pt-[140px] scroll-pb-14 phone:scroll-pt-[72px] phone:scroll-pb-24; } /* 고정된 상단 · 하단에 가리지 않게 */
+  #top { @apply sticky top-0 z-40; }
   body { @apply bg-background text-foreground font-sans antialiased text-[15px] leading-normal tracking-[-0.01em] phone:text-sm; }
   button:not(:disabled), [role="button"], summary, label:has(input) { @apply cursor-pointer; }
   button { -webkit-tap-highlight-color: transparent; }
@@ -112,7 +113,7 @@
   h2 { @apply mt-8 mb-3 flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-foreground phone:mt-6; }
   h3 { @apply font-semibold; }
   svg.lucide { @apply size-[1.1em] shrink-0; }
-  main { @apply mx-auto max-w-[1160px] px-5 pt-6 pb-14 focus:outline-none phone:px-4 phone:pt-[18px] phone:pb-7; }
+  main { @apply mx-auto max-w-[1160px] px-5 pt-6 pb-20 focus:outline-none phone:px-4 phone:pt-[18px] phone:pb-7; }
   .muted { @apply text-muted-foreground; }
   /* 날짜 · 시간 입력의 달력 단추 */
   input::-webkit-calendar-picker-indicator { @apply cursor-pointer opacity-60 hover:opacity-100; }
@@ -238,7 +239,7 @@
    ========================================================================= */
 @layer components {
   .skip-link { @apply absolute left-3 -top-16 z-[100] rounded-md bg-navy px-4 py-2.5 font-bold text-white no-underline shadow-lg focus:top-3; }
-  .topbar { @apply sticky top-0 z-20 bg-navy text-white shadow-sm; }
+  .topbar { @apply bg-navy text-white shadow-sm; }
   .topbar-inner { @apply mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-5 gap-y-3 px-5 py-5 phone:flex-nowrap phone:gap-2 phone:px-3 phone:py-2; }
   .brand { @apply mr-auto flex min-w-0 items-center gap-4 phone:gap-2; }
   .brand-mark { @apply h-9 w-1 shrink-0 rounded-sm bg-brand-red phone:h-[26px] phone:w-1; }
@@ -280,16 +281,16 @@
     & .count { @apply phone:absolute phone:top-0.5 phone:left-[calc(50%+6px)] phone:min-w-[18px] phone:text-[11px] phone:leading-[18px]; }
   }
 
-  .site-foot { @apply border-t-[3px] border-brand-red bg-navy text-white/80; }
-  .sf-inner { @apply mx-auto flex max-w-[1160px] flex-col gap-3 px-5 pt-[22px] pb-[26px] phone:gap-5 phone:px-4 phone:pt-5 phone:pb-7; }
+  .site-foot { @apply border-t-[3px] border-brand-red bg-navy text-white/80 pc:fixed pc:inset-x-0 pc:bottom-0 pc:z-30 pc:border-t-2 pc:shadow-[0_-4px_16px_rgba(11,31,75,.18)]; }
+  .sf-inner { @apply mx-auto flex max-w-[1160px] flex-col gap-3 px-5 pt-[22px] pb-[26px] pc:flex-row pc:items-center pc:justify-center pc:gap-4 pc:py-2 phone:gap-5 phone:px-4 phone:pt-5 phone:pb-7; }
   body:has(.nav) .sf-inner { @apply phone:pb-[calc(104px+env(safe-area-inset-bottom))]; }
   /* 로고 · 기관명 · 시스템명 한 줄, 이용 안내는 아래 */
-  .sf-row { @apply m-0 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-center text-[15px] phone:text-[14.5px];
+  .sf-row { @apply m-0 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-center text-[15px] pc:shrink-0 pc:flex-nowrap pc:text-[13px] phone:text-[14.5px];
     & span, & b { @apply whitespace-nowrap; }
     & b { @apply font-bold tracking-[-0.02em] text-white; }
     & > span:last-child { @apply tracking-[0.02em] text-white/65; } }
-  .sf-row .sf-mark { @apply w-8 shrink-0 opacity-95; }
-  .sf-note { @apply m-0 text-xs leading-relaxed text-white/60; }
+  .sf-row .sf-mark { @apply w-8 shrink-0 opacity-95 pc:w-7; }
+  .sf-note { @apply m-0 text-xs leading-relaxed text-white/60 pc:min-w-0 pc:truncate pc:border-l pc:border-white/20 pc:pl-4 pc:text-[11.5px]; }
 
   /* 화면 제목 */
   .page-head { @apply flex flex-wrap items-center gap-x-3.5 gap-y-3; }
@@ -307,7 +308,7 @@
 
   /* 알림 메시지 (Sonner 모양) */
   .toast {
-    @apply fixed bottom-7 left-1/2 z-[95] flex max-w-[calc(100%-32px)] -translate-x-1/2 items-center gap-2 rounded-lg border bg-popover px-4 py-3
+    @apply fixed bottom-7 left-1/2 z-[95] flex max-w-[calc(100%-32px)] pc:bottom-16 -translate-x-1/2 items-center gap-2 rounded-lg border bg-popover px-4 py-3
       text-sm font-medium text-popover-foreground shadow-lg phone:bottom-[calc(96px+env(safe-area-inset-bottom))];
     &[data-type="error"] { @apply border-late/40; }
   }
