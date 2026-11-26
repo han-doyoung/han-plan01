@@ -548,24 +548,23 @@
   }
   .sc-form .form-submit { @apply phone:-mb-4; }
   .fs-btns { @apply flex gap-2; & .btn { @apply h-11 flex-1 rounded-lg text-base; } }
-  .req-left { @apply m-0 flex flex-wrap items-center gap-x-1.5 text-[12.5px] text-muted-foreground; & b { @apply text-out; } &.ok { @apply font-semibold text-work; } & svg { @apply size-3.5; } }
-  /* 요청서 단계: 휴대폰에서만 한 단계씩 */
-  .rq-steps { @apply m-0 hidden list-none grid-cols-3 gap-1.5 p-0 phone:grid; }
-  .rq-steps button {
-    @apply flex w-full flex-col items-center gap-1 rounded-lg border-0 bg-transparent px-1 py-1.5 text-xs font-semibold text-muted-foreground;
-    & i { @apply grid size-7 place-items-center rounded-full bg-muted text-[12.5px] font-bold not-italic ring-1 ring-border [&_svg]:size-3.5; }
-    &.on { @apply text-primary; & i { @apply bg-primary text-white ring-primary; } }
-    &.done { @apply text-work; & i { @apply bg-work-bg text-work ring-work/30; } }
-    &.left.done i { @apply bg-out-bg text-out ring-out/30; }
+  .req-left { @apply m-0 flex flex-wrap items-center gap-x-1.5 text-[12.5px] text-muted-foreground; &.ok { @apply font-semibold text-work; } & svg { @apply size-3.5; } }
+  .rl-btn {
+    @apply flex w-full min-w-0 items-center gap-1.5 rounded-md border-0 bg-out-bg px-2.5 py-1.5 text-left text-[12.5px] text-foreground;
+    & b { @apply shrink-0 text-out; } & span { @apply min-w-0 flex-1 truncate; }
+    & em { @apply inline-flex shrink-0 items-center not-italic font-semibold text-out [&_svg]:size-3.5; }
   }
-  .rq-step { @apply contents; }
-  .rq-prev, .rq-next { @apply hidden; }
+  /* 작업승인 요청 화면: 휴대폰은 탭(작업승인 요청 · 재방문 작업 · 내 요청), PC는 두 칸 그대로 */
+  .req-tabs { @apply hidden phone:block; & .subtabs { @apply phone:mt-3; } }
+  .rq-none { @apply pc:hidden; }
+  .rq-h2 { @apply phone:hidden; }
+  .rq-side > .rq-pane:first-child > .rq-h2 { @apply mt-0; }
+  .rq-side > .rq-none + .rq-pane > .rq-h2 { @apply mt-0; }
   @media (max-width: 640px) {
-    #req-form .rq-step { @apply hidden; }
-    #req-form[data-step="1"] .rq-step[data-step="1"], #req-form[data-step="2"] .rq-step[data-step="2"], #req-form[data-step="3"] .rq-step[data-step="3"] { @apply flex flex-col gap-[18px]; }
-    #req-form:not([data-step="1"]) .rq-prev { @apply inline-flex; }
-    #req-form:not([data-step="3"]) .rq-next { @apply inline-flex; }
-    #req-form:not([data-step="3"]) #req-submit { @apply hidden; }
+    .req-layout { @apply mt-3.5; }
+    .req-layout .rq-pane { @apply hidden; }
+    .req-layout[data-tab="form"] #req-form { @apply flex; }
+    .req-layout[data-tab="revisit"] .rq-pane[data-pane="revisit"], .req-layout[data-tab="mine"] .rq-pane[data-pane="mine"] { @apply block; }
   }
   .sub-lbl { @apply mt-0.5 mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold text-muted-foreground; }
   .sub-lbl + .opts + .sub-lbl { @apply mt-3; }
