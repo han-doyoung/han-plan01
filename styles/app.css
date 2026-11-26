@@ -315,6 +315,21 @@
   .toast[data-type="error"] .toast-ic { @apply bg-late; }
   .toast[data-type="info"] .toast-ic { @apply bg-primary; }
   .proto-note { @apply mt-9 text-center text-xs text-muted-foreground; }
+  /* 오늘 할 일 */
+  .todo { @apply mt-4 overflow-hidden p-0; & ul { @apply m-0 list-none p-0; } }
+  .todo-head { @apply flex items-center gap-2 border-b px-4 py-3 phone:px-3.5; & b { @apply inline-flex items-center gap-1.5 text-[15px] font-semibold text-ink; & .ic { @apply text-primary; } } }
+  .todo-n { @apply rounded-full bg-brand-red px-2 text-xs leading-5 font-bold text-white; }
+  .todo-item { @apply flex items-center gap-3 border-b px-4 py-3 last:border-b-0 phone:px-3.5;
+    & .ti-txt { @apply flex min-w-0 flex-1 flex-col gap-0.5; & b { @apply text-sm font-semibold; } & small { @apply line-clamp-2 text-[12.5px] text-muted-foreground; } }
+    & .btn { @apply shrink-0; } }
+  .ti-ic { @apply grid size-9 shrink-0 place-items-center rounded-lg bg-(--cb) text-(--c) [&_svg]:size-[18px]; }
+  .todo-item.t-late { @apply [--c:var(--late)] [--cb:var(--late-bg)]; & .ti-txt b { @apply text-late; } }
+  .todo-item.t-out { @apply [--c:var(--out)] [--cb:var(--out-bg)]; }
+  .todo-item.t-trip { @apply [--c:var(--trip)] [--cb:var(--trip-bg)]; }
+  .todo-item.t-field { @apply [--c:var(--field)] [--cb:var(--field-bg)]; }
+  .todo-item.t-work { @apply [--c:var(--work)] [--cb:var(--work-bg)]; }
+  .todo-item.t-leave { @apply [--c:var(--leave)] [--cb:var(--leave-bg)]; }
+  .todo-none { @apply mt-4 mb-0 flex items-center gap-1.5 rounded-lg border border-dashed bg-card/60 px-4 py-2.5 text-[13px] text-muted-foreground; & .ic { @apply text-work; } }
 }
 
 /* =========================================================================
@@ -439,6 +454,8 @@
     & > .avatar-picker { @apply phone:order-7; }
   }
   .seg { @apply flex flex-wrap gap-1.5; & .btn { @apply inline-flex items-center justify-center; } }
+  .ms-locked .btn:disabled { @apply opacity-45; }
+  .ms-hint { @apply flex basis-full items-center gap-1.5 phone:order-3; & .ic { @apply text-muted-foreground; } }
   .ms-actions { @apply gap-1.5; }
 
   /* 안내 띠 (Alert) */
@@ -676,7 +693,13 @@
   .actions { @apply flex flex-col gap-2 border-t pt-3; }
   .instr-lbl, .ack-lbl { @apply text-[13px] font-semibold text-ink; & small { @apply font-normal text-muted-foreground; } }
   .instr-inp { @apply min-h-0 resize-y text-sm; }
-  .instr { @apply flex flex-col gap-0.5 rounded-md border-l-[3px] border-primary bg-accent px-3 py-2 text-[13.5px]; & b { @apply text-[12.5px] text-ink-2; } }
+  .instr { @apply flex flex-col gap-0.5 rounded-md border-l-[3px] border-primary bg-accent px-3 py-2 text-[13.5px]; & b { @apply text-[12.5px] text-ink-2; }
+    &.acked { @apply border-work; } }
+  .instr-ack { @apply mt-1 flex flex-wrap items-center gap-2 text-xs; & .ok { @apply inline-flex items-center gap-1 font-semibold text-work; } & .no { @apply font-semibold text-out; } }
+  /* 보완 요청 */
+  .revise { @apply flex flex-col gap-1 rounded-md border-l-[3px] border-trip bg-trip-bg px-3 py-2 text-[13.5px];
+    & b { @apply inline-flex items-center gap-1.5 text-[12.5px] text-trip; } & small { @apply text-xs text-muted-foreground; }
+    &.done { @apply border-work bg-work-bg; & b { @apply text-work; } } }
   .mystatus-instr { @apply w-full; }
 }
 
@@ -1291,6 +1314,8 @@
   .md-id { @apply text-[12.5px] font-bold text-muted-foreground tabular-nums; }
   .md-close { @apply shrink-0; }
   .md-body { @apply flex flex-col gap-3 overflow-y-auto px-5 pt-4 pb-5; }
+  .md-foot { @apply flex flex-wrap justify-end gap-2 border-t bg-muted/40 px-5 py-3 phone:grid phone:grid-cols-2 phone:px-4 phone:pb-[calc(12px+env(safe-area-inset-bottom))];
+    & .btn { @apply phone:h-11 phone:w-full; } & .btn.primary { @apply phone:col-span-full; } }
   .md-kv { @apply grid-cols-[110px_1fr] phone:grid-cols-[84px_1fr]; & dt { @apply whitespace-normal; } }
   .steps {
     @apply m-0 flex list-none gap-0 p-0;
@@ -1314,6 +1339,7 @@
       phone:max-h-[85vh] phone:w-full phone:rounded-t-2xl phone:rounded-b-none phone:animate-[slide-up_.2s_ease-out];
   }
   .np-head { @apply flex items-center gap-2 border-b px-4 py-3.5; & b { @apply inline-flex items-center gap-1.5 text-[15px] font-semibold; } & .muted { @apply flex-1 text-[12.5px]; } }
+  .np-tools { @apply flex items-center gap-1.5 border-b px-4 py-2; & .qchip { @apply inline-flex items-center gap-1 phone:h-8; } & .qchip.on { @apply border-primary bg-primary text-white hover:bg-primary hover:text-white; } & .qchip:disabled { @apply opacity-50; } & .soft { @apply ml-auto; } }
   .np-body { @apply overflow-y-auto px-2 pt-1 pb-2; & h3 { @apply mx-2 mt-3 mb-1.5 text-[12.5px] text-muted-foreground; } }
   .np-list { @apply m-0 flex list-none flex-col gap-0.5 p-0; }
   .np-item {
